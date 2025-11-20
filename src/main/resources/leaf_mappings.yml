@@ -1,6 +1,12 @@
-# Maps log (or related wood) materials to the leaf blocks that belong to the same tree species.
+#     _____ _       _                 _ _      
+#    |_   _(_)_ __ | |__  ___ _ _ ___| | |__ _ 
+#      | | | | '  \| '_ \/ -_) '_/ -_) | / _` |
+#      |_| |_|_|_|_|_.__/\___|_| \___|_|_\__,_|
+
+# Maps materials to the leaf blocks that belong to the same tree species.
 # You can add or remove entries as needed; Timberella will only decay leaves listed for the
 # logs that were actually felled.
+
 log_to_leaves:
   OAK_LOG:
     - OAK_LEAVES

@@ -1,8 +1,9 @@
 # Timberella 🌲
 
-Paper 1.21.x plugin that fells whole trees, prunes their leaves, and replants saplings with minimal configuration.
+Timberella is a Paper 1.21.x plugin that packages tree felling, leaf decay, and replanting into cleanly separated modules. You can toggle each feature individually and even define custom log-to-leaf mappings so species never overlap.
 
 ## ✨ Highlights
+- Configurable sneak mode: only fell trees when sneaking, when not sneaking or always 
 - Sequential log breaking with particle feedback and configurable durability cost.
 - Independent modules for timber, species-aware leaves decay that skips neighboring crowns, and soil-aware replanting (incl. waterlogged mangroves).
 - Config watcher merges defaults on the fly; localized messages.
@@ -16,18 +17,278 @@ Paper 1.21.x plugin that fells whole trees, prunes their leaves, and replants sa
 
 > ℹ️ Detailed usage guides, permissions, and command matrices live in the internal wiki (kept outside of this repo/JAR).
 
-## ⚙️ Configuration Snapshot
-Key toggles inside `plugins/Timberella/config.yml`:
-- `enable_timber`, `enable_leaves_decay`, `enable_replant` (leaves decay respects species mappings even without permissions)
-- `include_diagonals`, `break_interval_ticks`, `max_blocks`
-- `tools.*` for allowed axes & durability model
-- `leaves_decay.*` for radius + batch tuning (instant flood-fill)
-- `replant.saplings` whitelist with soil validation
-- `metrics_enabled` to opt out of bStats telemetry if desired
-- `check_updates`, `update_check_interval_hours`, `update_provider` for the automatic version checker
-- `update_include_prereleases` to decide whether beta/alpha builds should trigger notifications
+## ⚙️ Default Config
+<details>
+<summary>config.yml</summary>
 
-Separated `leaf_mappings.yml` to map any log/wood material to the leaves that should decay with it; unmapped species fall back to vanilla decay ranges.
+```yaml
+#################################################
+# General
+#################################################
+
+# language: messages locale file to load from /lang (default: en_US)
+language: en_US
+
+# Update check options
+check_updates: true
+
+# 0 = Modrinth + Hangar, 1 = only Modrinth, 2 = only Hangar
+update_provider: 0
+
+# Interval (in hours) for automatic update checks (minimum 1)
+update_check_interval_hours: 24
+
+# Notify about pre-release builds (beta/alpha). Requires support from provider APIs.
+update_include_prereleases: false
+
+# Config watcher toggle (auto-reload & merge every ~5s if enabled)
+config_watch_enabled: true
+
+# Enable anonymous usage metrics via bStats (https://bstats.org)
+metrics_enabled: true
+
+#################################################
+# Modules
+#################################################
+
+# Enable timber ability
+enable_timber: true
+
+# Enable replanting of saplings after tree felling
+enable_replant: true
+
+# Enable leaves decay after tree felling
+# if true, leaves around felled logs will start decaying, netherless of enable_timber and enable_replant
+enable_leaves_decay: true
+
+#################################################
+# Timber settings
+#################################################
+
+# When should trees be felled automatically?
+# 0 = only when sneaking
+# 1 = only when NOT sneaking
+# 2 = sneaking or not (always)
+sneak_mode: 0
+
+# Tree connection detection:
+# true = consider diagonal neighbors, false = only 6 orthogonal faces
+include_diagonals: true
+
+# Interval (in ticks) between breaking subsequent blocks when felling sequentially
+break_interval_ticks: 2
+
+tools:
+	# Which axes are allowed to trigger tree felling
+
+	allowed_axes:
+		- STONE_AXE
+		- IRON_AXE
+		- GOLDEN_AXE
+		- DIAMOND_AXE
+		- NETHERITE_AXE
+  
+	# Minimum remaining durability required before felling starts (protection)
+	min_remaining_durability: 10
+
+	# Durability mode: "first" counts only the first block / "all" counts all broken blocks
+	durability_mode: first
+
+	# Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
+	durability_multiplier: 0.5
+
+# Maximum number of log blocks to break in one go (safety)
+max_blocks: 1024
+
+# Categories with per-material toggles (set true/false). Unknown materials are ignored safely.
+categories:
+	logs:
+		OAK_LOG: true
+		SPRUCE_LOG: true
+		BIRCH_LOG: true
+		JUNGLE_LOG: true
+		ACACIA_LOG: true
+		DARK_OAK_LOG: true
+		MANGROVE_LOG: true
+		CHERRY_LOG: true
+		CRIMSON_STEM: true
+		WARPED_STEM: true
+	stripped_logs:
+		STRIPPED_OAK_LOG: false
+		STRIPPED_SPRUCE_LOG: false
+		STRIPPED_BIRCH_LOG: false
+		STRIPPED_JUNGLE_LOG: false
+		STRIPPED_ACACIA_LOG: false
+		STRIPPED_DARK_OAK_LOG: false
+		STRIPPED_MANGROVE_LOG: false
+		STRIPPED_CHERRY_LOG: false
+		STRIPPED_CRIMSON_STEM: false
+		STRIPPED_WARPED_STEM: false
+	woods:
+		OAK_WOOD: false
+		SPRUCE_WOOD: false
+		BIRCH_WOOD: false
+		JUNGLE_WOOD: false
+		ACACIA_WOOD: false
+		DARK_OAK_WOOD: false
+		MANGROVE_WOOD: false
+		CHERRY_WOOD: false
+	stripped_woods:
+		STRIPPED_OAK_WOOD: false
+		STRIPPED_SPRUCE_WOOD: false
+		STRIPPED_BIRCH_WOOD: false
+		STRIPPED_JUNGLE_WOOD: false
+		STRIPPED_ACACIA_WOOD: false
+		STRIPPED_DARK_OAK_WOOD: false
+		STRIPPED_MANGROVE_WOOD: false
+		STRIPPED_CHERRY_WOOD: false
+	fences:
+		OAK_FENCE: false
+		SPRUCE_FENCE: false
+		BIRCH_FENCE: false
+		JUNGLE_FENCE: false
+		ACACIA_FENCE: false
+		DARK_OAK_FENCE: false
+		MANGROVE_FENCE: false
+		CHERRY_FENCE: false
+		CRIMSON_FENCE: false
+		WARPED_FENCE: false
+
+#################################################
+# Replant settings
+#################################################
+replant:
+
+	# Enable replanting of saplings after tree felling
+	enabled: true
+
+	# List of saplings to replant (must match item IDs)
+	saplings:
+		- OAK_SAPLING
+		- SPRUCE_SAPLING
+		- BIRCH_SAPLING
+		- JUNGLE_SAPLING
+		- ACACIA_SAPLING
+		- DARK_OAK_SAPLING
+		- CHERRY_SAPLING
+		- MANGROVE_PROPAGULE
+
+#################################################
+# Leaves decay settings
+#################################################
+leaves_decay:
+	# Radius around felled logs to check for leaves to decay
+	decay_radius: 5
+
+	# Interval (in ticks) between leaf removal batches
+	batch_interval_ticks: 2
+
+	# Maximum number of leaves removed per batch
+	batch_size: 20
+```
+
+</details>
+
+<details>
+<summary>leaf_mappings.yml</summary>
+
+```yaml
+# Maps log (or related wood) materials to the leaf blocks that belong to the same tree species.
+# You can add or remove entries as needed; Timberella will only decay leaves listed for the
+# logs that were actually felled.
+log_to_leaves:
+	OAK_LOG:
+		- OAK_LEAVES
+	STRIPPED_OAK_LOG:
+		- OAK_LEAVES
+	OAK_WOOD:
+		- OAK_LEAVES
+	STRIPPED_OAK_WOOD:
+		- OAK_LEAVES
+
+	SPRUCE_LOG:
+		- SPRUCE_LEAVES
+	STRIPPED_SPRUCE_LOG:
+		- SPRUCE_LEAVES
+	SPRUCE_WOOD:
+		- SPRUCE_LEAVES
+	STRIPPED_SPRUCE_WOOD:
+		- SPRUCE_LEAVES
+
+	BIRCH_LOG:
+		- BIRCH_LEAVES
+	STRIPPED_BIRCH_LOG:
+		- BIRCH_LEAVES
+	BIRCH_WOOD:
+		- BIRCH_LEAVES
+	STRIPPED_BIRCH_WOOD:
+		- BIRCH_LEAVES
+
+	JUNGLE_LOG:
+		- JUNGLE_LEAVES
+	STRIPPED_JUNGLE_LOG:
+		- JUNGLE_LEAVES
+	JUNGLE_WOOD:
+		- JUNGLE_LEAVES
+	STRIPPED_JUNGLE_WOOD:
+		- JUNGLE_LEAVES
+
+	ACACIA_LOG:
+		- ACACIA_LEAVES
+	STRIPPED_ACACIA_LOG:
+		- ACACIA_LEAVES
+	ACACIA_WOOD:
+		- ACACIA_LEAVES
+	STRIPPED_ACACIA_WOOD:
+		- ACACIA_LEAVES
+
+	DARK_OAK_LOG:
+		- DARK_OAK_LEAVES
+	STRIPPED_DARK_OAK_LOG:
+		- DARK_OAK_LEAVES
+	DARK_OAK_WOOD:
+		- DARK_OAK_LEAVES
+	STRIPPED_DARK_OAK_WOOD:
+		- DARK_OAK_LEAVES
+
+	CHERRY_LOG:
+		- CHERRY_LEAVES
+	STRIPPED_CHERRY_LOG:
+		- CHERRY_LEAVES
+	CHERRY_WOOD:
+		- CHERRY_LEAVES
+	STRIPPED_CHERRY_WOOD:
+		- CHERRY_LEAVES
+
+	MANGROVE_LOG:
+		- MANGROVE_LEAVES
+	STRIPPED_MANGROVE_LOG:
+		- MANGROVE_LEAVES
+	MANGROVE_WOOD:
+		- MANGROVE_LEAVES
+	STRIPPED_MANGROVE_WOOD:
+		- MANGROVE_LEAVES
+
+	CRIMSON_STEM:
+		- NETHER_WART_BLOCK
+	STRIPPED_CRIMSON_STEM:
+		- NETHER_WART_BLOCK
+	CRIMSON_HYPHAE:
+		- NETHER_WART_BLOCK
+	STRIPPED_CRIMSON_HYPHAE:
+		- NETHER_WART_BLOCK
+
+	WARPED_STEM:
+		- WARPED_WART_BLOCK
+	STRIPPED_WARPED_STEM:
+		- WARPED_WART_BLOCK
+	WARPED_HYPHAE:
+		- WARPED_WART_BLOCK
+	STRIPPED_WARPED_HYPHAE:
+		- WARPED_WART_BLOCK
+```
+
+</details>
 
 ## 📦 Build Requirements
 - JDK 21+
@@ -50,7 +311,7 @@ Resulting artifacts land in `build/libs/` (shadowed JAR only).
 - `THIRD_PARTY_LICENSES.md` ➜ dependency overview & links
 
 ## 📜 Licenses
-Embedded third-party code inside the shaded JAR:
+Timberella itself ships under the Apache License 2.0 (see `LICENSE`). Embedded third-party code inside the shaded JAR:
 - `com.github.johnrengelman.shadow` — Apache License 2.0
 - `net.kyori:adventure-text-minimessage` — MIT License
 - `com.google.code.gson:gson` — Apache License 2.0
