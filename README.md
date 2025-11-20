@@ -2,6 +2,8 @@
 
 Timberella is a Paper 1.21.x plugin that packages tree felling, leaf decay, and replanting into cleanly separated modules. You can toggle each feature individually and even define custom log-to-leaf mappings so species never overlap.
 
+[[https://github.com/hrobasti/timberella-plugin/blob/main/img/timber_01.gif|Fell a tree using a diamond axe. Logs dropped and leaves decayed.]]
+
 ## ✨ Highlights
 - Configurable sneak mode: only fell trees when sneaking, when not sneaking or always 
 - Sequential log breaking with particle feedback and configurable durability cost.
