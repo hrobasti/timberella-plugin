@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.hro_basti.timberella'
+
+// Lese die zentrale Version aus version.properties
+def versionProps = new Properties()
+def versionFile = file('version.properties')
+if (versionFile.exists()) {
+    versionFile.withInputStream { versionProps.load(it) }
+}
+version = versionProps.getProperty('version', '0.1.0')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc-repo'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly('io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT')
+    implementation('net.kyori:adventure-text-minimessage:4.17.0')
+    implementation('com.google.code.gson:gson:2.10.1')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.2')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.10.2')
+}
+
+tasks.named('processResources') {
+    inputs.property('version', project.version)
+    filesMatching('plugin.yml') {
+        expand([version: project.version])
+    }
+}
+
+// Wrapper configuration (wrapper JAR should be committed; see README)
+tasks.named('wrapper') {
+    gradleVersion = '8.10.2'
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+// Shadow JAR as the primary artifact (bundles MiniMessage)
+tasks.named('shadowJar') {
+    archiveClassifier.set('')
+    // Dateiname enthält automatisch project.version (z. B. Timberella-1.2.3.jar)
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
+    }
+}

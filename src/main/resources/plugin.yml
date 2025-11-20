@@ -1,0 +1,25 @@
+name: Timberella
+main: com.hro_basti.timberella.TimberellaPlugin
+version: ${version}
+api-version: '1.21'
+authors:
+  - hro_basti
+description: "Tree cutting, leaves decay and replanting abilities. Completely configurable."
+website: ""
+commands:
+  timberella:
+    description: Timberella commands
+    usage: "/<command> [reload|version|toggle]"
+permissions:
+  timberella.use:
+    description: Use Timberella to fell trees
+    default: true
+  timberella.toggle:
+    description: Allow players to toggle Timberella for themselves
+    default: true
+  timberella.admin:
+    description: Admin permission for Timberella
+    default: op
+  timberella.update.notify:
+    description: Receive in-game update reminders when new versions are available
+    default: op

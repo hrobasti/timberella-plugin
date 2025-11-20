@@ -1,0 +1,25 @@
+# Local documentation kept outside VCS
+wiki/
+
+# Build outputs
+/build/
+/bin/
+/out/
+/dist/
+
+# Gradle caches
+/.gradle/
+
+# IDE / workspace metadata
+/.idea/
+.idea/
+/.vscode/
+.classpath
+.project
+.settings/
+*.iml
+
+# OS & tooling clutter
+.DS_Store
+Thumbs.db
+*.log
