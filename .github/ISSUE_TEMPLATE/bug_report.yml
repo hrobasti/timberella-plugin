@@ -11,8 +11,8 @@ body:
     id: server_version
     attributes:
       label: Server Version
-      description: Include the full Paper/Purpur/etc. version string (e.g., git-Paper-123 1.21.1-R0.1-SNAPSHOT).
-      placeholder: git-Paper-123 (MC: 1.21.1)
+      description: Include the full Paper version string (e.g., git-Paper-123 1.21.1-R0.1-SNAPSHOT).
+      placeholder: "Paper 1.21.10"
     validations:
       required: true
   - type: textarea
@@ -20,7 +20,7 @@ body:
     attributes:
       label: Timberella Version
       description: Which Timberella build are you running? If built from source, mention the commit hash.
-      placeholder: "v1.4.0 (commit abc123)"
+      placeholder: "v1.4.0"
     validations:
       required: true
   - type: textarea
