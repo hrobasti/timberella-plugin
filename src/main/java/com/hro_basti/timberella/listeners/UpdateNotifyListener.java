@@ -26,8 +26,8 @@ public class UpdateNotifyListener implements Listener {
             return;
         }
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("latest", info.latestVersion());
-        placeholders.put("current", info.currentVersion());
+        placeholders.put("latest_ver", info.latestVersion());
+        placeholders.put("current_ver", info.currentVersion());
         event.getPlayer().sendMessage(plugin.messages().format("update_available", placeholders));
     }
 }

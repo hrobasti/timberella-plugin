@@ -59,6 +59,7 @@ enable_replant: true
 
 # Enable leaves decay after tree felling
 # if true, leaves around felled logs will start decaying, netherless of enable_timber and enable_replant
+# doesn't require timber permission to function - it's a global setting
 enable_leaves_decay: true
 
 #################################################
@@ -79,114 +80,121 @@ include_diagonals: true
 break_interval_ticks: 2
 
 tools:
-	# Which axes are allowed to trigger tree felling
+  # Which axes are allowed to trigger tree felling
 
-	allowed_axes:
-		- STONE_AXE
-		- IRON_AXE
-		- GOLDEN_AXE
-		- DIAMOND_AXE
-		- NETHERITE_AXE
+  allowed_axes:
+    - STONE_AXE
+    - IRON_AXE
+    - GOLDEN_AXE
+    - DIAMOND_AXE
+    - NETHERITE_AXE
   
-	# Minimum remaining durability required before felling starts (protection)
-	min_remaining_durability: 10
+  # Minimum remaining durability required before felling starts (protection)
+  min_remaining_durability: 10
 
-	# Durability mode: "first" counts only the first block / "all" counts all broken blocks
-	durability_mode: first
+  # Durability mode: "first" counts only the first block / "all" counts all broken blocks
+  durability_mode: first
 
-	# Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
-	durability_multiplier: 0.5
+  # Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
+  durability_multiplier: 0.5
 
 # Maximum number of log blocks to break in one go (safety)
 max_blocks: 1024
 
 # Categories with per-material toggles (set true/false). Unknown materials are ignored safely.
 categories:
-	logs:
-		OAK_LOG: true
-		SPRUCE_LOG: true
-		BIRCH_LOG: true
-		JUNGLE_LOG: true
-		ACACIA_LOG: true
-		DARK_OAK_LOG: true
-		MANGROVE_LOG: true
-		CHERRY_LOG: true
-		CRIMSON_STEM: true
-		WARPED_STEM: true
-	stripped_logs:
-		STRIPPED_OAK_LOG: false
-		STRIPPED_SPRUCE_LOG: false
-		STRIPPED_BIRCH_LOG: false
-		STRIPPED_JUNGLE_LOG: false
-		STRIPPED_ACACIA_LOG: false
-		STRIPPED_DARK_OAK_LOG: false
-		STRIPPED_MANGROVE_LOG: false
-		STRIPPED_CHERRY_LOG: false
-		STRIPPED_CRIMSON_STEM: false
-		STRIPPED_WARPED_STEM: false
-	woods:
-		OAK_WOOD: false
-		SPRUCE_WOOD: false
-		BIRCH_WOOD: false
-		JUNGLE_WOOD: false
-		ACACIA_WOOD: false
-		DARK_OAK_WOOD: false
-		MANGROVE_WOOD: false
-		CHERRY_WOOD: false
-	stripped_woods:
-		STRIPPED_OAK_WOOD: false
-		STRIPPED_SPRUCE_WOOD: false
-		STRIPPED_BIRCH_WOOD: false
-		STRIPPED_JUNGLE_WOOD: false
-		STRIPPED_ACACIA_WOOD: false
-		STRIPPED_DARK_OAK_WOOD: false
-		STRIPPED_MANGROVE_WOOD: false
-		STRIPPED_CHERRY_WOOD: false
-	fences:
-		OAK_FENCE: false
-		SPRUCE_FENCE: false
-		BIRCH_FENCE: false
-		JUNGLE_FENCE: false
-		ACACIA_FENCE: false
-		DARK_OAK_FENCE: false
-		MANGROVE_FENCE: false
-		CHERRY_FENCE: false
-		CRIMSON_FENCE: false
-		WARPED_FENCE: false
+  logs:
+    OAK_LOG: true
+    SPRUCE_LOG: true
+    BIRCH_LOG: true
+    JUNGLE_LOG: true
+    ACACIA_LOG: true
+    DARK_OAK_LOG: true
+    MANGROVE_LOG: true
+    CHERRY_LOG: true
+    CRIMSON_STEM: true
+    WARPED_STEM: true
+  stripped_logs:
+    STRIPPED_OAK_LOG: false
+    STRIPPED_SPRUCE_LOG: false
+    STRIPPED_BIRCH_LOG: false
+    STRIPPED_JUNGLE_LOG: false
+    STRIPPED_ACACIA_LOG: false
+    STRIPPED_DARK_OAK_LOG: false
+    STRIPPED_MANGROVE_LOG: false
+    STRIPPED_CHERRY_LOG: false
+    STRIPPED_CRIMSON_STEM: false
+    STRIPPED_WARPED_STEM: false
+  woods:
+    OAK_WOOD: false
+    SPRUCE_WOOD: false
+    BIRCH_WOOD: false
+    JUNGLE_WOOD: false
+    ACACIA_WOOD: false
+    DARK_OAK_WOOD: false
+    MANGROVE_WOOD: false
+    CHERRY_WOOD: false
+  stripped_woods:
+    STRIPPED_OAK_WOOD: false
+    STRIPPED_SPRUCE_WOOD: false
+    STRIPPED_BIRCH_WOOD: false
+    STRIPPED_JUNGLE_WOOD: false
+    STRIPPED_ACACIA_WOOD: false
+    STRIPPED_DARK_OAK_WOOD: false
+    STRIPPED_MANGROVE_WOOD: false
+    STRIPPED_CHERRY_WOOD: false
+  fences:
+    OAK_FENCE: false
+    SPRUCE_FENCE: false
+    BIRCH_FENCE: false
+    JUNGLE_FENCE: false
+    ACACIA_FENCE: false
+    DARK_OAK_FENCE: false
+    MANGROVE_FENCE: false
+    CHERRY_FENCE: false
+    CRIMSON_FENCE: false
+    WARPED_FENCE: false
 
 #################################################
 # Replant settings
 #################################################
+
 replant:
 
-	# Enable replanting of saplings after tree felling
-	enabled: true
+  # Enable replanting of saplings after tree felling
+  enabled: true
 
-	# List of saplings to replant (must match item IDs)
-	saplings:
-		- OAK_SAPLING
-		- SPRUCE_SAPLING
-		- BIRCH_SAPLING
-		- JUNGLE_SAPLING
-		- ACACIA_SAPLING
-		- DARK_OAK_SAPLING
-		- CHERRY_SAPLING
-		- MANGROVE_PROPAGULE
+  # List of saplings to replant (must match item IDs)
+  saplings:
+    - OAK_SAPLING
+    - SPRUCE_SAPLING
+    - BIRCH_SAPLING
+    - JUNGLE_SAPLING
+    - ACACIA_SAPLING
+    - DARK_OAK_SAPLING
+    - CHERRY_SAPLING
+    - MANGROVE_PROPAGULE
 
 #################################################
 # Leaves decay settings
 #################################################
+
 leaves_decay:
-	# Radius around felled logs to check for leaves to decay
-	decay_radius: 5
+  # Search radius around felled logs used to discover candidate leaves (flood-fill depth)
+  # Minimum accepted value: 0 (values below are clamped)
+  decay_radius: 5
 
-	# Interval (in ticks) between leaf removal batches
-	batch_interval_ticks: 2
+  # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched
+  # Minimum accepted value: 1
+  max_distance: 3
 
-	# Maximum number of leaves removed per batch
-	batch_size: 20
-```
+  # Interval (in ticks) between leaf removal batches
+  # Minimum accepted value: 1 tick
+  batch_interval_ticks: 2
 
+  # Maximum number of leaves removed per batch
+  # Minimum accepted value: 1
+  batch_size: 20
 </details>
 
 <details>
@@ -289,6 +297,9 @@ log_to_leaves:
 ```
 
 </details>
+
+Leaf decay additionally enforces a configurable 3D buffer (`leaves_decay.max_distance`, default 4) from every log block in the felled trunk, so even tightly packed trees of the same species keep their crowns as long as each leaf stays within the configured range of at least one harvested log. Use `leaves_decay.decay_radius` to control how far the flood-fill searches, and rely on `max_distance` as the non-negotiable safety bubble.
+All leaf-related values clamp to the documented minimums to avoid destabilizing the scheduler.
 
 ## 📦 Build Requirements
 - JDK 21+

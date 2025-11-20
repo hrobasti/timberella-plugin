@@ -321,8 +321,8 @@ public class TimberellaPlugin extends JavaPlugin {
                 this,
                 () -> {
                     Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("latest", info.latestVersion());
-                    placeholders.put("current", info.currentVersion());
+                    placeholders.put("latest_ver", info.latestVersion());
+                    placeholders.put("current_ver", info.currentVersion());
                     getServer().getConsoleSender().sendMessage(messages.format("update_available", placeholders));
                 });
     }

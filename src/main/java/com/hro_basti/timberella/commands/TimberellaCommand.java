@@ -71,7 +71,7 @@ public class TimberellaCommand implements CommandExecutor {
                 }
             case "version":
                 Map<String, String> rep = new HashMap<>();
-                rep.put("version", plugin.getPluginMeta().getVersion());
+                rep.put("current_ver", plugin.getPluginMeta().getVersion());
                 sender.sendMessage(plugin.messages().format("version", rep));
                 return true;
             default:

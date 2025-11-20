@@ -139,6 +139,7 @@ categories:
 #################################################
 # Replant settings
 #################################################
+
 replant:
 
   # Enable replanting of saplings after tree felling
@@ -158,12 +159,20 @@ replant:
 #################################################
 # Leaves decay settings
 #################################################
+
 leaves_decay:
-  # Radius around felled logs to check for leaves to decay
+  # Search radius around felled logs used to discover candidate leaves (flood-fill depth)
+  # Minimum accepted value: 0 (values below are clamped)
   decay_radius: 5
 
+  # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched
+  # Minimum accepted value: 1
+  max_distance: 3
+
   # Interval (in ticks) between leaf removal batches
+  # Minimum accepted value: 1 tick
   batch_interval_ticks: 2
 
   # Maximum number of leaves removed per batch
+  # Minimum accepted value: 1
   batch_size: 20
