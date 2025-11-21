@@ -74,7 +74,7 @@ tools:
   min_remaining_durability: 10
 
   # Durability mode: "first" counts only the first block / "all" counts all broken blocks
-  durability_mode: first
+  durability_mode: all
 
   # Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
   durability_multiplier: 0.5
@@ -82,21 +82,83 @@ tools:
 # Maximum number of log blocks to break in one go (safety)
 max_blocks: 1024
 
+# Species-specific safety limits (radius = Chebyshev X/Z distance; vertical = |Y| offset)
+species_limits:
+  mangrove:
+    enabled: true
+    max_blocks: 128
+    max_horizontal_radius: 9
+    max_vertical_radius: 32
+  jungle:
+    enabled: true
+    max_horizontal_radius: 8
+    max_vertical_radius: 32
+  spruce:
+    enabled: true
+    max_horizontal_radius: 5
+    max_vertical_radius: 32
+  oak:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 24
+  pale_oak:
+    enabled: true
+    max_horizontal_radius: 5
+    max_vertical_radius: 16
+  dark_oak:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 12
+  birch:
+    enabled: true
+    max_horizontal_radius: 2
+    max_vertical_radius: 12
+  acacia:
+    enabled: true
+    max_horizontal_radius: 8
+    max_vertical_radius: 12
+  cherry:
+    enabled: true
+    max_horizontal_radius: 9
+    max_vertical_radius: 12
+  mushroom_brown:
+    enabled: true
+    max_horizontal_radius: 4
+    max_vertical_radius: 12
+  mushroom_red:
+    enabled: true
+    max_horizontal_radius: 2
+    max_vertical_radius: 12
+  warped:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 32
+  crimson:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 32
+
 # Categories with per-material toggles (set true/false). Unknown materials are ignored safely.
 categories:
   logs:
     OAK_LOG: true
+    PALE_OAK_LOG: true
     SPRUCE_LOG: true
     BIRCH_LOG: true
     JUNGLE_LOG: true
     ACACIA_LOG: true
     DARK_OAK_LOG: true
     MANGROVE_LOG: true
+    MANGROVE_ROOTS: true
     CHERRY_LOG: true
     CRIMSON_STEM: true
     WARPED_STEM: true
+    MUSHROOM_STEM: true
+    BROWN_MUSHROOM_BLOCK: true
+    RED_MUSHROOM_BLOCK: true
   stripped_logs:
     STRIPPED_OAK_LOG: false
+    STRIPPED_PALE_OAK_LOG: false
     STRIPPED_SPRUCE_LOG: false
     STRIPPED_BIRCH_LOG: false
     STRIPPED_JUNGLE_LOG: false
@@ -108,6 +170,7 @@ categories:
     STRIPPED_WARPED_STEM: false
   woods:
     OAK_WOOD: false
+    PALE_OAK_WOOD: false
     SPRUCE_WOOD: false
     BIRCH_WOOD: false
     JUNGLE_WOOD: false
@@ -117,6 +180,7 @@ categories:
     CHERRY_WOOD: false
   stripped_woods:
     STRIPPED_OAK_WOOD: false
+    STRIPPED_PALE_OAK_WOOD: false
     STRIPPED_SPRUCE_WOOD: false
     STRIPPED_BIRCH_WOOD: false
     STRIPPED_JUNGLE_WOOD: false
@@ -135,19 +199,20 @@ categories:
     CHERRY_FENCE: false
     CRIMSON_FENCE: false
     WARPED_FENCE: false
+  additions:
+    BEE_NEST: true
+    BEEHIVE: true
+    CREAKING_HEART: true
 
 #################################################
 # Replant settings
 #################################################
 
 replant:
-
-  # Enable replanting of saplings after tree felling
-  enabled: true
-
   # List of saplings to replant (must match item IDs)
   saplings:
     - OAK_SAPLING
+    - PALE_OAK_SAPLING
     - SPRUCE_SAPLING
     - BIRCH_SAPLING
     - JUNGLE_SAPLING
@@ -167,7 +232,7 @@ leaves_decay:
 
   # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched
   # Minimum accepted value: 1
-  max_distance: 3
+  max_distance: 4
 
   # Interval (in ticks) between leaf removal batches
   # Minimum accepted value: 1 tick

@@ -5,10 +5,12 @@ Timberella is a Paper 1.21.x plugin that packages tree felling, leaf decay, and 
 ## ✨ Highlights
 - Configurable sneak mode: only fell trees when sneaking, when not sneaking or always 
 - Sequential log breaking with particle feedback and configurable durability cost.
-- Independent modules for timber, species-aware leaves decay that skips neighboring crowns, and soil-aware replanting (incl. waterlogged mangroves).
+- Independent modules for timber, species-aware leaves decay that skips neighboring crowns, and soil-aware replanting (incl. waterlogged mangroves while muddy roots stay intact).
+- Species-specific safety limits keep huge crowns (jungle, mangrove, mushrooms, etc.) under control without nerfing other trees.
 - Config watcher merges defaults on the fly; localized messages.
 - Update checker covers Modrinth & Hangar for gentle upgrade nudges.
 - Customizable `leaf_mappings.yml` keeps leaf pruning scoped to the species you define.
+- Languages: en_US, de_DE / Machine translated: ar_SA, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, pl_PL, pt_PT, tr_TR, uk_UA, zh_CN
 
 ## 🚀 Quick Start
 1. Drop the release JAR into `plugins/`.
@@ -93,7 +95,7 @@ tools:
   min_remaining_durability: 10
 
   # Durability mode: "first" counts only the first block / "all" counts all broken blocks
-  durability_mode: first
+  durability_mode: all
 
   # Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
   durability_multiplier: 0.5
@@ -101,21 +103,83 @@ tools:
 # Maximum number of log blocks to break in one go (safety)
 max_blocks: 1024
 
+# Species-specific safety limits (radius = Chebyshev X/Z distance; vertical = |Y| offset)
+species_limits:
+  mangrove:
+    enabled: true
+    max_blocks: 128
+    max_horizontal_radius: 9
+    max_vertical_radius: 32
+  jungle:
+    enabled: true
+    max_horizontal_radius: 8
+    max_vertical_radius: 32
+  spruce:
+    enabled: true
+    max_horizontal_radius: 5
+    max_vertical_radius: 32
+  oak:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 24
+  pale_oak:
+    enabled: true
+    max_horizontal_radius: 5
+    max_vertical_radius: 16
+  dark_oak:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 12
+  birch:
+    enabled: true
+    max_horizontal_radius: 2
+    max_vertical_radius: 12
+  acacia:
+    enabled: true
+    max_horizontal_radius: 8
+    max_vertical_radius: 12
+  cherry:
+    enabled: true
+    max_horizontal_radius: 9
+    max_vertical_radius: 12
+  mushroom_brown:
+    enabled: true
+    max_horizontal_radius: 4
+    max_vertical_radius: 12
+  mushroom_red:
+    enabled: true
+    max_horizontal_radius: 2
+    max_vertical_radius: 12
+  warped:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 32
+  crimson:
+    enabled: true
+    max_horizontal_radius: 6
+    max_vertical_radius: 32
+
 # Categories with per-material toggles (set true/false). Unknown materials are ignored safely.
 categories:
   logs:
     OAK_LOG: true
+    PALE_OAK_LOG: true
     SPRUCE_LOG: true
     BIRCH_LOG: true
     JUNGLE_LOG: true
     ACACIA_LOG: true
     DARK_OAK_LOG: true
     MANGROVE_LOG: true
+    MANGROVE_ROOTS: true
     CHERRY_LOG: true
     CRIMSON_STEM: true
     WARPED_STEM: true
+    MUSHROOM_STEM: true
+    BROWN_MUSHROOM_BLOCK: true
+    RED_MUSHROOM_BLOCK: true
   stripped_logs:
     STRIPPED_OAK_LOG: false
+    STRIPPED_PALE_OAK_LOG: false
     STRIPPED_SPRUCE_LOG: false
     STRIPPED_BIRCH_LOG: false
     STRIPPED_JUNGLE_LOG: false
@@ -127,6 +191,7 @@ categories:
     STRIPPED_WARPED_STEM: false
   woods:
     OAK_WOOD: false
+    PALE_OAK_WOOD: false
     SPRUCE_WOOD: false
     BIRCH_WOOD: false
     JUNGLE_WOOD: false
@@ -136,6 +201,7 @@ categories:
     CHERRY_WOOD: false
   stripped_woods:
     STRIPPED_OAK_WOOD: false
+    STRIPPED_PALE_OAK_WOOD: false
     STRIPPED_SPRUCE_WOOD: false
     STRIPPED_BIRCH_WOOD: false
     STRIPPED_JUNGLE_WOOD: false
@@ -154,6 +220,10 @@ categories:
     CHERRY_FENCE: false
     CRIMSON_FENCE: false
     WARPED_FENCE: false
+  additions:
+    BEE_NEST: true
+    BEEHIVE: true
+    CREAKING_HEART: true
 
 #################################################
 # Replant settings
@@ -167,6 +237,7 @@ replant:
   # List of saplings to replant (must match item IDs)
   saplings:
     - OAK_SAPLING
+    - PALE_OAK_SAPLING
     - SPRUCE_SAPLING
     - BIRCH_SAPLING
     - JUNGLE_SAPLING
@@ -186,7 +257,7 @@ leaves_decay:
 
   # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched
   # Minimum accepted value: 1
-  max_distance: 3
+  max_distance: 4
 
   # Interval (in ticks) between leaf removal batches
   # Minimum accepted value: 1 tick
@@ -196,6 +267,16 @@ leaves_decay:
   # Minimum accepted value: 1
   batch_size: 20
 </details>
+
+## 🌐 Species Safety Limits
+
+Use the `species_limits` section in `config.yml` to tune block caps and search radii per tree family. Each entry provides:
+
+- `max_blocks`: optional override for how many logs/related blocks Timberella will break for that species (omit or set `-1` to fall back to the global `max_blocks`).
+- `max_horizontal_radius`: Chebyshev distance on the X/Z plane around the first log; keeps sprawling crowns local without affecting vertical reach.
+- `max_vertical_radius`: absolute Y distance above/below the first log; perfect for limiting flat species (birch, dark oak) while letting tall fungi stretch upward.
+
+Adjust the defaults to match your server’s biome generation. If a species is disabled (`enabled: false`), Timberella reverts to the global safety cap for that family.
 
 <details>
 <summary>leaf_mappings.yml</summary>

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,11 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MessageService {
     private static final MiniMessage MINI = MiniMessage.miniMessage();
+    private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
     private static final String DEFAULT_LOCALE = "en_US";
     private static final String[] BUNDLED_LOCALES = {
             "en_US",
@@ -39,10 +44,14 @@ public class MessageService {
 
     private final JavaPlugin plugin;
     private final Map<String, String> messages = new HashMap<>();
-    private String prefixRaw = "<gold>[Timberella]</gold>";
+    private String prefixRaw = "<light_purple>[Timberella]</light_purple>";
 
     public MessageService(JavaPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public static List<String> getBundledLocales() {
+        return List.of(BUNDLED_LOCALES);
     }
 
     public void load(String locale) {
@@ -55,12 +64,12 @@ public class MessageService {
             locale = DEFAULT_LOCALE;
             langFile = new File(plugin.getDataFolder(), "lang" + File.separator + DEFAULT_LOCALE + ".yml");
         }
-        mergeMissingLangKeys(langFile, locale);
+        syncLocaleFile(locale);
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(langFile);
         for (String key : cfg.getKeys(false)) {
             messages.put(key, cfg.getString(key, key));
         }
-        this.prefixRaw = messages.getOrDefault("prefix", "<gold>[Timberella]</gold>");
+        this.prefixRaw = messages.getOrDefault("prefix", "<light_purple>[Timberella]</light_purple>");
     }
 
     private void ensureBundledLocales() {
@@ -69,24 +78,47 @@ public class MessageService {
         }
     }
 
-    private void saveLangIfAbsent(String name) {
+    private File saveLangIfAbsent(String name) {
         File out = new File(plugin.getDataFolder(), "lang" + File.separator + name);
         if (!out.getParentFile().exists()) {
             //noinspection ResultOfMethodCallIgnored
             out.getParentFile().mkdirs();
         }
         if (!out.exists()) {
-            plugin.saveResource("lang/" + name, false);
+            try {
+                plugin.saveResource("lang/" + name, false);
+            } catch (IllegalArgumentException ex) {
+                try {
+                    if (!out.createNewFile()) {
+                        plugin.getLogger().fine("Could not create " + name + " (already exists?).");
+                    }
+                } catch (IOException ioException) {
+                    plugin.getLogger().fine("Could not create language file " + name + ": " + ioException.getMessage());
+                }
+            }
         }
+        return out;
     }
 
-    private void mergeMissingLangKeys(File langFile, String locale) {
+    public List<String> syncLocaleFile(String locale) {
+        if (locale == null || locale.isBlank()) {
+            return Collections.emptyList();
+        }
+        if (locale.endsWith(".yml")) {
+            locale = locale.substring(0, locale.length() - 4);
+        }
+        File langFile = saveLangIfAbsent(locale + ".yml");
+        return mergeMissingLangKeys(langFile, locale);
+    }
+
+    private List<String> mergeMissingLangKeys(File langFile, String locale) {
         YamlConfiguration target = YamlConfiguration.loadConfiguration(langFile);
         YamlConfiguration defaults = loadDefaultLang(locale);
         if (defaults == null) {
-            return;
+            return Collections.emptyList();
         }
-        boolean changed = mergeSections(target, defaults);
+        List<String> addedKeys = new ArrayList<>();
+        boolean changed = mergeSections(target, defaults, "", addedKeys);
         if (changed) {
             try {
                 target.save(langFile);
@@ -94,6 +126,7 @@ public class MessageService {
                 plugin.getLogger().fine("Failed to merge lang keys for " + langFile.getName() + ": " + e.getMessage());
             }
         }
+        return addedKeys;
     }
 
     private YamlConfiguration loadDefaultLang(String locale) {
@@ -115,7 +148,7 @@ public class MessageService {
         }
     }
 
-    private boolean mergeSections(ConfigurationSection target, ConfigurationSection defaults) {
+    private boolean mergeSections(ConfigurationSection target, ConfigurationSection defaults, String pathPrefix, List<String> addedKeys) {
         boolean changed = false;
         for (String key : defaults.getKeys(false)) {
             Object defVal = defaults.get(key);
@@ -128,11 +161,16 @@ public class MessageService {
                 } else {
                     continue;
                 }
-                changed |= mergeSections(targetSection, defSection);
+                String fullKey = pathPrefix == null || pathPrefix.isEmpty() ? key : pathPrefix + "." + key;
+                changed |= mergeSections(targetSection, defSection, fullKey, addedKeys);
                 continue;
             }
             if (!target.contains(key)) {
                 target.set(key, defVal);
+                if (addedKeys != null) {
+                    String fullKey = pathPrefix == null || pathPrefix.isEmpty() ? key : pathPrefix + "." + key;
+                    addedKeys.add(fullKey);
+                }
                 changed = true;
             }
         }
@@ -156,5 +194,16 @@ public class MessageService {
             builder.resolver(Placeholder.unparsed(e.getKey(), e.getValue()));
         }
         return MINI.deserialize(raw, builder.build());
+    }
+
+    public String plain(String key) {
+        return PLAIN.serialize(component(key));
+    }
+
+    public String plain(String key, Map<String, String> replacements) {
+        if (replacements == null || replacements.isEmpty()) {
+            return plain(key);
+        }
+        return PLAIN.serialize(format(key, replacements));
     }
 }

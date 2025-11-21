@@ -1,7 +1,6 @@
 package com.hro_basti.timberella.listeners;
 
 import com.hro_basti.timberella.TimberellaPlugin;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
@@ -40,25 +39,170 @@ public class TreeChopListener implements Listener {
             Material.MUD,
             Material.MUDDY_MANGROVE_ROOTS
     );
-    private static final Set<Material> MANGROVE_SOILS = EnumSet.of(
+        private static final Set<Material> MANGROVE_SOILS = EnumSet.of(
             Material.MUD,
             Material.MUDDY_MANGROVE_ROOTS,
             Material.ROOTED_DIRT,
             Material.DIRT,
             Material.GRASS_BLOCK,
-            Material.PODZOL
-    );
+            Material.PODZOL,
+            Material.MANGROVE_ROOTS
+        );
     private static final Set<Material> FUNGUS_SOILS = EnumSet.of(
             Material.CRIMSON_NYLIUM,
             Material.WARPED_NYLIUM,
             Material.NETHERRACK
     );
 
+    private enum Species {
+        MANGROVE("mangrove", true, 128, 9, 32),
+        JUNGLE("jungle", true, -1, 8, 32),
+        SPRUCE("spruce", true, -1, 5, 30),
+        OAK("oak", true, -1, 6, 24),
+        PALE_OAK("pale_oak", true, -1, 5, 16),
+        DARK_OAK("dark_oak", true, -1, 6, 12),
+        BIRCH("birch", true, -1, 2, 12),
+        ACACIA("acacia", true, -1, 8, 12),
+        CHERRY("cherry", true, -1, 9, 12),
+        MUSHROOM_BROWN("mushroom_brown", true, -1, 4, 12),
+        MUSHROOM_RED("mushroom_red", true, -1, 2, 12),
+        WARPED("warped", true, -1, 6, 32),
+        CRIMSON("crimson", true, -1, 6, 32);
+
+        private final String configKey;
+        private final boolean defaultEnabled;
+        private final int defaultMaxBlocks;
+        private final int defaultHorizontalRadius;
+        private final int defaultVerticalRadius;
+
+        Species(String configKey, boolean defaultEnabled, int defaultMaxBlocks,
+                int defaultHorizontalRadius, int defaultVerticalRadius) {
+            this.configKey = configKey;
+            this.defaultEnabled = defaultEnabled;
+            this.defaultMaxBlocks = defaultMaxBlocks;
+            this.defaultHorizontalRadius = defaultHorizontalRadius;
+            this.defaultVerticalRadius = defaultVerticalRadius;
+        }
+
+        String configKey() {
+            return configKey;
+        }
+
+        boolean defaultEnabled() {
+            return defaultEnabled;
+        }
+
+        int defaultMaxBlocks() {
+            return defaultMaxBlocks;
+        }
+
+        int defaultHorizontalRadius() {
+            return defaultHorizontalRadius;
+        }
+
+        int defaultVerticalRadius() {
+            return defaultVerticalRadius;
+        }
+    }
+
+    private static final Map<Material, Species> MATERIAL_TO_SPECIES = new EnumMap<>(Material.class);
+
+    static {
+        registerSpeciesMaterials(Species.MANGROVE,
+                Material.MANGROVE_LOG,
+                Material.STRIPPED_MANGROVE_LOG,
+                Material.MANGROVE_WOOD,
+                Material.STRIPPED_MANGROVE_WOOD,
+                Material.MANGROVE_ROOTS,
+                Material.MUDDY_MANGROVE_ROOTS);
+        registerSpeciesMaterials(Species.JUNGLE,
+                Material.JUNGLE_LOG,
+                Material.STRIPPED_JUNGLE_LOG,
+                Material.JUNGLE_WOOD,
+                Material.STRIPPED_JUNGLE_WOOD);
+        registerSpeciesMaterials(Species.SPRUCE,
+                Material.SPRUCE_LOG,
+                Material.STRIPPED_SPRUCE_LOG,
+                Material.SPRUCE_WOOD,
+                Material.STRIPPED_SPRUCE_WOOD);
+        registerSpeciesMaterials(Species.OAK,
+            Material.OAK_LOG,
+            Material.STRIPPED_OAK_LOG,
+            Material.OAK_WOOD,
+            Material.STRIPPED_OAK_WOOD);
+        registerSpeciesMaterialsByName(Species.PALE_OAK,
+            "PALE_OAK_LOG",
+            "STRIPPED_PALE_OAK_LOG",
+            "PALE_OAK_WOOD",
+            "STRIPPED_PALE_OAK_WOOD");
+        registerSpeciesMaterials(Species.DARK_OAK,
+                Material.DARK_OAK_LOG,
+                Material.STRIPPED_DARK_OAK_LOG,
+                Material.DARK_OAK_WOOD,
+                Material.STRIPPED_DARK_OAK_WOOD);
+        registerSpeciesMaterials(Species.BIRCH,
+                Material.BIRCH_LOG,
+                Material.STRIPPED_BIRCH_LOG,
+                Material.BIRCH_WOOD,
+                Material.STRIPPED_BIRCH_WOOD);
+        registerSpeciesMaterials(Species.ACACIA,
+                Material.ACACIA_LOG,
+                Material.STRIPPED_ACACIA_LOG,
+                Material.ACACIA_WOOD,
+                Material.STRIPPED_ACACIA_WOOD);
+        registerSpeciesMaterials(Species.CHERRY,
+                Material.CHERRY_LOG,
+                Material.STRIPPED_CHERRY_LOG,
+                Material.CHERRY_WOOD,
+                Material.STRIPPED_CHERRY_WOOD);
+        registerSpeciesMaterials(Species.MUSHROOM_BROWN,
+                Material.BROWN_MUSHROOM_BLOCK);
+        registerSpeciesMaterials(Species.MUSHROOM_RED,
+                Material.RED_MUSHROOM_BLOCK);
+        registerSpeciesMaterials(Species.WARPED,
+                Material.WARPED_STEM,
+                Material.STRIPPED_WARPED_STEM,
+                Material.WARPED_HYPHAE,
+                Material.STRIPPED_WARPED_HYPHAE);
+        registerSpeciesMaterials(Species.CRIMSON,
+                Material.CRIMSON_STEM,
+                Material.STRIPPED_CRIMSON_STEM,
+                Material.CRIMSON_HYPHAE,
+                Material.STRIPPED_CRIMSON_HYPHAE);
+    }
+
+    private static void registerSpeciesMaterials(Species species, Material... materials) {
+        for (Material material : materials) {
+            if (material != null) {
+                MATERIAL_TO_SPECIES.put(material, species);
+            }
+        }
+    }
+
+    private static void registerSpeciesMaterialsByName(Species species, String... materialNames) {
+        for (String name : materialNames) {
+            if (name == null) continue;
+            Material material = Material.matchMaterial(name);
+            if (material != null) {
+                MATERIAL_TO_SPECIES.put(material, species);
+            }
+        }
+    }
+
+    private static final class SpeciesLimit {
+        boolean enabled;
+        int maxBlocks;
+        int maxHorizontalRadius;
+        int maxVerticalRadius;
+    }
+
+    private final Map<Species, SpeciesLimit> speciesLimits = new EnumMap<>(Species.class);
     private final Set<Material> normalLogs = new HashSet<>();
     private final Set<Material> strippedLogs = new HashSet<>();
     private final Set<Material> woods = new HashSet<>();
     private final Set<Material> strippedWoods = new HashSet<>();
     private final Set<Material> fences = new HashSet<>();
+    private final Set<Material> additions = new HashSet<>();
     private final Set<Material> allowedAxes = new HashSet<>();
     private final Map<Material, Material> saplingMappings = new EnumMap<>(Material.class);
     private final Set<Material> allowedSaplings = EnumSet.noneOf(Material.class);
@@ -93,6 +237,7 @@ public class TreeChopListener implements Listener {
         woods.clear();
         strippedWoods.clear();
         fences.clear();
+        additions.clear();
         allowedAxes.clear();
         saplingMappings.clear();
         initializeSaplingMappings();
@@ -107,10 +252,13 @@ public class TreeChopListener implements Listener {
             }
         }
         loadMap("categories.logs", normalLogs);
+        ensureDefaultMaterial("categories.logs.MANGROVE_ROOTS", normalLogs, Material.MANGROVE_ROOTS);
+        normalLogs.remove(Material.MUDDY_MANGROVE_ROOTS);
         loadMap("categories.stripped_logs", strippedLogs);
         loadMap("categories.woods", woods);
         loadMap("categories.stripped_woods", strippedWoods);
         loadMap("categories.fences", fences);
+        loadMap("categories.additions", additions);
         loadLeafMappings();
         // modules
         timberEnabled = plugin.getConfig().getBoolean("enable_timber", true);
@@ -121,10 +269,9 @@ public class TreeChopListener implements Listener {
         int configuredMaxDistance = plugin.getConfig().getInt("leaves_decay.max_distance", 4);
         leavesDecayMaxDistance = Math.max(1, configuredMaxDistance);
         leavesDecayMaxDistanceSquared = leavesDecayMaxDistance * leavesDecayMaxDistance;
-        boolean replantGlobal = plugin.getConfig().getBoolean("enable_replant", true);
-        boolean replantSection = plugin.getConfig().getBoolean("replant.enabled", true);
-        replantEnabled = replantGlobal && replantSection;
+        replantEnabled = plugin.getConfig().getBoolean("enable_replant", true);
         maxBlocks = Math.max(1, plugin.getConfig().getInt("max_blocks", 1024));
+        loadSpeciesLimits();
         sneakMode = plugin.getConfig().getInt("sneak_mode", 0);
         includeDiagonals = plugin.getConfig().getBoolean("include_diagonals",
             plugin.getConfig().getInt("adjacency_faces", 26) > 6);
@@ -154,6 +301,48 @@ public class TreeChopListener implements Listener {
         }
     }
 
+    private void ensureDefaultMaterial(String path, Set<Material> target, Material material) {
+        if (material == null) return;
+        if (plugin.getConfig().isSet(path)) {
+            if (plugin.getConfig().getBoolean(path, true)) {
+                target.add(material);
+            }
+            return;
+        }
+        target.add(material);
+    }
+
+    private void loadSpeciesLimits() {
+        speciesLimits.clear();
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection("species_limits");
+        for (Species species : Species.values()) {
+            SpeciesLimit limit = new SpeciesLimit();
+            limit.enabled = species.defaultEnabled();
+            limit.maxBlocks = species.defaultMaxBlocks();
+            limit.maxHorizontalRadius = Math.max(0, species.defaultHorizontalRadius());
+            limit.maxVerticalRadius = Math.max(0, species.defaultVerticalRadius());
+
+            ConfigurationSection source = section != null ? section.getConfigurationSection(species.configKey()) : null;
+            if (source != null) {
+                limit.enabled = source.getBoolean("enabled", limit.enabled);
+                if (source.isSet("max_blocks")) {
+                    limit.maxBlocks = source.getInt("max_blocks", limit.maxBlocks);
+                }
+                if (source.isSet("max_horizontal_radius")) {
+                    limit.maxHorizontalRadius = Math.max(0,
+                            source.getInt("max_horizontal_radius", limit.maxHorizontalRadius));
+                }
+                if (source.isSet("max_vertical_radius")) {
+                    limit.maxVerticalRadius = Math.max(0,
+                            source.getInt("max_vertical_radius", limit.maxVerticalRadius));
+                }
+            }
+
+            limit.maxBlocks = limit.maxBlocks < 1 ? -1 : limit.maxBlocks;
+            speciesLimits.put(species, limit);
+        }
+    }
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -168,18 +357,37 @@ public class TreeChopListener implements Listener {
 
         boolean hasTimberPermission = player.hasPermission("timberella.use");
 
-        if (hasTimberPermission && timberEnabled) {
-            List<Block> sequence = collectConnectedLogs(start, maxBlocks, includeDiagonals);
-            if (sequence.isEmpty()) {
-                sequence = Collections.singletonList(start);
+        int treeMaxBlocks = maxBlocks;
+        int horizontalRadiusLimit = -1;
+        int verticalRadiusLimit = -1;
+        Species species = detectSpecies(start);
+        SpeciesLimit limit = species != null ? speciesLimits.get(species) : null;
+        if (limit != null && limit.enabled) {
+            if (limit.maxBlocks > 0) {
+                treeMaxBlocks = Math.min(treeMaxBlocks, limit.maxBlocks);
             }
+            if (limit.maxHorizontalRadius > 0) {
+                horizontalRadiusLimit = limit.maxHorizontalRadius;
+            }
+            if (limit.maxVerticalRadius > 0) {
+                verticalRadiusLimit = limit.maxVerticalRadius;
+            }
+        }
+        List<Block> sequence = collectConnectedLogs(start, treeMaxBlocks, includeDiagonals,
+                horizontalRadiusLimit, verticalRadiusLimit);
+        if (sequence.isEmpty()) {
+            sequence = Collections.singletonList(start);
+        }
+        final Map<Long, Material> originalMaterials = captureOriginalMaterials(sequence);
+
+        if (hasTimberPermission && timberEnabled) {
             try {
                 var loc = start.getLocation().add(0.5, 0.5, 0.5);
                 start.getWorld().spawnParticle(Particle.SWEEP_ATTACK, loc, 1, 0, 0, 0, 0);
             } catch (Throwable ignored) {}
             if (sequence.size() <= 1) {
                 applyDurabilityCost(player, tool, sequence.size());
-                handlePostActions(player, tool, sequence, false);
+                handlePostActions(player, tool, sequence, false, originalMaterials);
                 return;
             }
             final List<Block> allLogs = new ArrayList<>(sequence);
@@ -187,13 +395,14 @@ public class TreeChopListener implements Listener {
             final ItemStack usedTool = tool;
             final Player p = player;
             final long interval = breakIntervalTicks;
+            final Map<Long, Material> capturedMaterials = originalMaterials;
             new BukkitRunnable() {
                 int idx = 0;
                 @Override
                 public void run() {
                     if (idx >= toBreak.size()) {
                         applyDurabilityCost(p, usedTool, allLogs.size());
-                        handlePostActions(p, usedTool, allLogs, true);
+                        handlePostActions(p, usedTool, allLogs, true, capturedMaterials);
                         cancel();
                         return;
                     }
@@ -208,7 +417,7 @@ public class TreeChopListener implements Listener {
 
         // Timber disabled: still allow optional post-actions using the initial block
         List<Block> single = new ArrayList<>(Collections.singletonList(start));
-        handlePostActions(player, tool, single, false);
+        handlePostActions(player, tool, single, false, originalMaterials);
     }
 
     private boolean sneakModeAllows(boolean sneaking) {
@@ -251,18 +460,72 @@ public class TreeChopListener implements Listener {
         if (woods.contains(m)) return true;
         if (strippedWoods.contains(m)) return true;
         if (fences.contains(m)) return true;
+        if (additions.contains(m)) return true;
         return false;
     }
 
-    private List<Block> collectConnectedLogs(Block start, int maxBlocks, boolean includeDiagonals) {
+    private Species detectSpecies(Block block) {
+        if (block == null) return null;
+        Material type = block.getType();
+        Species mapped = MATERIAL_TO_SPECIES.get(type);
+        if (mapped != null) {
+            return mapped;
+        }
+        if (type == Material.MUSHROOM_STEM) {
+            return detectMushroomSpecies(block);
+        }
+        return null;
+    }
+
+    private Species detectMushroomSpecies(Block origin) {
+        if (origin == null) return null;
+        for (int dy = 1; dy <= 6; dy++) {
+            Block candidate = origin.getRelative(0, dy, 0);
+            Material mat = candidate.getType();
+            Species species = MATERIAL_TO_SPECIES.get(mat);
+            if (species == Species.MUSHROOM_BROWN || species == Species.MUSHROOM_RED) {
+                return species;
+            }
+            if (mat != Material.MUSHROOM_STEM) {
+                break;
+            }
+        }
+        int radius = 3;
+        for (int dy = 0; dy <= 4; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (dx == 0 && dz == 0 && dy == 0) continue;
+                    Block candidate = origin.getRelative(dx, dy, dz);
+                    Species species = MATERIAL_TO_SPECIES.get(candidate.getType());
+                    if (species == Species.MUSHROOM_BROWN || species == Species.MUSHROOM_RED) {
+                        return species;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private List<Block> collectConnectedLogs(Block start, int maxBlocks, boolean includeDiagonals,
+                                             int maxHorizontalRadius, int maxVerticalRadius) {
+        if (start == null) {
+            return Collections.emptyList();
+        }
         Queue<Block> queue = new ArrayDeque<>();
         Set<Long> visited = new HashSet<>();
         List<Block> result = new ArrayList<>();
         queue.add(start);
         visited.add(key(start));
+        final boolean limitHorizontal = maxHorizontalRadius > 0;
+        final boolean limitVertical = maxVerticalRadius > 0;
+        final boolean limitRadius = limitHorizontal || limitVertical;
+        final int originX = start.getX();
+        final int originY = start.getY();
+        final int originZ = start.getZ();
         while (!queue.isEmpty() && result.size() < maxBlocks) {
             Block b = queue.poll();
             if (!isTreeMaterial(b.getType())) continue;
+            if (limitRadius && !withinRadius(originX, originY, originZ, b, maxHorizontalRadius, maxVerticalRadius)) continue;
             result.add(b);
             if (!includeDiagonals) {
                 int[][] dirs = {
@@ -271,6 +534,7 @@ public class TreeChopListener implements Listener {
                 for (int[] d : dirs) {
                     Block n = b.getRelative(d[0], d[1], d[2]);
                     if (!isTreeMaterial(n.getType())) continue;
+                    if (limitRadius && !withinRadius(originX, originY, originZ, n, maxHorizontalRadius, maxVerticalRadius)) continue;
                     long k = key(n);
                     if (visited.add(k)) queue.add(n);
                 }
@@ -281,6 +545,7 @@ public class TreeChopListener implements Listener {
                             if (dx == 0 && dy == 0 && dz == 0) continue;
                             Block n = b.getRelative(dx, dy, dz);
                             if (!isTreeMaterial(n.getType())) continue;
+                            if (limitRadius && !withinRadius(originX, originY, originZ, n, maxHorizontalRadius, maxVerticalRadius)) continue;
                             long k = key(n);
                             if (visited.add(k)) queue.add(n);
                         }
@@ -291,14 +556,14 @@ public class TreeChopListener implements Listener {
         return result;
     }
 
-    private void handlePostActions(Player player, ItemStack tool, List<Block> logs, boolean performedTimber) {
+    private void handlePostActions(Player player, ItemStack tool, List<Block> logs, boolean performedTimber, Map<Long, Material> originalMaterials) {
         if (logs == null || logs.isEmpty()) return;
         if (leavesDecayEnabled) {
             Block origin = logs.get(0);
             scheduleLeavesDecay(player, logs, origin);
         }
         if (performedTimber && replantEnabled) {
-            tryReplant(logs);
+            tryReplant(logs, originalMaterials);
         }
     }
 
@@ -432,41 +697,36 @@ public class TreeChopListener implements Listener {
         return (dx * dx + dy * dy + dz * dz) <= leavesDecayMaxDistanceSquared;
     }
 
-    private void tryReplant(List<Block> logs) {
+    private void tryReplant(List<Block> logs, Map<Long, Material> originalMaterials) {
         if (!replantEnabled) return;
         if (logs == null || logs.isEmpty()) return;
 
         Block best = null;
         Material sapling = null;
         for (Block log : logs) {
-            Material mapped = saplingMappings.get(log.getType());
+            Material originalType = getOriginalMaterial(log, originalMaterials);
+            Material mapped = saplingMappings.get(originalType);
             if (mapped == null) continue;
             if (!allowedSaplings.isEmpty() && !allowedSaplings.contains(mapped)) continue;
-            Block soil = log.getRelative(0, -1, 0);
-            if (!isSuitableSoil(soil.getType(), mapped)) continue;
-            if (best == null || log.getY() < best.getY()) {
+            if (!canPlantAt(log, mapped)) continue;
+            if (best == null || log.getY() < best.getY()
+                    || (log.getY() == best.getY() && compareColumns(log, best) < 0)) {
                 best = log;
                 sapling = mapped;
             }
         }
         if (best == null || sapling == null) return;
 
-        Location targetLoc = best.getLocation();
-        Material finalSapling = sapling;
+        List<Block> plantingSpots = computePlantingSpots(best, logs, originalMaterials, sapling);
+        if (plantingSpots.isEmpty()) {
+            plantingSpots = Collections.singletonList(best);
+        }
+
+        final Material finalSapling = sapling;
+        final List<Block> targets = new ArrayList<>(new LinkedHashSet<>(plantingSpots));
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            Block target = targetLoc.getBlock();
-            Block soil = target.getRelative(0, -1, 0);
-            if (!isSuitableSoil(soil.getType(), finalSapling)) return;
-            Material current = target.getType();
-            boolean targetIsWater = current == Material.WATER;
-            if (!current.isAir() && !targetIsWater && !target.isPassable()) return;
-            target.setType(finalSapling);
-            if (finalSapling == Material.MANGROVE_PROPAGULE) {
-                var data = target.getBlockData();
-                if (data instanceof Waterlogged waterlogged) {
-                    waterlogged.setWaterlogged(targetIsWater);
-                    target.setBlockData(waterlogged);
-                }
+            for (Block target : targets) {
+                placeSapling(target, finalSapling);
             }
         }, 2L);
     }
@@ -487,6 +747,10 @@ public class TreeChopListener implements Listener {
         mapSapling(Material.STRIPPED_OAK_LOG, Material.OAK_SAPLING);
         mapSapling(Material.OAK_WOOD, Material.OAK_SAPLING);
         mapSapling(Material.STRIPPED_OAK_WOOD, Material.OAK_SAPLING);
+        mapSapling("PALE_OAK_LOG", "PALE_OAK_SAPLING");
+        mapSapling("STRIPPED_PALE_OAK_LOG", "PALE_OAK_SAPLING");
+        mapSapling("PALE_OAK_WOOD", "PALE_OAK_SAPLING");
+        mapSapling("STRIPPED_PALE_OAK_WOOD", "PALE_OAK_SAPLING");
 
         mapSapling(Material.SPRUCE_LOG, Material.SPRUCE_SAPLING);
         mapSapling(Material.STRIPPED_SPRUCE_LOG, Material.SPRUCE_SAPLING);
@@ -522,6 +786,8 @@ public class TreeChopListener implements Listener {
         mapSapling(Material.STRIPPED_MANGROVE_LOG, Material.MANGROVE_PROPAGULE);
         mapSapling(Material.MANGROVE_WOOD, Material.MANGROVE_PROPAGULE);
         mapSapling(Material.STRIPPED_MANGROVE_WOOD, Material.MANGROVE_PROPAGULE);
+        mapSapling(Material.MANGROVE_ROOTS, Material.MANGROVE_PROPAGULE);
+        mapSapling(Material.MUDDY_MANGROVE_ROOTS, Material.MANGROVE_PROPAGULE);
 
         mapSapling(Material.CRIMSON_STEM, Material.CRIMSON_FUNGUS);
         mapSapling(Material.STRIPPED_CRIMSON_STEM, Material.CRIMSON_FUNGUS);
@@ -537,6 +803,114 @@ public class TreeChopListener implements Listener {
     private void mapSapling(Material source, Material sapling) {
         if (source == null || sapling == null) return;
         saplingMappings.put(source, sapling);
+    }
+
+    private void mapSapling(String sourceName, String saplingName) {
+        if (sourceName == null || saplingName == null) return;
+        Material source = Material.matchMaterial(sourceName);
+        Material sapling = Material.matchMaterial(saplingName);
+        mapSapling(source, sapling);
+    }
+
+    private Map<Long, Material> captureOriginalMaterials(List<Block> logs) {
+        if (logs == null || logs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<Long, Material> snapshot = new HashMap<>(logs.size());
+        for (Block log : logs) {
+            if (log == null) continue;
+            snapshot.put(key(log), log.getType());
+        }
+        return snapshot;
+    }
+
+    private Material getOriginalMaterial(Block block, Map<Long, Material> originals) {
+        if (block == null || originals == null || originals.isEmpty()) {
+            return block != null ? block.getType() : null;
+        }
+        return originals.getOrDefault(key(block), block.getType());
+    }
+
+    private boolean canPlantAt(Block target, Material sapling) {
+        if (target == null || sapling == null) return false;
+        Block soil = target.getRelative(0, -1, 0);
+        if (!isSuitableSoil(soil.getType(), sapling)) return false;
+        Material current = target.getType();
+        if (current == Material.WATER || current == Material.BUBBLE_COLUMN) {
+            return sapling == Material.MANGROVE_PROPAGULE;
+        }
+        return current.isAir() || target.isPassable();
+    }
+
+    private void placeSapling(Block target, Material sapling) {
+        if (!canPlantAt(target, sapling)) return;
+        Material current = target.getType();
+        boolean targetIsWater = current == Material.WATER || current == Material.BUBBLE_COLUMN;
+        target.setType(sapling);
+        if (sapling == Material.MANGROVE_PROPAGULE) {
+            var data = target.getBlockData();
+            if (data instanceof Waterlogged waterlogged) {
+                waterlogged.setWaterlogged(targetIsWater);
+                target.setBlockData(waterlogged);
+            }
+        }
+    }
+
+    private List<Block> computePlantingSpots(Block reference, List<Block> logs, Map<Long, Material> originals, Material sapling) {
+        if (reference == null || logs == null) {
+            return Collections.emptyList();
+        }
+        Map<Long, Block> columns = new HashMap<>();
+        for (Block log : logs) {
+            Material mapped = saplingMappings.get(getOriginalMaterial(log, originals));
+            if (!sapling.equals(mapped)) continue;
+            if (!canPlantAt(log, sapling)) continue;
+            long colKey = columnKey(log.getWorld(), log.getX(), log.getZ());
+            Block existing = columns.get(colKey);
+            if (existing == null || log.getY() < existing.getY()) {
+                columns.put(colKey, log);
+            }
+        }
+        if (columns.isEmpty()) {
+            return Collections.singletonList(reference);
+        }
+        List<Block> footprint = findTwoByTwoFootprint(columns);
+        if (!footprint.isEmpty()) {
+            return footprint;
+        }
+        return Collections.singletonList(reference);
+    }
+
+    private List<Block> findTwoByTwoFootprint(Map<Long, Block> columns) {
+        if (columns.size() < 4) {
+            return Collections.emptyList();
+        }
+        for (Block origin : columns.values()) {
+            var world = origin.getWorld();
+            Block east = columns.get(columnKey(world, origin.getX() + 1, origin.getZ()));
+            Block south = columns.get(columnKey(world, origin.getX(), origin.getZ() + 1));
+            Block southEast = columns.get(columnKey(world, origin.getX() + 1, origin.getZ() + 1));
+            if (east == null || south == null || southEast == null) continue;
+            if (!isLevelClose(origin, east) || !isLevelClose(origin, south) || !isLevelClose(origin, southEast)) continue;
+            return Arrays.asList(origin, east, south, southEast);
+        }
+        return Collections.emptyList();
+    }
+
+    private boolean isLevelClose(Block a, Block b) {
+        if (a == null || b == null) return false;
+        return Math.abs(a.getY() - b.getY()) <= 1;
+    }
+
+    private int compareColumns(Block a, Block b) {
+        if (a == null || b == null) return 0;
+        if (!a.getWorld().equals(b.getWorld())) {
+            return a.getWorld().getUID().compareTo(b.getWorld().getUID());
+        }
+        if (a.getX() != b.getX()) {
+            return Integer.compare(a.getX(), b.getX());
+        }
+        return Integer.compare(a.getZ(), b.getZ());
     }
 
     private void loadLeafMappings() {
@@ -615,12 +989,27 @@ public class TreeChopListener implements Listener {
     }
 
     private long key(Block b) {
-        long x = b.getX();
-        long y = b.getY();
-        long z = b.getZ();
-        // world hash (mix both UUID parts for better spread) truncated to 16 bits
-        long worldHash = (b.getWorld().getUID().getMostSignificantBits() ^ b.getWorld().getUID().getLeastSignificantBits()) & 0xFFFFL;
+        return key(b.getWorld(), b.getX(), b.getY(), b.getZ());
+    }
+
+    private long key(org.bukkit.World world, long x, long y, long z) {
+        long worldHash = (world.getUID().getMostSignificantBits() ^ world.getUID().getLeastSignificantBits()) & 0xFFFFL;
         long coordPack = (x & 0x3FFFFFFL) << 38 | (z & 0x3FFFFFFL) << 12 | (y & 0xFFFL);
-        return (worldHash << 48) ^ coordPack; // combine ensuring difference across worlds
+        return (worldHash << 48) ^ coordPack;
+    }
+
+    private long columnKey(org.bukkit.World world, int x, int z) {
+        return key(world, x, 0, z);
+    }
+
+    private boolean withinRadius(int originX, int originY, int originZ, Block candidate,
+                                 int horizontalRadius, int verticalRadius) {
+        if (candidate == null) return false;
+        int dx = Math.abs(candidate.getX() - originX);
+        int dy = Math.abs(candidate.getY() - originY);
+        int dz = Math.abs(candidate.getZ() - originZ);
+        boolean horizontalOk = horizontalRadius <= 0 || Math.max(dx, dz) <= horizontalRadius;
+        boolean verticalOk = verticalRadius <= 0 || dy <= verticalRadius;
+        return horizontalOk && verticalOk;
     }
 }
