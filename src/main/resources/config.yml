@@ -65,6 +65,7 @@ tools:
 
   allowed_axes:
     - STONE_AXE
+    - COPPER_AXE
     - IRON_AXE
     - GOLDEN_AXE
     - DIAMOND_AXE
