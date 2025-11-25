@@ -1,0 +1,40 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Timberella plugin enabled.
+  disabled: Timberella plugin disabled.
+  language-set: Language set to <code>.
+command:
+  usage-admin: '<prefix> <white>Usage: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>Configuration reloaded.</white>
+  no-permission: <prefix> <light_red>You don't have permission to do that.</light_red>
+  player-only: <prefix> <light_red>This command can only be used by players.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>Player not found.</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella enabled.</white>
+  self-disabled: <prefix> <white>Timberella disabled.</white>
+  other-enabled: <prefix> <white>Enabled for <gold><player></gold>.</white>
+  other-disabled: <prefix> <white>Disabled for <gold><player></gold>.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>Update check unavailable right now.</light_red>
+log:
+  defaults-none: No new default values needed for <file>.
+  defaults-updated: 'Defaults updated (<file>): <count> new keys -> <keys>'
+  modules-summary: 'Module status -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: enabled
+  modules-state-inactive: disabled
+  update-found: 'Update found. Current version: <current>.'
+  update-provider-ok: '- <provider>: Version <version> [<url>]'
+  update-provider-error: '- <provider>: Failed to fetch.'
+  update-none: No update found.
+  reload-changes-header: 'Detected file changes:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: No configuration changes detected.
+warn:
+  unsupported-server-version: '<prefix> <yellow>Warning: Timberella officially supports <gold><required_server></gold> servers
+    running Minecraft <gold><supported_versions></gold>. Your server reports <gold><server_name></gold> <gold><mc_version></gold>.
+    Proceed at your own risk.</yellow>'

@@ -1,0 +1,40 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: تم تفعيل إضافة Timberella.
+  disabled: تم تعطيل إضافة Timberella.
+  language-set: تم ضبط اللغة إلى <code>.
+command:
+  usage-admin: '<prefix> <white>الاستخدام: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>تم إعادة تحميل الإعدادات.</white>
+  no-permission: <prefix> <light_red>ليس لديك صلاحية للقيام بذلك.</light_red>
+  player-only: <prefix> <light_red>يمكن للاعبين فقط استخدام هذا الأمر.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>لم يتم العثور على اللاعب.</light_red>
+toggle:
+  self-enabled: <prefix> <white>تم تفعيل Timberella.</white>
+  self-disabled: <prefix> <white>تم تعطيل Timberella.</white>
+  other-enabled: <prefix> <white>تم التفعيل لـ <gold><player></gold>.</white>
+  other-disabled: <prefix> <white>تم التعطيل لـ <gold><player></gold>.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>التحقق من التحديث غير متاح حالياً.</light_red>
+log:
+  defaults-none: لا توجد قيم افتراضية جديدة مطلوبة لـ <file>.
+  defaults-updated: 'تم تحديث القيم الافتراضية (<file>): <count> مفاتيح جديدة -> <keys>'
+  modules-summary: 'حالة الوحدات -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: مفعل
+  modules-state-inactive: معطل
+  update-found: 'تم العثور على تحديث. الإصدار الحالي: <current>.'
+  update-provider-ok: '- <provider>: الإصدار <version> [<url>]'
+  update-provider-error: '- <provider>: فشل في الجلب.'
+  update-none: لم يتم العثور على تحديث.
+  reload-changes-header: 'تم رصد تغييرات في الملفات:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: لم يتم اكتشاف تغييرات في الإعداد.
+warn:
+  unsupported-server-version: '<prefix> <yellow>تحذير: يدعم Timberella رسمياً خوادم <gold><required_server></gold> التي تعمل على
+    ماينكرافت <gold><supported_versions></gold>. يبلغ خادمك <gold><server_name></gold> <gold><mc_version></gold>. المتابعة على
+    مسؤوليتك الخاصة.</yellow>'

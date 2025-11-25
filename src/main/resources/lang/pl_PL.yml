@@ -1,0 +1,40 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Wtyczka Timberella włączona.
+  disabled: Wtyczka Timberella wyłączona.
+  language-set: Ustawiono język na <code>.
+command:
+  usage-admin: '<prefix> <white>Użycie: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>Konfiguracja przeładowana.</white>
+  no-permission: <prefix> <light_red>Nie masz uprawnień do tej akcji.</light_red>
+  player-only: <prefix> <light_red>Tę komendę mogą używać tylko gracze.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>Nie znaleziono gracza.</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella włączona.</white>
+  self-disabled: <prefix> <white>Timberella wyłączona.</white>
+  other-enabled: <prefix> <white>Włączono dla <gold><player></gold>.</white>
+  other-disabled: <prefix> <white>Wyłączono dla <gold><player></gold>.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>Sprawdzenie aktualizacji jest teraz niedostępne.</light_red>
+log:
+  defaults-none: Brak nowych wartości domyślnych dla <file>.
+  defaults-updated: 'Zaktualizowano wartości domyślne (<file>): <count> nowych kluczy -> <keys>'
+  modules-summary: 'Status modułów -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: włączony
+  modules-state-inactive: wyłączony
+  update-found: 'Znaleziono aktualizację. Obecna wersja: <current>.'
+  update-provider-ok: '- <provider>: Wersja <version> [<url>]'
+  update-provider-error: '- <provider>: Nie udało się pobrać.'
+  update-none: Brak dostępnych aktualizacji.
+  reload-changes-header: 'Wykryto zmiany w plikach:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: Nie wykryto zmian konfiguracji.
+warn:
+  unsupported-server-version: '<prefix> <yellow>Ostrzeżenie: Timberella jest oficjalnie wspierana na serwerach <gold><required_server></gold>
+    działających na Minecraft <gold><supported_versions></gold>. Twój serwer zgłasza <gold><server_name></gold> <gold><mc_version></gold>.
+    Kontynuujesz na własne ryzyko.</yellow>'

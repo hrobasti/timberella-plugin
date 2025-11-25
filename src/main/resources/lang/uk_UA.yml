@@ -1,0 +1,40 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Плагін Timberella увімкнено.
+  disabled: Плагін Timberella вимкнено.
+  language-set: Мову встановлено на <code>.
+command:
+  usage-admin: '<prefix> <white>Використання: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>Конфігурацію перезавантажено.</white>
+  no-permission: <prefix> <light_red>У тебе немає прав на цю дію.</light_red>
+  player-only: <prefix> <light_red>Цю команду можуть використовувати лише гравці.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>Гравця не знайдено.</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella увімкнено.</white>
+  self-disabled: <prefix> <white>Timberella вимкнено.</white>
+  other-enabled: <prefix> <white>Увімкнено для <gold><player></gold>.</white>
+  other-disabled: <prefix> <white>Вимкнено для <gold><player></gold>.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>Перевірка оновлень зараз недоступна.</light_red>
+log:
+  defaults-none: Нові значення за замовчуванням для <file> не потрібні.
+  defaults-updated: 'Оновлено значення за замовчуванням (<file>): <count> нових ключів -> <keys>'
+  modules-summary: 'Стан модулів -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: увімкнено
+  modules-state-inactive: вимкнено
+  update-found: 'Знайдено оновлення. Поточна версія: <current>.'
+  update-provider-ok: '- <provider>: Версія <version> [<url>]'
+  update-provider-error: '- <provider>: Не вдалося отримати.'
+  update-none: Оновлення не знайдено.
+  reload-changes-header: 'Виявлено зміни у файлах:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: Змін у конфігурації не виявлено.
+warn:
+  unsupported-server-version: '<prefix> <yellow>Попередження: Timberella офіційно підтримує сервери <gold><required_server></gold>,
+    що працюють на Minecraft <gold><supported_versions></gold>. Твій сервер повідомляє <gold><server_name></gold> <gold><mc_version></gold>.
+    Продовжуй на власний ризик.</yellow>'

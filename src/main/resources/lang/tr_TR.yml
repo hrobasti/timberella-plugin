@@ -1,0 +1,39 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Timberella eklentisi etkinleştirildi.
+  disabled: Timberella eklentisi devre dışı bırakıldı.
+  language-set: Dil <code> olarak ayarlandı.
+command:
+  usage-admin: '<prefix> <white>Kullanım: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>Yapılandırma yeniden yüklendi.</white>
+  no-permission: <prefix> <light_red>Bunu yapmak için iznin yok.</light_red>
+  player-only: <prefix> <light_red>Bu komutu sadece oyuncular kullanabilir.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>Oyuncu bulunamadı.</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella etkinleştirildi.</white>
+  self-disabled: <prefix> <white>Timberella devre dışı bırakıldı.</white>
+  other-enabled: <prefix> <white><gold><player></gold> için etkinleştirildi.</white>
+  other-disabled: <prefix> <white><gold><player></gold> için devre dışı bırakıldı.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>Güncelleme kontrolü şu anda kullanılamıyor.</light_red>
+log:
+  defaults-none: <file> için yeni varsayılanlara gerek yok.
+  defaults-updated: 'Varsayılanlar güncellendi (<file>): <count> yeni anahtar -> <keys>'
+  modules-summary: 'Modül durumu -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: etkin
+  modules-state-inactive: devre dışı
+  update-found: 'Güncelleme bulundu. Mevcut sürüm: <current>.'
+  update-provider-ok: '- <provider>: Sürüm <version> [<url>]'
+  update-provider-error: '- <provider>: Getirme başarısız.'
+  update-none: Güncelleme bulunamadı.
+  reload-changes-header: 'Dosya değişiklikleri algılandı:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: Yapılandırma değişikliği algılanmadı.
+warn:
+  unsupported-server-version: '<prefix> <yellow>Uyarı: Timberella resmi olarak <gold><required_server></gold> sunucularında çalışan Minecraft <gold><supported_versions></gold>
+    sürümlerini destekler. Sunucun <gold><server_name></gold> <gold><mc_version></gold> bildiriyor. Devam etmek kendi sorumluluğundadır.</yellow>'

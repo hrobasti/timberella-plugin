@@ -1,0 +1,39 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Timberella 插件已启用。
+  disabled: Timberella 插件已禁用。
+  language-set: 语言已设置为 <code>。
+command:
+  usage-admin: <prefix> <white>用法：/timberella [reload|version|toggle]</white>
+  reloaded: <prefix> <white>配置已重新加载。</white>
+  no-permission: <prefix> <light_red>你没有权限执行此操作。</light_red>
+  player-only: <prefix> <light_red>只有玩家才能使用这个指令。</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>未找到该玩家。</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella 已启用。</white>
+  self-disabled: <prefix> <white>Timberella 已停用。</white>
+  other-enabled: <prefix> <white>已为 <gold><player></gold> 启用。</white>
+  other-disabled: <prefix> <white>已为 <gold><player></gold> 停用。</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>目前无法检查更新。</light_red>
+log:
+  defaults-none: <file> 不需要新的默认值。
+  defaults-updated: 默认值已更新 (<file>)：<count> 个新键 -> <keys>
+  modules-summary: '模块状态 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: 已启用
+  modules-state-inactive: 已禁用
+  update-found: 发现更新。当前版本：<current>.
+  update-provider-ok: '- <provider>：版本 <version> [<url>]'
+  update-provider-error: '- <provider>：获取失败。'
+  update-none: 未发现更新。
+  reload-changes-header: 检测到文件更改：
+  reload-changes-line: <file>（<changes>）
+  reload-changes-locale-line: <file>
+  reload-changes-none: 未检测到配置更改。
+warn:
+  unsupported-server-version: <prefix> <yellow>警告：Timberella 官方仅支持运行 Minecraft <gold><supported_versions></gold> 的 <gold><required_server></gold>
+    服务器。当前服务器为 <gold><server_name></gold> <gold><mc_version></gold>，继续使用需自担风险。</yellow>

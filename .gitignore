@@ -1,0 +1,27 @@
+# Build outputs
+/build/
+/bin/
+/out/
+/dist/
+/target/
+/logs/
+/tmp/
+/wiki/
+
+# Gradle caches
+/.gradle/
+
+# IDE / workspace metadata
+/.idea/
+/.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# OS & tooling clutter
+.DS_Store
+Thumbs.db
+*.log

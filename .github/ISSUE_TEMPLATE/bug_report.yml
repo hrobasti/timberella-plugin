@@ -1,0 +1,59 @@
+name: Bug Report
+description: Share reproducible problems so we can fix them quickly.
+labels: [bug]
+title: "[Bug] <short summary>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please fill out the fields below as completely as possible.
+  - type: input
+    id: server_version
+    attributes:
+      label: Server Version
+      description: Include the full Paper version string (e.g., git-Paper-123 1.21.1-R0.1-SNAPSHOT).
+      placeholder: "Paper 1.21.10"
+    validations:
+      required: true
+  - type: textarea
+    id: plugin_version
+    attributes:
+      label: Timberella Version
+      description: Which Timberella build are you running? If built from source, mention the commit hash.
+      placeholder: "v1.4.0"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+      placeholder: Clear and concise description.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a numbered list of steps that reliably reproduces the issue.
+      placeholder: |
+        1. Enable timber...
+        2. Chop a mangrove...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Log Output
+      description: Paste any stack traces or relevant console output (use code fences).
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots that might help.
+    validations:
+      required: false

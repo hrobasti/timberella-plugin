@@ -1,0 +1,39 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Timberella プラグインを有効化したよ。
+  disabled: Timberella プラグインを無効化したよ。
+  language-set: 言語を <code> にしたよ。
+command:
+  usage-admin: '<prefix> <white>使い方: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>設定を再読み込みしました。</white>
+  no-permission: <prefix> <light_red>その操作をする権限がありません。</light_red>
+  player-only: <prefix> <light_red>このコマンドはプレイヤーのみ使用できます。</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>プレイヤーが見つかりません。</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella を有効化しました。</white>
+  self-disabled: <prefix> <white>Timberella を無効化しました。</white>
+  other-enabled: <prefix> <white><gold><player></gold> を有効化しました。</white>
+  other-disabled: <prefix> <white><gold><player></gold> を無効化しました。</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>今はアップデートを確認できません。</light_red>
+log:
+  defaults-none: <file> に新しいデフォルト値はありません。
+  defaults-updated: 'デフォルトを更新しました (<file>): <count> 件の新しいキー -> <keys>'
+  modules-summary: 'モジュール状態 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: 有効
+  modules-state-inactive: 無効
+  update-found: 'アップデートが見つかりました。現在のバージョン: <current>.'
+  update-provider-ok: '- <provider>: バージョン <version> [<url>]'
+  update-provider-error: '- <provider>: 取得に失敗しました。'
+  update-none: アップデートは見つかりませんでした。
+  reload-changes-header: 'ファイルの変更を検出しました:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: 設定の変更は検出されませんでした。
+warn:
+  unsupported-server-version: '<prefix> <yellow>警告: Timberella は公式には <gold><required_server></gold> サーバーで動作する Minecraft <gold><supported_versions></gold>
+    をサポートしています。現在のサーバーは <gold><server_name></gold> <gold><mc_version></gold> です。自己責任で続行してください。</yellow>'

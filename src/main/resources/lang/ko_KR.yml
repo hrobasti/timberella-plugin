@@ -1,0 +1,39 @@
+ui:
+  prefix: <light_purple>[<prefix_label>]</light_purple>
+plugin:
+  enabled: Timberella 플러그인 활성화됐어.
+  disabled: Timberella 플러그인 비활성화됐어.
+  language-set: 언어를 <code>로 설정했어.
+command:
+  usage-admin: '<prefix> <white>사용법: /timberella [reload|version|toggle]</white>'
+  reloaded: <prefix> <white>설정을 다시 불러왔습니다.</white>
+  no-permission: <prefix> <light_red>이 작업을 할 권한이 없어요.</light_red>
+  player-only: <prefix> <light_red>이 명령어는 플레이어만 사용할 수 있습니다.</light_red>
+  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
+  player-not-found: <prefix> <light_red>플레이어를 찾을 수 없습니다.</light_red>
+toggle:
+  self-enabled: <prefix> <white>Timberella가 활성화되었습니다.</white>
+  self-disabled: <prefix> <white>Timberella가 비활성화되었습니다.</white>
+  other-enabled: <prefix> <white><gold><player></gold>에게 활성화했습니다.</white>
+  other-disabled: <prefix> <white><gold><player></gold>에게 비활성화했습니다.</white>
+update:
+  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
+  details: '<prefix> <white>: For details, see the server log.</white>'
+  failed: <prefix> <light_red>지금은 업데이트를 확인할 수 없습니다.</light_red>
+log:
+  defaults-none: <file>에는 새 기본값이 필요하지 않습니다.
+  defaults-updated: '기본값 업데이트 (<file>): <count>개의 새 키 -> <keys>'
+  modules-summary: '모듈 상태 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
+  modules-state-active: 활성
+  modules-state-inactive: 비활성
+  update-found: '업데이트를 찾았습니다. 현재 버전: <current>.'
+  update-provider-ok: '- <provider>: 버전 <version> [<url>]'
+  update-provider-error: '- <provider>: 가져오기에 실패했습니다.'
+  update-none: 업데이트를 찾지 못했습니다.
+  reload-changes-header: '파일 변경 사항이 감지되었습니다:'
+  reload-changes-line: <file> (<changes>)
+  reload-changes-locale-line: <file>
+  reload-changes-none: 구성 변경이 감지되지 않았습니다.
+warn:
+  unsupported-server-version: '<prefix> <yellow>경고: Timberella 는 공식적으로 <gold><required_server></gold> 서버에서 실행되는 Minecraft <gold><supported_versions></gold>
+    만 지원합니다. 현재 서버는 <gold><server_name></gold> <gold><mc_version></gold> 입니다. 계속 진행 시 주의하세요.</yellow>'
