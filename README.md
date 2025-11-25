@@ -2,6 +2,8 @@
 
 Drop-in quality-of-life plugin for Paper 1.21.x servers: instant tree felling, tidy leaf cleanup, and automatic replanting with safety rails so mega-builds stay intact.
 
+![Timberella demo](img/timber_01.gif)
+
 ## Why server owners love it
 - ⚡ One axe swing can clear an entire tree while damage, particles, and timing stay configurable.
 - 🌱 Optional replant + soil checks keep forests alive.
