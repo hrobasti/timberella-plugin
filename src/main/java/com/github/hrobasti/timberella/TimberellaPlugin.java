@@ -42,7 +42,7 @@ public class TimberellaPlugin extends JavaPlugin {
     private static final int BSTATS_PLUGIN_ID = 28062;
     private static final String SUPPORTED_SERVER_BRAND = "Paper";
     private static final String SUPPORTED_VERSION_MIN = "1.21";
-    private static final String SUPPORTED_VERSION_MAX = "1.21.10";
+    private static final String SUPPORTED_VERSION_MAX = "1.21.11";
     private static final String SUPPORTED_VERSION_LABEL = SUPPORTED_VERSION_MIN + " - " + SUPPORTED_VERSION_MAX;
     private static final String STARTUP_BANNER_RESOURCE = "banner.txt";
     private record MergeResult(String fileName, java.util.List<String> addedKeys) {}
@@ -348,7 +348,7 @@ public class TimberellaPlugin extends JavaPlugin {
             method.setAccessible(true);
             method.invoke(this, name, command);
         } catch (ReflectiveOperationException ex) {
-            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running Paper 1.21.10+.", ex);
+            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running Paper 1.21.11+.", ex);
         }
     }
 
