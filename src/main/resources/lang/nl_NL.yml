@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>Vellen is al bezig</light_red>
 plugin:
   enabled: Timberella plugin ingeschakeld.
   disabled: Timberella plugin uitgeschakeld.

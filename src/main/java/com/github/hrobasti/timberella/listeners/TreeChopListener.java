@@ -2,6 +2,7 @@ package com.github.hrobasti.timberella.listeners;
 
 import com.github.hrobasti.timberella.TimberellaPlugin;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.inventory.meta.Damageable;
 
 import java.io.File;
@@ -21,6 +23,10 @@ import java.util.*;
 
 public class TreeChopListener implements Listener {
     private final TimberellaPlugin plugin;
+    private final NamespacedKey activeFellingKey;
+    private final Set<UUID> activeFellingPlayers = new HashSet<>();
+    private final Map<UUID, Long> lastFellingActionbarAt = new HashMap<>();
+    private static final long FELLING_ACTIONBAR_COOLDOWN_MS = 900L;
 
     private record LeafEntry(Block block, int depth, Block origin) {}
 
@@ -225,6 +231,7 @@ public class TreeChopListener implements Listener {
 
     public TreeChopListener(TimberellaPlugin plugin) {
         this.plugin = plugin;
+        this.activeFellingKey = new NamespacedKey(plugin, "active_felling_id");
         loadCategoryMaps();
     }
 
@@ -389,15 +396,29 @@ public class TreeChopListener implements Listener {
         final Map<Long, Material> originalMaterials = captureOriginalMaterials(sequence);
 
         if (hasTimberPermission && timberEnabled) {
+            if (activeFellingPlayers.contains(player.getUniqueId())) {
+                // Prevent overlapping felling tasks for the same player.
+                // Let vanilla breaking happen for this block; we just don't start a second timber task.
+                sendFellingAlreadyRunningActionbar(player);
+                return;
+            }
             try {
                 var loc = start.getLocation().add(0.5, 0.5, 0.5);
                 start.getWorld().spawnParticle(Particle.SWEEP_ATTACK, loc, 1, 0, 0, 0, 0);
             } catch (Throwable ignored) {}
             if (sequence.size() <= 1) {
-                applyDurabilityCost(player, tool, sequence.size());
                 handlePostActions(player, tool, sequence, false, originalMaterials);
                 return;
             }
+
+            UUID fellingId = markToolForFelling(tool);
+            if (fellingId == null) {
+                // Tool couldn't be tagged; fall back to safe behavior (no extra durability, no overwrites)
+                handlePostActions(player, tool, sequence, false, originalMaterials);
+                return;
+            }
+
+            activeFellingPlayers.add(player.getUniqueId());
             final List<Block> allLogs = new ArrayList<>(sequence);
             final List<Block> toBreak = new ArrayList<>(sequence.subList(1, sequence.size()));
             final ItemStack usedTool = tool;
@@ -408,9 +429,18 @@ public class TreeChopListener implements Listener {
                 int idx = 0;
                 @Override
                 public void run() {
+                    if (!p.isOnline()) {
+                        clearToolFellingTag(p, fellingId);
+                        activeFellingPlayers.remove(p.getUniqueId());
+                        cancel();
+                        return;
+                    }
+
                     if (idx >= toBreak.size()) {
-                        applyDurabilityCost(p, usedTool, allLogs.size());
+                        applyDurabilityCostForTaggedTool(p, fellingId, allLogs.size());
+                        clearToolFellingTag(p, fellingId);
                         handlePostActions(p, usedTool, allLogs, true, capturedMaterials);
+                        activeFellingPlayers.remove(p.getUniqueId());
                         cancel();
                         return;
                     }
@@ -972,9 +1002,15 @@ public class TreeChopListener implements Listener {
         return allowed;
     }
 
-    private void applyDurabilityCost(Player player, ItemStack tool, int brokenBlocks) {
+    private void applyDurabilityCostForTaggedTool(Player player, UUID fellingId, int brokenBlocks) {
         if (!durabilityModeAll) return; // vanilla first-only
-        if (tool == null) return;
+        if (player == null || !player.isOnline()) return;
+        if (fellingId == null) return;
+
+        FoundTool found = findToolByFellingId(player, fellingId);
+        if (found == null || found.stack == null) return;
+
+        ItemStack tool = found.stack;
         Material type = tool.getType();
         int max = type.getMaxDurability();
         if (max <= 0) return;
@@ -992,8 +1028,95 @@ public class TreeChopListener implements Listener {
         if (cappedExtra <= 0) return;
         dmg.setDamage(currentDamage + cappedExtra);
         tool.setItemMeta((org.bukkit.inventory.meta.ItemMeta) dmg);
-        // ensure inventory updates
-        player.getInventory().setItemInMainHand(tool);
+
+        // Ensure the modified stack is written back to the correct slot (important if Bukkit returned copies).
+        found.writeBack(player, tool);
+    }
+
+    private UUID markToolForFelling(ItemStack tool) {
+        if (tool == null || tool.getType().isAir()) return null;
+        var meta = tool.getItemMeta();
+        if (meta == null) return null;
+
+        UUID id = UUID.randomUUID();
+        meta.getPersistentDataContainer().set(activeFellingKey, PersistentDataType.STRING, id.toString());
+        tool.setItemMeta(meta);
+        return id;
+    }
+
+    private void clearToolFellingTag(Player player, UUID fellingId) {
+        if (player == null || fellingId == null) return;
+        FoundTool found = findToolByFellingId(player, fellingId);
+        if (found == null || found.stack == null) return;
+        var meta = found.stack.getItemMeta();
+        if (meta == null) return;
+        meta.getPersistentDataContainer().remove(activeFellingKey);
+        found.stack.setItemMeta(meta);
+        found.writeBack(player, found.stack);
+    }
+
+    private static final class FoundTool {
+        final int slot;
+        final boolean offhand;
+        final ItemStack stack;
+
+        FoundTool(int slot, boolean offhand, ItemStack stack) {
+            this.slot = slot;
+            this.offhand = offhand;
+            this.stack = stack;
+        }
+
+        void writeBack(Player player, ItemStack updated) {
+            if (player == null) return;
+            var inv = player.getInventory();
+            if (offhand) {
+                inv.setItemInOffHand(updated);
+            } else if (slot >= 0) {
+                inv.setItem(slot, updated);
+            }
+        }
+    }
+
+    private FoundTool findToolByFellingId(Player player, UUID fellingId) {
+        if (player == null || fellingId == null) return null;
+        var inv = player.getInventory();
+        String target = fellingId.toString();
+
+        ItemStack off = inv.getItemInOffHand();
+        if (hasFellingId(off, target)) {
+            return new FoundTool(-1, true, off);
+        }
+
+        ItemStack[] contents = inv.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (hasFellingId(item, target)) {
+                return new FoundTool(i, false, item);
+            }
+        }
+        return null;
+    }
+
+    private boolean hasFellingId(ItemStack stack, String expectedId) {
+        if (stack == null || stack.getType().isAir()) return false;
+        var meta = stack.getItemMeta();
+        if (meta == null) return false;
+        String id = meta.getPersistentDataContainer().get(activeFellingKey, PersistentDataType.STRING);
+        return expectedId.equals(id);
+    }
+
+    private void sendFellingAlreadyRunningActionbar(Player player) {
+        if (player == null || !player.isOnline()) return;
+        long now = System.currentTimeMillis();
+        UUID uuid = player.getUniqueId();
+        long last = lastFellingActionbarAt.getOrDefault(uuid, 0L);
+        if ((now - last) < FELLING_ACTIONBAR_COOLDOWN_MS) return;
+        lastFellingActionbarAt.put(uuid, now);
+        try {
+            player.sendActionBar(plugin.messages().component("ui.felling-already-running"));
+        } catch (Throwable ignored) {
+            // Best-effort only (compat across server APIs)
+        }
     }
 
     private long key(Block b) {

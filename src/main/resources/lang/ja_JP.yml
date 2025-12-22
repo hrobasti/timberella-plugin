@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>伐採はすでに進行中です</light_red>
 plugin:
   enabled: Timberella プラグインを有効化したよ。
   disabled: Timberella プラグインを無効化したよ。

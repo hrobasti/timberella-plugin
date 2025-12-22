@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>القطع جارٍ بالفعل</light_red>
 plugin:
   enabled: تم تفعيل إضافة Timberella.
   disabled: تم تعطيل إضافة Timberella.

@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>Kesim zaten devam ediyor</light_red>
 plugin:
   enabled: Timberella eklentisi etkinleştirildi.
   disabled: Timberella eklentisi devre dışı bırakıldı.

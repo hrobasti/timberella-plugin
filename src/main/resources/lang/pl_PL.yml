@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>Ścinanie już trwa</light_red>
 plugin:
   enabled: Wtyczka Timberella włączona.
   disabled: Wtyczka Timberella wyłączona.

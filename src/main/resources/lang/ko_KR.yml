@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>벌목이 이미 진행 중입니다</light_red>
 plugin:
   enabled: Timberella 플러그인 활성화됐어.
   disabled: Timberella 플러그인 비활성화됐어.

@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>Fällung läuft bereits</light_red>
 plugin:
   enabled: Timberella Plugin aktiviert.
   disabled: Timberella Plugin deaktiviert.

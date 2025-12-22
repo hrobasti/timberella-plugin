@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>Зруб уже триває</light_red>
 plugin:
   enabled: Плагін Timberella увімкнено.
   disabled: Плагін Timberella вимкнено.

@@ -1,5 +1,6 @@
 ui:
   prefix: <light_purple>[<prefix_label>]</light_purple>
+  felling-already-running: <light_red>O abate já está em curso</light_red>
 plugin:
   enabled: Plugin Timberella activado.
   disabled: Plugin Timberella desactivado.
