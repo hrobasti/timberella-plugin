@@ -2,20 +2,20 @@ name: Timberella
 version: ${version}
 main: com.github.hrobasti.timberella.TimberellaPlugin
 description: "Tree cutting, leaves decay and replanting abilities. Completely configurable."
-api-version: '1.21'
+api-version: '1.21.11'
 authors:
   - hro_basti
 website: "https://github.com/hrobasti/timberella-plugin"
 permissions:
   timberella.use:
     description: Use Timberella to fell trees
-    default: true
+    default: 'true'
   timberella.toggle:
     description: Allow players to toggle Timberella for themselves
-    default: true
+    default: 'true'
   timberella.admin:
     description: Admin permission for Timberella
-    default: op
+    default: 'op'
   timberella.update.notify:
     description: Receive in-game update reminders when new versions are available
-    default: op
+    default: 'op'

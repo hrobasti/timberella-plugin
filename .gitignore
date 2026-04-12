@@ -1,8 +1,9 @@
-# Build outputs
+# Build outputs (generated)
 /build/
 /bin/
 /out/
 /dist/
+/dist/sources/
 /target/
 /logs/
 /tmp/

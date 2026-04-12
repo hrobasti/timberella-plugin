@@ -11,10 +11,6 @@
  *  - Reformat the code (if you use a linter, add an exception)
  *
  * Violations will result in a ban of your plugin and account from bStats.
- * 
- * Source: https://github.com/Bastian/bStats-Metrics (Metrics.java)
- * Copyright (c) 2021 Bastian Oppermann
- * Licensed under the MIT License – see THIRD_PARTY_LICENSES.md or licenses/mit.txt for the full text.
  */
 package com.github.hrobasti.timberella.metrics;
 
@@ -83,7 +79,8 @@ public class Metrics {
                   + "many people use their plugin and their total player count. It's recommended to keep bStats\n"
                   + "enabled, but if you're not comfortable with this, you can turn this setting off. There is no\n"
                   + "performance penalty associated with having metrics enabled, and data sent to bStats is fully\n"
-                  + "anonymous.")
+                  + "anonymous.\n"
+                  + "Learn more here: https://bstats.org/docs/server-owners")
           .copyDefaults(true);
       try {
         config.save(configFile);
@@ -176,7 +173,7 @@ public class Metrics {
   public static class MetricsBase {
 
     /** The version of the Metrics class. */
-    public static final String METRICS_VERSION = "3.1.0";
+    public static final String METRICS_VERSION = "3.2.1";
 
     private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
 

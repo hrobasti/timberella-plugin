@@ -11,8 +11,8 @@ body:
     id: server_version
     attributes:
       label: Server Version
-      description: Include the full Paper version string (e.g., git-Paper-123 1.21.1-R0.1-SNAPSHOT).
-      placeholder: "Paper 1.21.11"
+      description: "Include the full Paper version string"
+      placeholder: "Paper 26.1.2 build 5"
     validations:
       required: true
   - type: textarea

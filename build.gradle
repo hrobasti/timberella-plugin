@@ -3,6 +3,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+import org.gradle.jvm.tasks.Jar
+
 group = 'com.github.hrobasti.timberella'
 
 def versionProps = new Properties()
@@ -15,6 +17,11 @@ if (resolvedVersion == null || resolvedVersion.trim().isEmpty()) {
     resolvedVersion = project.findProperty('version') ?: '1.0-SNAPSHOT'
 }
 version = resolvedVersion
+def paperApiVersion = (project.findProperty('paperApiVersion') ?: '26.1.1.build.14-alpha').toString()
+
+java {
+    withSourcesJar()
+}
 
 repositories {
     mavenLocal()
@@ -26,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly('io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT')
+    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}")
     implementation(project(':plugins:turtle-lib'))
     implementation('net.kyori:adventure-text-minimessage:4.17.0')
     implementation('com.google.code.gson:gson:2.10.1')
@@ -44,6 +51,13 @@ tasks.named('processResources') {
 tasks.named('shadowJar') {
     archiveBaseName.set('timberella-paper')
     archiveClassifier.set('')
+    destinationDirectory.set(layout.projectDirectory.dir('dist'))
+}
+
+tasks.named('sourcesJar', Jar) {
+    archiveBaseName.set('timberella-paper')
+    archiveClassifier.set('sources')
+    destinationDirectory.set(layout.projectDirectory.dir('dist/sources'))
 }
 
 tasks.named('jar') {
@@ -52,5 +66,10 @@ tasks.named('jar') {
 
 tasks.named('build') {
     dependsOn tasks.named('shadowJar')
+    dependsOn tasks.named('sourcesJar')
+}
+
+tasks.named('clean') {
+    delete layout.projectDirectory.dir('dist')
 }
 

@@ -40,11 +40,13 @@ import java.util.zip.CRC32;
 
 public class TimberellaPlugin extends JavaPlugin {
     private static final int BSTATS_PLUGIN_ID = 28062;
-    private static final String SUPPORTED_SERVER_BRAND = "Paper";
-    private static final String SUPPORTED_VERSION_MIN = "1.21";
-    private static final String SUPPORTED_VERSION_MAX = "1.21.11";
-    private static final String SUPPORTED_VERSION_LABEL = SUPPORTED_VERSION_MIN + " - " + SUPPORTED_VERSION_MAX;
     private static final String STARTUP_BANNER_RESOURCE = "banner.txt";
+    private static final String REQUIRED_SERVER_BRAND = "Paper";
+    private static final String SUPPORTED_VERSION_MIN = "26.1";
+    private static final String SUPPORTED_VERSION_MAX = "26.1.2";
+    private static final String SUPPORTED_VERSION_LABEL = "26.1 - 26.1.2";
+    private static final ServerMatcher.IncompatibleAction INCOMPATIBLE_SERVER_ACTION =
+        ServerMatcher.IncompatibleAction.WARN_AND_CONTINUE;
     private record MergeResult(String fileName, java.util.List<String> addedKeys) {}
     private MessageService messages;
     private UpdateChecker updateChecker;
@@ -348,7 +350,7 @@ public class TimberellaPlugin extends JavaPlugin {
             method.setAccessible(true);
             method.invoke(this, name, command);
         } catch (ReflectiveOperationException ex) {
-            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running Paper 1.21.11+.", ex);
+            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running a supported Paper 26.1.x build.", ex);
         }
     }
 
@@ -556,7 +558,7 @@ public class TimberellaPlugin extends JavaPlugin {
         }
         serverMatcher = ServerMatcher.builder(this)
             .allowRange(SUPPORTED_VERSION_MIN, SUPPORTED_VERSION_MAX)
-            .incompatibleAction(ServerMatcher.IncompatibleAction.WARN_AND_CONTINUE)
+            .incompatibleAction(INCOMPATIBLE_SERVER_ACTION)
             .onMismatch(this::handleServerMismatch)
             .build();
         serverMatcher.enforce();
@@ -564,7 +566,7 @@ public class TimberellaPlugin extends JavaPlugin {
 
     private void handleServerMismatch(ServerMatcher.MatchResult result) {
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("required_server", SUPPORTED_SERVER_BRAND);
+        placeholders.put("required_server", REQUIRED_SERVER_BRAND);
         placeholders.put("supported_versions", SUPPORTED_VERSION_LABEL);
         placeholders.put("server_name", result.serverName() != null ? result.serverName() : "unknown");
         placeholders.put("mc_version", result.minecraftVersion() != null ? result.minecraftVersion() : "unknown");
@@ -576,7 +578,7 @@ public class TimberellaPlugin extends JavaPlugin {
             }
             getLogger().warning(messages.plain("warn.unsupported-server-version", placeholders));
         } else {
-            getLogger().warning("Timberella officially supports " + SUPPORTED_SERVER_BRAND
+            getLogger().warning("Timberella officially supports " + REQUIRED_SERVER_BRAND
                 + " " + SUPPORTED_VERSION_LABEL + ". Detected "
                 + result.serverName() + " " + result.minecraftVersion() + '.');
         }
