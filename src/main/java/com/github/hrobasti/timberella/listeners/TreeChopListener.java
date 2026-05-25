@@ -28,7 +28,7 @@ public class TreeChopListener implements Listener {
     private final Map<UUID, Long> lastFellingActionbarAt = new HashMap<>();
     private static final long FELLING_ACTIONBAR_COOLDOWN_MS = 900L;
 
-    private record LeafEntry(Block block, int depth, Block origin) {}
+    private record LeafEntry(Block block, int depth) {}
 
     private static final Set<String> AXE_MATERIALS = new HashSet<>(Arrays.asList(
             "WOODEN_AXE", "STONE_AXE", "IRON_AXE", "GOLDEN_AXE", "DIAMOND_AXE", "NETHERITE_AXE"
@@ -597,25 +597,29 @@ public class TreeChopListener implements Listener {
     private void handlePostActions(Player player, ItemStack tool, List<Block> logs, boolean performedTimber, Map<Long, Material> originalMaterials) {
         if (logs == null || logs.isEmpty()) return;
         if (leavesDecayEnabled) {
-            Block origin = logs.get(0);
-            scheduleLeavesDecay(player, logs, origin);
+            scheduleLeavesDecay(player, logs, originalMaterials);
         }
         if (performedTimber && replantEnabled) {
             tryReplant(logs, originalMaterials);
         }
     }
 
-    private void scheduleLeavesDecay(Player player, List<Block> logs, Block origin) {
+    private void scheduleLeavesDecay(Player player, List<Block> logs, Map<Long, Material> originalMaterials) {
         if (!leavesDecayEnabled) return;
         if (logs.isEmpty()) return;
         if (leavesDecayRadius <= 0) return;
 
-        final Set<Material> allowedLeaves = computeAllowedLeaves(logs, origin);
+        final Set<Material> allowedLeaves = computeAllowedLeaves(logs, originalMaterials);
+        if (allowedLeaves != null && allowedLeaves.isEmpty()) {
+            return;
+        }
+        final int foliageMaxDistanceSquared = resolveFoliageMaxDistanceSquared(logs, originalMaterials);
         final Deque<LeafEntry> queue = new ArrayDeque<>();
         final Set<Long> visited = new HashSet<>();
         final int maxDepth = leavesDecayRadius;
-        for (Block log : logs) {
-            seedLeafNeighbors(log, queue, visited, maxDepth, allowedLeaves, log);
+        final List<Block> felledLogs = List.copyOf(logs);
+        for (Block log : felledLogs) {
+            seedLeafNeighbors(log, queue, visited, maxDepth, allowedLeaves, felledLogs, foliageMaxDistanceSquared);
         }
         if (queue.isEmpty()) return;
         final int batchSize = leavesDecayBatchSize;
@@ -632,8 +636,8 @@ public class TreeChopListener implements Listener {
                     if (entry == null) break;
                     Block b = entry.block();
                     int depth = entry.depth();
-                    Block originBlock = entry.origin();
-                    if (!isLeafMaterial(b.getType()) || !isAllowedLeaf(b.getType(), allowedLeaves)) {
+                    if (!isDecayCandidate(b.getType(), allowedLeaves)
+                            || !isAllowedLeaf(b.getType(), allowedLeaves)) {
                         continue;
                     }
 
@@ -661,7 +665,8 @@ public class TreeChopListener implements Listener {
                                     for (int dz = -1; dz <= 1; dz++) {
                                         if (dx == 0 && dy == 0 && dz == 0) continue;
                                         Block n = b.getRelative(dx, dy, dz);
-                                        enqueueLeaf(n, nextDepth, maxDepth, queue, visited, allowedLeaves, originBlock);
+                                        enqueueLeaf(n, nextDepth, maxDepth, queue, visited, allowedLeaves,
+                                                felledLogs, foliageMaxDistanceSquared);
                                     }
                                 }
                             }
@@ -671,7 +676,8 @@ public class TreeChopListener implements Listener {
                             };
                             for (int[] d : dirs) {
                                 Block n = b.getRelative(d[0], d[1], d[2]);
-                                enqueueLeaf(n, nextDepth, maxDepth, queue, visited, allowedLeaves, originBlock);
+                                enqueueLeaf(n, nextDepth, maxDepth, queue, visited, allowedLeaves,
+                                        felledLogs, foliageMaxDistanceSquared);
                             }
                         }
                     }
@@ -682,7 +688,8 @@ public class TreeChopListener implements Listener {
         }.runTaskTimer(plugin, 0L, interval);
     }
 
-    private void seedLeafNeighbors(Block log, Deque<LeafEntry> queue, Set<Long> visited, int maxDepth, Set<Material> allowedLeaves, Block origin) {
+    private void seedLeafNeighbors(Block log, Deque<LeafEntry> queue, Set<Long> visited, int maxDepth,
+                                   Set<Material> allowedLeaves, List<Block> felledLogs, int foliageMaxDistanceSquared) {
         if (log == null || maxDepth <= 0) return;
         if (includeDiagonals) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -690,7 +697,8 @@ public class TreeChopListener implements Listener {
                     for (int dz = -1; dz <= 1; dz++) {
                         if (dx == 0 && dy == 0 && dz == 0) continue;
                         Block candidate = log.getRelative(dx, dy, dz);
-                        enqueueLeaf(candidate, 0, maxDepth, queue, visited, allowedLeaves, origin);
+                        enqueueLeaf(candidate, 0, maxDepth, queue, visited, allowedLeaves,
+                                felledLogs, foliageMaxDistanceSquared);
                     }
                 }
             }
@@ -700,20 +708,22 @@ public class TreeChopListener implements Listener {
             };
             for (int[] d : dirs) {
                 Block candidate = log.getRelative(d[0], d[1], d[2]);
-                enqueueLeaf(candidate, 0, maxDepth, queue, visited, allowedLeaves, origin);
+                enqueueLeaf(candidate, 0, maxDepth, queue, visited, allowedLeaves,
+                        felledLogs, foliageMaxDistanceSquared);
             }
         }
     }
 
-    private void enqueueLeaf(Block block, int depth, int maxDepth, Deque<LeafEntry> queue, Set<Long> visited, Set<Material> allowedLeaves, Block origin) {
+    private void enqueueLeaf(Block block, int depth, int maxDepth, Deque<LeafEntry> queue, Set<Long> visited,
+                             Set<Material> allowedLeaves, List<Block> felledLogs, int foliageMaxDistanceSquared) {
         if (block == null) return;
         if (depth > maxDepth) return;
-        if (!isLeafMaterial(block.getType())) return;
+        if (!isDecayCandidate(block.getType(), allowedLeaves)) return;
         if (!isAllowedLeaf(block.getType(), allowedLeaves)) return;
-        if (!isWithinLeafDistance(origin, block)) return;
+        if (!isWithinLeafDistance(felledLogs, block, foliageMaxDistanceSquared)) return;
         long key = key(block);
         if (visited.add(key)) {
-            queue.add(new LeafEntry(block, depth, origin));
+            queue.add(new LeafEntry(block, depth));
         }
     }
 
@@ -721,18 +731,55 @@ public class TreeChopListener implements Listener {
         return allowedLeaves == null || allowedLeaves.contains(material);
     }
 
-    private boolean isLeafMaterial(Material material) {
+    /**
+     * Whether a block may be removed by leaves decay. Uses {@code leaf_mappings.yml} when present;
+     * otherwise falls back to vanilla leaf materials ({@code *_LEAVES} / {@code *_LEAF}).
+     */
+    private boolean isDecayCandidate(Material material, Set<Material> allowedLeaves) {
         if (material == null) return false;
+        if (allowedLeaves != null && !allowedLeaves.isEmpty() && allowedLeaves.contains(material)) {
+            return true;
+        }
         String name = material.name();
         return name.endsWith("_LEAVES") || name.endsWith("_LEAF");
     }
 
-    private boolean isWithinLeafDistance(Block origin, Block candidate) {
+    private boolean isWithinLeafDistance(Block origin, Block candidate, int maxDistanceSquared) {
         if (origin == null || candidate == null) return true;
         int dx = origin.getX() - candidate.getX();
         int dy = origin.getY() - candidate.getY();
         int dz = origin.getZ() - candidate.getZ();
-        return (dx * dx + dy * dy + dz * dz) <= leavesDecayMaxDistanceSquared;
+        return (dx * dx + dy * dy + dz * dz) <= maxDistanceSquared;
+    }
+
+    private boolean isWithinLeafDistance(List<Block> felledLogs, Block candidate, int maxDistanceSquared) {
+        if (candidate == null || felledLogs == null || felledLogs.isEmpty()) {
+            return true;
+        }
+        for (Block log : felledLogs) {
+            if (isWithinLeafDistance(log, candidate, maxDistanceSquared)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int resolveFoliageMaxDistanceSquared(List<Block> logs, Map<Long, Material> originalMaterials) {
+        int best = leavesDecayMaxDistanceSquared;
+        if (logs == null) {
+            return best;
+        }
+        for (Block log : logs) {
+            if (log == null) continue;
+            Material type = getOriginalMaterial(log, originalMaterials);
+            Species species = MATERIAL_TO_SPECIES.get(type);
+            if (species == null) continue;
+            SpeciesLimit limit = speciesLimits.get(species);
+            if (limit == null || limit.maxHorizontalRadius <= 0) continue;
+            int radius = limit.maxHorizontalRadius;
+            best = Math.max(best, radius * radius);
+        }
+        return best;
     }
 
     private void tryReplant(List<Block> logs, Map<Long, Material> originalMaterials) {
@@ -982,20 +1029,20 @@ public class TreeChopListener implements Listener {
         }
     }
 
-    private Set<Material> computeAllowedLeaves(List<Block> logs, Block origin) {
+    private Set<Material> computeAllowedLeaves(List<Block> logs, Map<Long, Material> originalMaterials) {
         if (logs == null || logs.isEmpty()) {
             return null;
         }
-        Material originType = origin != null ? origin.getType() : null;
-        Set<Material> originLeaves = originType != null ? leafMappings.get(originType) : null;
-        if (originLeaves == null || originLeaves.isEmpty()) {
-            return null;
-        }
-        Set<Material> allowed = EnumSet.copyOf(originLeaves);
+        Set<Material> allowed = null;
         for (Block log : logs) {
             if (log == null) continue;
-            Set<Material> mapped = leafMappings.get(log.getType());
-            if (mapped != null && mapped.equals(originLeaves)) {
+            Material logType = getOriginalMaterial(log, originalMaterials);
+            if (logType == null) continue;
+            Set<Material> mapped = leafMappings.get(logType);
+            if (mapped == null || mapped.isEmpty()) continue;
+            if (allowed == null) {
+                allowed = EnumSet.copyOf(mapped);
+            } else {
                 allowed.addAll(mapped);
             }
         }

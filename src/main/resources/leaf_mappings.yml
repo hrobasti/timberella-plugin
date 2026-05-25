@@ -3,9 +3,9 @@
 #      | | | | '  \| '_ \/ -_) '_/ -_) | / _` |
 #      |_| |_|_|_|_|_.__/\___|_| \___|_|_\__,_|
 
-# Maps materials to the leaf blocks that belong to the same tree species.
-# You can add or remove entries as needed; Timberella will only decay leaves listed for the
-# logs that were actually felled.
+# Maps log/stem materials to foliage blocks that belong to the same tree species.
+# Entries may be vanilla leaves or any other block (e.g. NETHER_WART_BLOCK, SHROOMLIGHT).
+# Timberella only decays materials listed here for the logs that were actually felled.
 
 log_to_leaves:
   OAK_LOG:
@@ -95,21 +95,45 @@ log_to_leaves:
 
   CRIMSON_STEM:
     - NETHER_WART_BLOCK
+    - SHROOMLIGHT
+    - WEEPING_VINES
+    - WEEPING_VINES_PLANT
   STRIPPED_CRIMSON_STEM:
     - NETHER_WART_BLOCK
+    - SHROOMLIGHT
+    - WEEPING_VINES
+    - WEEPING_VINES_PLANT
   CRIMSON_HYPHAE:
     - NETHER_WART_BLOCK
+    - SHROOMLIGHT
+    - WEEPING_VINES
+    - WEEPING_VINES_PLANT
   STRIPPED_CRIMSON_HYPHAE:
     - NETHER_WART_BLOCK
+    - SHROOMLIGHT
+    - WEEPING_VINES
+    - WEEPING_VINES_PLANT
 
   WARPED_STEM:
     - WARPED_WART_BLOCK
+    - SHROOMLIGHT
+    - TWISTING_VINES
+    - TWISTING_VINES_PLANT
   STRIPPED_WARPED_STEM:
     - WARPED_WART_BLOCK
+    - SHROOMLIGHT
+    - TWISTING_VINES
+    - TWISTING_VINES_PLANT
   WARPED_HYPHAE:
     - WARPED_WART_BLOCK
+    - SHROOMLIGHT
+    - TWISTING_VINES
+    - TWISTING_VINES_PLANT
   STRIPPED_WARPED_HYPHAE:
     - WARPED_WART_BLOCK
+    - SHROOMLIGHT
+    - TWISTING_VINES
+    - TWISTING_VINES_PLANT
 
   MUSHROOM_STEM:
     - BROWN_MUSHROOM_BLOCK
