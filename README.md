@@ -15,9 +15,9 @@ Drop-in quality-of-life plugin for Paper 26.2 servers: instant tree felling, tid
 
 ## Server requirements
 
-- Paper 26.2 (Spigot/vanilla forks are not supported; previous Paper versions, incl. 26.1.x, are no longer supported).
-- Java 25 runtime.
-- Optional: a permissions plugin (LuckPerms, etc.) for fine-grained access to `/timberella` commands.
+- Paper 26.2 (Spigot/vanilla forks are not supported
+- Java 25 runtime
+- Optional: a permissions plugin (LuckPerms, etc.) for fine-grained access to `/timberella` commands
 
 ## Setup in 3 steps
 
