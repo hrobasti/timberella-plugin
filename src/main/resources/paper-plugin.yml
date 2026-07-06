@@ -2,7 +2,7 @@ name: Timberella
 version: ${version}
 main: com.github.hrobasti.timberella.TimberellaPlugin
 description: "Tree cutting, leaves decay and replanting abilities. Completely configurable."
-api-version: '26.1'
+api-version: '26.2'
 authors:
   - hro_basti
 website: "https://github.com/hrobasti/timberella-plugin"

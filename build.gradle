@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '9.5.1'
 }
 
 import org.gradle.jvm.tasks.Jar
@@ -17,9 +17,12 @@ if (resolvedVersion == null || resolvedVersion.trim().isEmpty()) {
     resolvedVersion = project.findProperty('version') ?: '1.0-SNAPSHOT'
 }
 version = resolvedVersion
-def paperApiVersion = (project.findProperty('paperApiVersion') ?: '26.1.1.build.14-alpha').toString()
+def paperApiVersion = (project.findProperty('paperApiVersion') ?: '26.2.build.48-alpha').toString()
 
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
     withSourcesJar()
 }
 
@@ -41,10 +44,11 @@ dependencies {
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.10.2')
 }
 
+def pluginVersionString = project.version.toString()
 tasks.named('processResources') {
-    inputs.property('version', project.version)
+    inputs.property('version', pluginVersionString)
     filesMatching('paper-plugin.yml') {
-        expand([version: project.version])
+        expand([version: pluginVersionString])
     }
 }
 

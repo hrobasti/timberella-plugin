@@ -12,7 +12,7 @@ body:
     attributes:
       label: Server Version
       description: "Include the full Paper version string"
-      placeholder: "Paper 26.1.2 build 5"
+      placeholder: "Paper 26.2 build 48"
     validations:
       required: true
   - type: textarea

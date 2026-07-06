@@ -1,4 +1,5 @@
 rootProject.name = 'Timberella'
 
 include(':plugins:turtle-lib')
+project(':plugins').projectDir = file('..')
 project(':plugins:turtle-lib').projectDir = file('../turtle-lib')
