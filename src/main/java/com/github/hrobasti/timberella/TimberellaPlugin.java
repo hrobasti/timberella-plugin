@@ -350,7 +350,7 @@ public class TimberellaPlugin extends JavaPlugin {
             method.setAccessible(true);
             method.invoke(this, name, command);
         } catch (ReflectiveOperationException ex) {
-            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running a supported Paper 26.2.x build.", ex);
+            throw new IllegalStateException("Paper registerCommand API not available. Ensure you're running a supported Paper 26.3.x build.", ex);
         }
     }
 
