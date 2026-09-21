@@ -1,6 +1,6 @@
 # Timberella 🌲
 
-Drop-in quality-of-life plugin for Paper 26.2 servers: instant tree felling, tidy leaf cleanup, and automatic replanting with safety rails so mega-builds stay intact.
+Drop-in quality-of-life plugin for Paper 26.3 servers: instant tree felling, tidy leaf cleanup, and automatic replanting with safety rails so mega-builds stay intact.
 
 ![Timberella demo](img/timber_01.gif)
 
@@ -15,7 +15,7 @@ Drop-in quality-of-life plugin for Paper 26.2 servers: instant tree felling, tid
 
 ## Server requirements
 
-- Paper 26.2 (Spigot/vanilla forks are not supported
+- Paper 26.3 (Spigot/vanilla forks are not supported)
 - Java 25 runtime
 - Optional: a permissions plugin (LuckPerms, etc.) for fine-grained access to `/timberella` commands
 
