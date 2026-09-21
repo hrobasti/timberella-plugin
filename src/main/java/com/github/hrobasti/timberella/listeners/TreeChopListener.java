@@ -70,6 +70,7 @@ public class TreeChopListener implements Listener {
         BIRCH("birch", true, -1, 2, 12),
         ACACIA("acacia", true, -1, 8, 12),
         CHERRY("cherry", true, -1, 9, 12),
+        POPLAR("poplar", true, -1, 9, 24),
         MUSHROOM_BROWN("mushroom_brown", true, -1, 4, 12),
         MUSHROOM_RED("mushroom_red", true, -1, 2, 12),
         WARPED("warped", true, -1, 6, 32),
@@ -161,6 +162,11 @@ public class TreeChopListener implements Listener {
                 Material.STRIPPED_CHERRY_LOG,
                 Material.CHERRY_WOOD,
                 Material.STRIPPED_CHERRY_WOOD);
+        registerSpeciesMaterials(Species.POPLAR,
+                Material.POPLAR_LOG,
+                Material.STRIPPED_POPLAR_LOG,
+                Material.POPLAR_WOOD,
+                Material.STRIPPED_POPLAR_WOOD);
         registerSpeciesMaterials(Species.MUSHROOM_BROWN,
                 Material.BROWN_MUSHROOM_BLOCK);
         registerSpeciesMaterials(Species.MUSHROOM_RED,

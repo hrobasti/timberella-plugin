@@ -146,6 +146,11 @@ species-limits:
     max-blocks: -1
     max-horizontal-radius: 9
     max-vertical-radius: 12
+  poplar:
+    enabled: true
+    max-blocks: -1
+    max-horizontal-radius: 9
+    max-vertical-radius: 24
   mushroom-brown:
     enabled: true
     max-blocks: -1
@@ -180,6 +185,7 @@ categories:
     MANGROVE_LOG: true
     MANGROVE_ROOTS: true
     CHERRY_LOG: true
+    POPLAR_LOG: true
     CRIMSON_STEM: true
     WARPED_STEM: true
     MUSHROOM_STEM: true
@@ -195,6 +201,7 @@ categories:
     STRIPPED_DARK_OAK_LOG: false
     STRIPPED_MANGROVE_LOG: false
     STRIPPED_CHERRY_LOG: false
+    STRIPPED_POPLAR_LOG: false
     STRIPPED_CRIMSON_STEM: false
     STRIPPED_WARPED_STEM: false
   woods:
@@ -207,6 +214,7 @@ categories:
     DARK_OAK_WOOD: false
     MANGROVE_WOOD: false
     CHERRY_WOOD: false
+    POPLAR_WOOD: false
   stripped-woods:
     STRIPPED_OAK_WOOD: false
     STRIPPED_PALE_OAK_WOOD: false
@@ -217,6 +225,7 @@ categories:
     STRIPPED_DARK_OAK_WOOD: false
     STRIPPED_MANGROVE_WOOD: false
     STRIPPED_CHERRY_WOOD: false
+    STRIPPED_POPLAR_WOOD: false
   fences:
     OAK_FENCE: false
     SPRUCE_FENCE: false
@@ -226,12 +235,14 @@ categories:
     DARK_OAK_FENCE: false
     MANGROVE_FENCE: false
     CHERRY_FENCE: false
+    POPLAR_FENCE: false
     CRIMSON_FENCE: false
     WARPED_FENCE: false
   additions:
     BEE_NEST: true
     BEEHIVE: true
     CREAKING_HEART: true
+    SHELF_MUSHROOM: true
 
 #################################################
 # Replant settings
@@ -248,6 +259,7 @@ replant:
     - ACACIA_SAPLING
     - DARK_OAK_SAPLING
     - CHERRY_SAPLING
+    - POPLAR_SAPLING
     - MANGROVE_PROPAGULE
 
 #################################################
