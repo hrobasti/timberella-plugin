@@ -1,41 +1,66 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>Abattage déjà en cours</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>Abattage déjà en cours</red>
+    felling_stopped_axe_missing: "<red>Abattage arrêté : la hache n'est plus dans ton inventaire</red>"
+    felling_stopped_world_changed: "<red>Abattage arrêté : tu as changé de monde</red>"
 plugin:
-  enabled: Plugin Timberella activé.
-  disabled: Plugin Timberella désactivé.
-  language-set: Langue définie sur <code>.
+    enabled: Plugin Timberella activé.
+    disabled: Plugin Timberella désactivé.
+    language_set: Langue définie sur <code>.
 command:
-  usage-admin: '<prefix> <white>Usage : /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>Configuration rechargée.</white>
-  no-permission: <prefix> <light_red>Tu n'as pas l'autorisation pour ça.</light_red>
-  player-only: <prefix> <light_red>Seuls les joueurs peuvent utiliser cette commande.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>Joueur introuvable.</light_red>
+    usage: "<prefix> <white>Usage : /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>Configuration rechargée.</white>
+    reload_failed: "<prefix> <red>Non rechargé : config.yml n'est pas un YAML valide (<error>). Les paramètres précédents restent actifs.</red>"
+    no_permission: <prefix> <red>Tu n'as pas l'autorisation pour ça.</red>
+    player_only: <prefix> <red>Seuls les joueurs peuvent utiliser cette commande.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>Joueur introuvable.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella activé.</white>
-  self-disabled: <prefix> <white>Timberella désactivé.</white>
-  other-enabled: <prefix> <white>Activé pour <gold><player></gold>.</white>
-  other-disabled: <prefix> <white>Désactivé pour <gold><player></gold>.</white>
+    self_enabled: <prefix> <white>Timberella activé.</white>
+    self_disabled: <prefix> <white>Timberella désactivé.</white>
+    other_enabled: <prefix> <white>Activé pour <gold><player></gold>.</white>
+    other_disabled: <prefix> <white>Désactivé pour <gold><player></gold>.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>La vérification des mises à jour est indisponible pour le moment.</light_red>
+    available: "<prefix> <white>Mise à jour disponible ! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>Pour plus de détails, consulte les logs du serveur.</white>"
 log:
-  defaults-none: Aucune nouvelle valeur par défaut n'est nécessaire pour <file>.
-  defaults-updated: 'Valeurs par défaut mises à jour (<file>) : <count> nouvelles clés -> <keys>'
-  modules-summary: 'Statut des modules -> Timber : <timber>, Replant : <replant>, Feuilles : <leaves>'
-  modules-state-active: activé
-  modules-state-inactive: désactivé
-  update-found: 'Mise à jour trouvée. Version actuelle : <current>.'
-  update-provider-ok: '- <provider> : Version <version> [<url>]'
-  update-provider-error: '- <provider> : Échec de la récupération.'
-  update-none: Aucune mise à jour trouvée.
-  reload-changes-header: 'Modifications de fichiers détectées :'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: Aucun changement de configuration détecté.
+    defaults_updated: "Valeurs par défaut mises à jour (<file>) : <count> nouvelle(s) clé(s) -> <keys>"
+    modules_summary: "Statut des modules -> Abattage : <timber>, Replantation : <replant>, Chute des feuilles : <leaves>"
+    modules_state_active: activé
+    modules_state_inactive: désactivé
+    detail_category_header: "Catégorie <category> :"
+    detail_leaves_header: "Associations de feuilles :"
+    detail_axes_header: "Haches autorisées :"
+    detail_saplings_header: "Pousses à replanter :"
+    custom_blocks_hooked: "Blocs personnalisés protégés de l'abattage : <plugins>"
+    update_found: "Mise à jour trouvée. Version actuelle : <current>."
+    update_provider_ok: "- <provider> : Version <version> [<url>]"
+    update_provider_error: "- <provider> : Échec de la récupération (<error>)."
+    update_provider_failed: "La vérification des mises à jour via <provider> a échoué (<error>) ; nouvel essai lors de la prochaine vérification."
+    update_provider_none: "- <provider> : Aucune mise à jour trouvée."
+    config_reloaded_external: "Le fichier de configuration a changé en externe, rechargé."
+    update_none: Aucune mise à jour trouvée.
+    reload_changes_header: "Modifications de fichiers détectées :"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: Aucun changement de configuration détecté.
+    config_invalid_reload: "config.yml n'est pas un YAML valide (<error>) ; les paramètres précédents restent actifs jusqu'à sa correction."
+    config_invalid_startup: "config.yml n'est pas un YAML valide (<error>) ; les paramètres par défaut sont utilisés, sans bStats ni vérification des mises à jour, jusqu'à sa correction."
+    config_missing_external: "config.yml a été supprimé ; les paramètres actuels restent actifs. /timberella reload ou un redémarrage crée un nouveau config.yml."
+    config_empty_external: "config.yml est vide ; les paramètres actuels restent actifs. /timberella reload ou un redémarrage le remplit avec les paramètres par défaut."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml n'est pas un YAML valide (<error>) ; les associations de feuilles précédentes restent actives jusqu'à sa correction."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml n'est pas un YAML valide (<error>) ; les associations de feuilles par défaut sont utilisées jusqu'à sa correction."
+    upgrade_header: "Mise à niveau depuis <plugin> 1.x : tes anciens fichiers ont été déplacés vers <backup> et de nouveaux fichiers ont été créés."
+    upgrade_from_1_0: "Tes fichiers <plugin> proviennent de la version 1.0.x : ils ont été déplacés vers <backup> et de nouveaux fichiers ont été créés. Les paramètres de 1.0.x ne peuvent pas être repris : réapplique tes modifications à partir de la sauvegarde."
+    upgrade_kept: "- Réglage conservé : <old> -> <new> : <value>"
+    upgrade_dropped: "- Non repris (ce réglage n'existe plus) : <key> = <value>"
+    upgrade_new_entries: "- Nouvelles entrées par défaut absentes de ta liste <list> : <entries>"
+    upgrade_replaced_file: "- Ton fichier <file> personnalisé a été remplacé ; ta version se trouve dans la sauvegarde."
+    upgrade_dropped_invalid: "- Non repris (la valeur ne convient pas au nouveau réglage) : <key> = <value>"
+    upgrade_removed: "- Suppression conservée : <key>"
+    upgrade_backup_only: "- <file> n'a pas d'équivalent dans la nouvelle version et reste uniquement dans la sauvegarde."
 warn:
-  unsupported-server-version: '<prefix> <yellow>Avertissement : Timberella est officiellement pris en charge sur les serveurs <gold><required_server></gold>
-    exécutant Minecraft <gold><supported_versions></gold>. Votre serveur indique <gold><server_name></gold> <gold><mc_version></gold>.
-    Continuez à vos risques et périls.</yellow>'
+    unsupported_server_version:
+        "<yellow>Avertissement : Timberella est officiellement pris en charge sur les serveurs <gold><required_server></gold>
+        exécutant Minecraft <gold><supported_versions></gold>. Ton serveur indique <gold><server_name></gold> <gold><mc_version></gold>.
+        Continue à tes risques et périls.</yellow>"

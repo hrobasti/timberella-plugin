@@ -4,60 +4,73 @@
 # General
 #################################################
 
-# language: messages locale file to load from /lang (default: en_US)
-language: 'en_US'
+# Language code of the file in lang/ used for messages (e.g. de_DE; default: en_US).
+language: "en_US"
 
-# Text displayed inside the colored chat prefix brackets.
-chat-prefix-label: 'Timberella'
+# Text shown between the colored brackets of the chat prefix.
+chat_prefix_label: "Timberella"
 
-# Display the startup banner in console when the plugin enables.
-startup-banner-enabled: true
+# Show the startup banner in the console when the plugin enables.
+startup_banner_enabled: true
 
-# Config watcher toggle (auto-reload & merge every ~5s if enabled)
-config-watch-enabled: true
+# Automatically reload when this file changes on disk.
+# When disabled, use /timberella reload to apply changes.
+# A version of this file that isn't valid YAML is never applied by a reload: the
+# previous settings stay active, and the console names the line with the error
+# (at startup the defaults are used until it is fixed).
+# Nor is an emptied or deleted file: the console warns, /timberella reload
+# or a restart then writes the default settings.
+config_watch_enabled: true
 
-# Interval (seconds) between watcher polls, minimum 1 second
-config-watch-interval-seconds: 5
+# Seconds between checks for changes to this file (minimum 1).
+config_watch_interval_seconds: 5
 
-# Enable anonymous usage metrics via bStats (https://bstats.org)
-metrics-enabled: true
+# Log a summary of the loaded configuration on startup and on reload.
+log_stats: true
+
+# Also list each enabled material, leaf mapping, axe and sapling individually.
+log_detail: false
+
+# Send anonymous usage statistics to bStats (https://bstats.org).
+metrics_enabled: true
 
 #################################################
 # Update mechanics
 #################################################
 
-update-check:
-  # Master switch controlling Modrinth/Hangar polling.
-  enabled: true
-  # 0 = Modrinth + Hangar, 1 = only Modrinth, 2 = only Hangar
-  provider: 0
-  # Interval (in hours) for automatic update checks (minimum 1)
-  interval-hours: 24
-  # Notify about pre-release builds (beta/alpha). Requires support from provider APIs.
-  include-prereleases: false
-  # Prefer builds that match the server's Minecraft version.
-  filter-by-server-version: true
-  # Log update availability to console when a newer version is found.
-  notify-console: true
-  # Always show provider summaries even when no update is available.
-  notify-console-always-shown: false
-  # Notify ops on join when an update is available.
-  notify-op-join: true
+update_check:
+    # Master switch for update checks (Modrinth/Hangar).
+    enabled: true
+    # 0 = Modrinth + Hangar, 1 = only Modrinth, 2 = only Hangar
+    provider: 0
+    # Hours between automatic update checks (minimum 1).
+    interval_hours: 24
+    # Include beta/alpha versions when determining the latest version.
+    include_prereleases: false
+    # Only report builds made for the server's Minecraft version (builds without
+    # version info count only if none matches).
+    filter_by_server_version: true
+    # Log update availability and unreachable platforms to the console.
+    notify_console: true
+    # Also log the provider summary once after each start/reload when no update is available.
+    notify_console_always_shown: false
+    # Notify ops on join when an update is available.
+    notify_op_join: true
 
 #################################################
 # Modules
 #################################################
 
 # Enable timber ability
-enable-timber: true
+enable_timber: true
 
 # Enable replanting of saplings after tree felling
-enable-replant: true
+enable_replant: true
 
 # Enable leaves decay after tree felling
-# if true, leaves around felled logs will start decaying, netherless of enable_timber and enable_replant
+# if true, leaves around felled logs will start decaying, regardless of enable_timber and enable_replant
 # doesn't require timber permission to function - it's a global setting
-enable-leaves-decay: true
+enable_leaves_decay: true
 
 #################################################
 # Timber settings
@@ -67,218 +80,239 @@ enable-leaves-decay: true
 # 0 = only when sneaking
 # 1 = only when NOT sneaking
 # 2 = sneaking or not (always)
-sneak-mode: 0
+sneak_mode: 0
 
 # Tree connection detection:
 # true = consider diagonal neighbors, false = only 6 orthogonal faces
-include-diagonals: true
+include_diagonals: true
+
+# Only fell logs that carry grown foliage: naturally grown leaves of any kind, or
+# other foliage listed for that log in leaf_mappings.yml (wart blocks, shroomlights);
+# giant mushrooms only as one straight stem with their cap on top. Protects log cabins and other builds, also where they
+# touch a tree: logs standing on the ground beside its trunk stay. Player-placed
+# leaves never count. false = also fell bare trunks and builds touching a tree.
+require_natural_leaves: true
 
 # Interval (in ticks) between breaking subsequent blocks when felling sequentially
-break-interval-ticks: 2
+break_interval_ticks: 2
 
 tools:
-  # Which axes are allowed to trigger tree felling
+    # Which axes are allowed to trigger tree felling.
+    # WOODEN_AXE is left out on purpose: it breaks quickly and is WorldEdit's default wand.
+    allowed_axes:
+        - STONE_AXE
+        - COPPER_AXE
+        - IRON_AXE
+        - GOLDEN_AXE
+        - DIAMOND_AXE
+        - NETHERITE_AXE
 
-  allowed-axes:
-    - STONE_AXE
-    - COPPER_AXE
-    - IRON_AXE
-    - GOLDEN_AXE
-    - DIAMOND_AXE
-    - NETHERITE_AXE
-  
-  # Minimum remaining durability required before felling starts (protection)
-  min-remaining-durability: 10
+    # Minimum remaining durability required before felling starts (protection)
+    min_remaining_durability: 10
 
-  # Durability mode: "first" counts only the first block / "all" counts all broken blocks
-  durability-mode: all
+    # Durability mode: "first" counts only the first block / "all" counts all broken blocks
+    durability_mode: all
 
-  # Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
-  durability-multiplier: 0.5
+    # Multiplier for durability cost when mode is "all" (total_cost = round(broken_blocks * multiplier))
+    durability_multiplier: 0.5
 
 # Maximum number of log blocks to break in one go (safety)
-max-blocks: 1024
+max_blocks: 1024
 
-# Species-specific safety limits (radius = Chebyshev X/Z distance; vertical = |Y| offset)
-species-limits:
-  mangrove:
-    enabled: true
-    max-blocks: 128
-    max-horizontal-radius: 9
-    max-vertical-radius: 36
-  jungle:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 8
-    max-vertical-radius: 32
-  spruce:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 6
-    max-vertical-radius: 32
-  oak:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 6
-    max-vertical-radius: 24
-  pale-oak:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 5
-    max-vertical-radius: 16
-  dark-oak:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 6
-    max-vertical-radius: 12
-  birch:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 2
-    max-vertical-radius: 12
-  acacia:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 8
-    max-vertical-radius: 12
-  cherry:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 9
-    max-vertical-radius: 12
-  poplar:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 9
-    max-vertical-radius: 24
-  mushroom-brown:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 4
-    max-vertical-radius: 12
-  mushroom-red:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 2
-    max-vertical-radius: 12
-  warped:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 6
-    max-vertical-radius: 32
-  crimson:
-    enabled: true
-    max-blocks: -1
-    max-horizontal-radius: 6
-    max-vertical-radius: 32
+# Species-specific safety limits (radius = Chebyshev X/Z distance; vertical = |Y| offset).
+# enabled: false = only the global limits apply; max_blocks: -1 = use the global max_blocks
+# (only smaller values take effect); a radius of 0 = no radius limit.
+species_limits:
+    mangrove:
+        enabled: true
+        max_blocks: 128
+        max_horizontal_radius: 9
+        max_vertical_radius: 36
+    jungle:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 8
+        max_vertical_radius: 32
+    spruce:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 6
+        max_vertical_radius: 32
+    oak:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 6
+        max_vertical_radius: 24
+    pale_oak:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 5
+        max_vertical_radius: 16
+    dark_oak:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 6
+        max_vertical_radius: 12
+    birch:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 2
+        max_vertical_radius: 12
+    acacia:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 8
+        max_vertical_radius: 12
+    cherry:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 9
+        max_vertical_radius: 12
+    poplar:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 9
+        max_vertical_radius: 24
+    mushroom_brown:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 4
+        max_vertical_radius: 12
+    mushroom_red:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 2
+        max_vertical_radius: 12
+    warped:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 6
+        max_vertical_radius: 32
+    crimson:
+        enabled: true
+        max_blocks: -1
+        max_horizontal_radius: 6
+        max_vertical_radius: 32
 
 # Categories with per-material toggles (set true/false). Unknown materials are ignored safely.
+# Materials you delete stay deleted; new materials from updates are added once.
 categories:
-  logs:
-    OAK_LOG: true
-    PALE_OAK_LOG: true
-    SPRUCE_LOG: true
-    BIRCH_LOG: true
-    JUNGLE_LOG: true
-    ACACIA_LOG: true
-    DARK_OAK_LOG: true
-    MANGROVE_LOG: true
-    MANGROVE_ROOTS: true
-    CHERRY_LOG: true
-    POPLAR_LOG: true
-    CRIMSON_STEM: true
-    WARPED_STEM: true
-    MUSHROOM_STEM: true
-    BROWN_MUSHROOM_BLOCK: true
-    RED_MUSHROOM_BLOCK: true
-  stripped-logs:
-    STRIPPED_OAK_LOG: false
-    STRIPPED_PALE_OAK_LOG: false
-    STRIPPED_SPRUCE_LOG: false
-    STRIPPED_BIRCH_LOG: false
-    STRIPPED_JUNGLE_LOG: false
-    STRIPPED_ACACIA_LOG: false
-    STRIPPED_DARK_OAK_LOG: false
-    STRIPPED_MANGROVE_LOG: false
-    STRIPPED_CHERRY_LOG: false
-    STRIPPED_POPLAR_LOG: false
-    STRIPPED_CRIMSON_STEM: false
-    STRIPPED_WARPED_STEM: false
-  woods:
-    OAK_WOOD: false
-    PALE_OAK_WOOD: false
-    SPRUCE_WOOD: false
-    BIRCH_WOOD: false
-    JUNGLE_WOOD: false
-    ACACIA_WOOD: false
-    DARK_OAK_WOOD: false
-    MANGROVE_WOOD: false
-    CHERRY_WOOD: false
-    POPLAR_WOOD: false
-  stripped-woods:
-    STRIPPED_OAK_WOOD: false
-    STRIPPED_PALE_OAK_WOOD: false
-    STRIPPED_SPRUCE_WOOD: false
-    STRIPPED_BIRCH_WOOD: false
-    STRIPPED_JUNGLE_WOOD: false
-    STRIPPED_ACACIA_WOOD: false
-    STRIPPED_DARK_OAK_WOOD: false
-    STRIPPED_MANGROVE_WOOD: false
-    STRIPPED_CHERRY_WOOD: false
-    STRIPPED_POPLAR_WOOD: false
-  fences:
-    OAK_FENCE: false
-    SPRUCE_FENCE: false
-    BIRCH_FENCE: false
-    JUNGLE_FENCE: false
-    ACACIA_FENCE: false
-    DARK_OAK_FENCE: false
-    MANGROVE_FENCE: false
-    CHERRY_FENCE: false
-    POPLAR_FENCE: false
-    CRIMSON_FENCE: false
-    WARPED_FENCE: false
-  additions:
-    BEE_NEST: true
-    BEEHIVE: true
-    CREAKING_HEART: true
-    SHELF_MUSHROOM: true
+    logs:
+        OAK_LOG: true
+        PALE_OAK_LOG: true
+        SPRUCE_LOG: true
+        BIRCH_LOG: true
+        JUNGLE_LOG: true
+        ACACIA_LOG: true
+        DARK_OAK_LOG: true
+        MANGROVE_LOG: true
+        MANGROVE_ROOTS: true
+        CHERRY_LOG: true
+        POPLAR_LOG: true
+        CRIMSON_STEM: true
+        WARPED_STEM: true
+        MUSHROOM_STEM: true
+        BROWN_MUSHROOM_BLOCK: true
+        RED_MUSHROOM_BLOCK: true
+    stripped_logs:
+        STRIPPED_OAK_LOG: false
+        STRIPPED_PALE_OAK_LOG: false
+        STRIPPED_SPRUCE_LOG: false
+        STRIPPED_BIRCH_LOG: false
+        STRIPPED_JUNGLE_LOG: false
+        STRIPPED_ACACIA_LOG: false
+        STRIPPED_DARK_OAK_LOG: false
+        STRIPPED_MANGROVE_LOG: false
+        STRIPPED_CHERRY_LOG: false
+        STRIPPED_POPLAR_LOG: false
+        STRIPPED_CRIMSON_STEM: false
+        STRIPPED_WARPED_STEM: false
+    woods:
+        OAK_WOOD: false
+        PALE_OAK_WOOD: false
+        SPRUCE_WOOD: false
+        BIRCH_WOOD: false
+        JUNGLE_WOOD: false
+        ACACIA_WOOD: false
+        DARK_OAK_WOOD: false
+        MANGROVE_WOOD: false
+        CHERRY_WOOD: false
+        POPLAR_WOOD: false
+    stripped_woods:
+        STRIPPED_OAK_WOOD: false
+        STRIPPED_PALE_OAK_WOOD: false
+        STRIPPED_SPRUCE_WOOD: false
+        STRIPPED_BIRCH_WOOD: false
+        STRIPPED_JUNGLE_WOOD: false
+        STRIPPED_ACACIA_WOOD: false
+        STRIPPED_DARK_OAK_WOOD: false
+        STRIPPED_MANGROVE_WOOD: false
+        STRIPPED_CHERRY_WOOD: false
+        STRIPPED_POPLAR_WOOD: false
+    fences:
+        OAK_FENCE: false
+        PALE_OAK_FENCE: false
+        SPRUCE_FENCE: false
+        BIRCH_FENCE: false
+        JUNGLE_FENCE: false
+        ACACIA_FENCE: false
+        DARK_OAK_FENCE: false
+        MANGROVE_FENCE: false
+        CHERRY_FENCE: false
+        POPLAR_FENCE: false
+        CRIMSON_FENCE: false
+        WARPED_FENCE: false
+    additions:
+        BEE_NEST: true
+        BEEHIVE: true
+        CREAKING_HEART: true
+        SHELF_MUSHROOM: true
 
 #################################################
 # Replant settings
 #################################################
 
 replant:
-  # List of saplings to replant (must match item IDs)
-  saplings:
-    - OAK_SAPLING
-    - PALE_OAK_SAPLING
-    - SPRUCE_SAPLING
-    - BIRCH_SAPLING
-    - JUNGLE_SAPLING
-    - ACACIA_SAPLING
-    - DARK_OAK_SAPLING
-    - CHERRY_SAPLING
-    - POPLAR_SAPLING
-    - MANGROVE_PROPAGULE
+    # Where replanted saplings come from:
+    # "drops" = only saplings the felled tree's leaves dropped during leaf cleanup;
+    #           a 2x2 tree is replanted only once all four dropped (needs enable_leaves_decay)
+    # "free"  = always plant new saplings for free
+    sapling_source: "drops"
+
+    # List of saplings to replant (must match item IDs)
+    # Azalea trees (oak logs under azalea leaves) replant AZALEA or FLOWERING_AZALEA.
+    saplings:
+        - OAK_SAPLING
+        - PALE_OAK_SAPLING
+        - SPRUCE_SAPLING
+        - BIRCH_SAPLING
+        - JUNGLE_SAPLING
+        - ACACIA_SAPLING
+        - DARK_OAK_SAPLING
+        - CHERRY_SAPLING
+        - POPLAR_SAPLING
+        - MANGROVE_PROPAGULE
+        - AZALEA
+        - FLOWERING_AZALEA
 
 #################################################
 # Leaves decay settings
 #################################################
 
-leaves-decay:
-  # Search radius around felled logs used to discover candidate leaves (flood-fill depth)
-  # Minimum accepted value: 0 (values below are clamped)
-  decay-radius: 5
+leaves_decay:
+    # Search radius around felled logs used to discover candidate leaves (flood-fill depth)
+    # Minimum accepted value: 0 (values below are clamped)
+    decay_radius: 5
 
-  # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched
-  # Minimum accepted value: 1
-  max-distance: 4
+    # Hard safety buffer: leaves farther than this (3D distance) from every felled log stay untouched.
+    # Below this cap, cleanup reaches the felled species' max_horizontal_radius (at least 4 blocks).
+    # Minimum accepted value: 1
+    max_distance: 9
 
-  # Interval (in ticks) between leaf removal batches
-  # Minimum accepted value: 1 tick
-  batch-interval-ticks: 2
+    # Interval (in ticks) between leaf removal batches
+    # Minimum accepted value: 1 tick
+    batch_interval_ticks: 2
 
-  # Maximum number of leaves removed per batch
-  # Minimum accepted value: 1
-  batch-size: 20
+    # Maximum number of leaves removed per batch
+    # Minimum accepted value: 1
+    batch_size: 20

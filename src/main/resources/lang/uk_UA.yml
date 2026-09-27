@@ -1,41 +1,66 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>Зруб уже триває</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>Зруб уже триває</red>
+    felling_stopped_axe_missing: "<red>Зруб зупинено: сокири більше немає в інвентарі</red>"
+    felling_stopped_world_changed: "<red>Зруб зупинено: світ змінено</red>"
 plugin:
-  enabled: Плагін Timberella увімкнено.
-  disabled: Плагін Timberella вимкнено.
-  language-set: Мову встановлено на <code>.
+    enabled: Плагін Timberella увімкнено.
+    disabled: Плагін Timberella вимкнено.
+    language_set: Мову встановлено на <code>.
 command:
-  usage-admin: '<prefix> <white>Використання: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>Конфігурацію перезавантажено.</white>
-  no-permission: <prefix> <light_red>У тебе немає прав на цю дію.</light_red>
-  player-only: <prefix> <light_red>Цю команду можуть використовувати лише гравці.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>Гравця не знайдено.</light_red>
+    usage: "<prefix> <white>Використання: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>Конфігурацію перезавантажено.</white>
+    reload_failed: "<prefix> <red>Не перезавантажено: config.yml не є коректним YAML (<error>). Попередні налаштування залишаються активними.</red>"
+    no_permission: <prefix> <red>У тебе немає прав на цю дію.</red>
+    player_only: <prefix> <red>Цю команду можуть використовувати лише гравці.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>Гравця не знайдено.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella увімкнено.</white>
-  self-disabled: <prefix> <white>Timberella вимкнено.</white>
-  other-enabled: <prefix> <white>Увімкнено для <gold><player></gold>.</white>
-  other-disabled: <prefix> <white>Вимкнено для <gold><player></gold>.</white>
+    self_enabled: <prefix> <white>Timberella увімкнено.</white>
+    self_disabled: <prefix> <white>Timberella вимкнено.</white>
+    other_enabled: <prefix> <white>Увімкнено для <gold><player></gold>.</white>
+    other_disabled: <prefix> <white>Вимкнено для <gold><player></gold>.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>Перевірка оновлень зараз недоступна.</light_red>
+    available: "<prefix> <white>Доступне оновлення! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>Для деталей переглянь журнал сервера.</white>"
 log:
-  defaults-none: Нові значення за замовчуванням для <file> не потрібні.
-  defaults-updated: 'Оновлено значення за замовчуванням (<file>): <count> нових ключів -> <keys>'
-  modules-summary: 'Стан модулів -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: увімкнено
-  modules-state-inactive: вимкнено
-  update-found: 'Знайдено оновлення. Поточна версія: <current>.'
-  update-provider-ok: '- <provider>: Версія <version> [<url>]'
-  update-provider-error: '- <provider>: Не вдалося отримати.'
-  update-none: Оновлення не знайдено.
-  reload-changes-header: 'Виявлено зміни у файлах:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: Змін у конфігурації не виявлено.
+    defaults_updated: "Оновлено значення за замовчуванням (<file>), нові ключі: <count> -> <keys>"
+    modules_summary: "Стан модулів -> Зруб: <timber>, Повторна посадка: <replant>, Опадання листя: <leaves>"
+    modules_state_active: увімкнено
+    modules_state_inactive: вимкнено
+    detail_category_header: "Категорія <category>:"
+    detail_leaves_header: "Відповідності листя:"
+    detail_axes_header: "Дозволені сокири:"
+    detail_saplings_header: "Саджанці для пересадження:"
+    custom_blocks_hooked: "Користувацькі блоки, захищені від зрубу: <plugins>"
+    update_found: "Знайдено оновлення. Поточна версія: <current>."
+    update_provider_ok: "- <provider>: Версія <version> [<url>]"
+    update_provider_error: "- <provider>: Не вдалося отримати (<error>)."
+    update_provider_failed: "Перевірка оновлень через <provider> не вдалася (<error>); повторна спроба під час наступної перевірки."
+    update_provider_none: "- <provider>: Оновлення не знайдено."
+    config_reloaded_external: "Файл конфігурації змінено ззовні, перезавантажено."
+    update_none: Оновлення не знайдено.
+    reload_changes_header: "Виявлено зміни у файлах:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: Змін у конфігурації не виявлено.
+    config_invalid_reload: "config.yml не є коректним YAML (<error>); попередні налаштування залишаються активними, доки файл не буде виправлено."
+    config_invalid_startup: "config.yml не є коректним YAML (<error>); доки файл не буде виправлено, плагін працює з налаштуваннями за замовчуванням, без bStats і перевірки оновлень."
+    config_missing_external: "config.yml видалено; поточні налаштування залишаються активними. /timberella reload або перезапуск створює новий config.yml."
+    config_empty_external: "config.yml порожній; поточні налаштування залишаються активними. /timberella reload або перезапуск заповнює його налаштуваннями за замовчуванням."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml не є коректним YAML (<error>); попередні відповідності листя залишаються активними, доки файл не буде виправлено."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml не є коректним YAML (<error>); доки файл не буде виправлено, використовуються типові відповідності листя."
+    upgrade_header: "Оновлено з <plugin> 1.x: твої старі файли переміщено до <backup>, створено нові файли."
+    upgrade_from_1_0: "Твої файли <plugin> походять із версії 1.0.x: їх переміщено до <backup>, створено нові файли. Налаштування з 1.0.x не можна перенести, тож застосуй свої зміни повторно з резервної копії."
+    upgrade_kept: "- Налаштування збережено: <old> -> <new>: <value>"
+    upgrade_dropped: "- Не перенесено (такого налаштування більше немає): <key> = <value>"
+    upgrade_new_entries: "- У твоєму списку <list> бракує нових стандартних записів: <entries>"
+    upgrade_replaced_file: "- Твій змінений файл <file> замінено; твоя версія є в резервній копії."
+    upgrade_dropped_invalid: "- Не перенесено (значення не підходить для нового налаштування): <key> = <value>"
+    upgrade_removed: "- Видалення збережено: <key>"
+    upgrade_backup_only: "- <file> не має відповідника в новій версії й залишається лише в резервній копії."
 warn:
-  unsupported-server-version: '<prefix> <yellow>Попередження: Timberella офіційно підтримує сервери <gold><required_server></gold>,
-    що працюють на Minecraft <gold><supported_versions></gold>. Твій сервер повідомляє <gold><server_name></gold> <gold><mc_version></gold>.
-    Продовжуй на власний ризик.</yellow>'
+    unsupported_server_version:
+        "<yellow>Попередження: Timberella офіційно підтримує сервери <gold><required_server></gold>,
+        що працюють на Minecraft <gold><supported_versions></gold>. Твій сервер повідомляє <gold><server_name></gold> <gold><mc_version></gold>.
+        Продовжуй на власний ризик.</yellow>"

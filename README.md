@@ -1,66 +1,43 @@
 # Timberella 🌲
 
-Drop-in quality-of-life plugin for Paper 26.3 servers: instant tree felling, tidy leaf cleanup, and automatic replanting with safety rails so mega-builds stay intact.
+Drop-in quality-of-life plugin for Paper 26.3.x servers: instant tree felling, tidy leaf cleanup, and automatic replanting with safety rails so mega-builds stay intact.
 
 ![Timberella demo](img/timber_01.gif)
 
 ## Why server owners love it
 
-- ⚡ One axe swing can clear an entire tree while damage, particles, and timing stay configurable.
-- 🌱 Optional replant + soil checks keep forests alive.
+- ⚡ One axe swing can clear an entire tree while axe wear, block limits and timing stay configurable.
+- 🌱 Optional replant + soil checks keep forests alive, underwater too with [UnderwaterTrees](https://github.com/hrobasti/underwatertrees-plugin).
 - 🛡️ Species-aware limits (per-tree caps, radii, durability rules) stop griefing before it starts.
-- 🔁 Live config + locale reloads merge new defaults automatically—no manual diffing.
+- 🏠 Builds stay safe: only logs of the hit tree's species with naturally grown foliage are felled, log walls and huts touching a tree stay standing, giant mushrooms only in their natural shape, player-placed leaves are never cleared away, and custom blocks from ItemsAdder, MMOItems, MythicCrucible and CraftEngine are left alone.
+- 🏰 Respects land protection: every extra log and leaf goes through a regular block-break check and every replanted sapling through a block-place check, so WorldGuard, GriefPrevention & co. can deny them.
+- 🔁 Live config + locale reloads merge new defaults automatically—no manual diffing: new settings are added in place with their comments, old-style keys are renamed in place, and the rest of your file stays exactly as you wrote it.
 - 🔔 Update checker (Modrinth + Hangar) and join reminders keep your fleet current.
-- 🌐 MiniMessage-powered localization lets you style player + console feedback exactly the way you like.
+- 🌐 14 bundled languages, all MiniMessage-powered, so you can style player + console feedback exactly the way you like.
 
-## Server requirements
+## Quick start
 
-- Paper 26.3 (Spigot/vanilla forks are not supported)
-- Java 25 runtime
-- Optional: a permissions plugin (LuckPerms, etc.) for fine-grained access to `/timberella` commands
+Timberella needs Paper 26.3.x and Java 25 (Spigot/vanilla are not supported).
 
-## Setup in 3 steps
-
-1. Copy the latest `timberella-paper-<version>.jar` into `plugins/`.
+1. Download the latest `timberella-paper-<version>.jar` from [Modrinth](https://modrinth.com/plugin/timberella) or [Hangar](https://hangar.papermc.io/hro_basti/timberella) and copy it into `plugins/`.
 2. Boot the server once—`config.yml`, `lang/`, and `leaf_mappings.yml` appear automatically.
 3. Tweak `plugins/Timberella/config.yml` (modules, safety caps, labels) and run `/timberella reload`.
 
-That’s it. The async watcher keeps configs + locales synced, and every reload revalidates permissions, caches, and message bundles.
+Edits to `config.yml` are picked up automatically by the config watcher; after editing `lang/` or `leaf_mappings.yml`, run `/timberella reload`.
 
-## Everyday tips
+## Upgrading from 1.x
 
-- Use `sneak-mode` to decide when timbering should trigger (only sneaking, only not sneaking, or always).
-- Flip specific logs/woods/fences on or off in `categories.*`. Unknown materials are ignored safely.
-- Watch the console after reloads: Timberella prints how many saplings, soils, and species are active plus any typos it auto-fixed.
-- Update notifications surface in console and (optionally) to ops with `timberella.update.notify`; set `update-check.notify-console-always-shown` true if you still want “no update” provider summaries every cycle, and leave `update-check.filter-by-server-version` true so Modrinth/Hangar matches your server build.
+Swap the jar and start the server: your old files move to `plugins/Timberella/backup-1.x/`, fresh files are created with every setting you had changed carried over, and the console lists exactly what happened. Two defaults changed (`require_natural_leaves` and `replant.sapling_source`); the [upgrade notes](https://github.com/hrobasti/timberella-plugin/wiki#upgrading-from-1x) explain how to get the 1.x behavior back. Coming from 1.0 or 1.0.1, your files are backed up the same way, but their settings can't be carried over: re-apply your changes from the backup.
 
-## Supported languages
+## Documentation
 
-Timberella bundles each locale as a MiniMessage YAML file so you can recolor or restyle them freely:
-
-- 🇺🇸 English (en_US)
-- 🇩🇪 German (de_DE)
-- 🇸🇦 Arabic (ar_SA)
-- 🇪🇸 Spanish (es_ES)
-- 🇫🇷 French (fr_FR)
-- 🇮🇹 Italian (it_IT)
-- 🇯🇵 Japanese (ja_JP)
-- 🇰🇷 Korean (ko_KR)
-- 🇳🇱 Dutch (nl_NL)
-- 🇵🇱 Polish (pl_PL)
-- 🇵🇹 Portuguese (pt_PT)
-- 🇹🇷 Turkish (tr_TR)
-- 🇺🇦 Ukrainian (uk_UA)
-- 🇨🇳 Simplified Chinese (zh_CN)
-
-Missing keys fall back to English, and `/timberella reload` hot-reloads both config + language edits.
-
-## Need deeper guidance?
-
-This README keeps things short on purpose. All developer and deep-dive documentation (config matrices, command charts, operations guides) lives in the project wiki. Start there whenever you need advanced workflows or contribution notes.
+- [Wiki: admin guide](https://github.com/hrobasti/timberella-plugin/wiki): every setting, commands and permissions, languages, land protection, troubleshooting.
+- [Wiki: developer guide](https://github.com/hrobasti/timberella-plugin/wiki/2-%E2%80%90-Developer-Guide): building from source, tests, releases, contributing.
 
 ## License & Credits
 
-- Timberella is released under the Apache License 2.0 (see `LICENSE`).
-- Third-party components such as MiniMessage (MIT), Gson (Apache 2.0), Shadow (Apache 2.0), and bStats (MIT) ship with their respective notices inside `THIRD_PARTY_LICENSES.md` and the packaged `licenses/` folder.
-- Parts of this plugin and documentation were produced with AI assistance (e.g., GitHub Copilot) and reviewed by the maintainer before release.
+- Timberella is released under the MIT License (see `LICENSE`), Copyright (c) 2025-2026 [kroet.net](https://kroet.net). Releases before 2.0.0 were published under the Apache License 2.0; kroet.net additionally makes them available under the MIT License.
+- The MIT License covers the code, not the name: forks should use a different plugin name and must not suggest they are the official Timberella.
+- Includes TurtleLib by [kroet.net](https://kroet.net) (MIT); its license text ships at `licenses/turtle-lib-MIT.txt` inside the jar.
+- Includes bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann); its license text ships at `licenses/bstats-MIT.txt`. MiniMessage and Gson are provided by Paper at runtime. All bundled and runtime-provided libraries are listed in `THIRD_PARTY_LICENSES.md`.
+- Parts of this plugin and its documentation were produced with AI assistance and reviewed by the maintainer before release.

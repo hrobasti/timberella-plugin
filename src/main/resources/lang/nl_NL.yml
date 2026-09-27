@@ -1,41 +1,66 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>Vellen is al bezig</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>Vellen is al bezig</red>
+    felling_stopped_axe_missing: "<red>Vellen gestopt: bijl zit niet meer in je inventaris</red>"
+    felling_stopped_world_changed: "<red>Vellen gestopt: je bent van wereld gewisseld</red>"
 plugin:
-  enabled: Timberella plugin ingeschakeld.
-  disabled: Timberella plugin uitgeschakeld.
-  language-set: Taal ingesteld op <code>.
+    enabled: Timberella plugin ingeschakeld.
+    disabled: Timberella plugin uitgeschakeld.
+    language_set: Taal ingesteld op <code>.
 command:
-  usage-admin: '<prefix> <white>Gebruik: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>Configuratie opnieuw geladen.</white>
-  no-permission: <prefix> <light_red>Je hebt geen rechten om dat te doen.</light_red>
-  player-only: <prefix> <light_red>Alleen spelers kunnen dit commando gebruiken.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>Speler niet gevonden.</light_red>
+    usage: "<prefix> <white>Gebruik: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>Configuratie opnieuw geladen.</white>
+    reload_failed: "<prefix> <red>Niet opnieuw geladen: config.yml is geen geldige YAML (<error>). De vorige instellingen blijven actief.</red>"
+    no_permission: <prefix> <red>Je hebt geen rechten om dat te doen.</red>
+    player_only: <prefix> <red>Alleen spelers kunnen dit commando gebruiken.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>Speler niet gevonden.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella ingeschakeld.</white>
-  self-disabled: <prefix> <white>Timberella uitgeschakeld.</white>
-  other-enabled: <prefix> <white>Ingeschakeld voor <gold><player></gold>.</white>
-  other-disabled: <prefix> <white>Uitgeschakeld voor <gold><player></gold>.</white>
+    self_enabled: <prefix> <white>Timberella ingeschakeld.</white>
+    self_disabled: <prefix> <white>Timberella uitgeschakeld.</white>
+    other_enabled: <prefix> <white>Ingeschakeld voor <gold><player></gold>.</white>
+    other_disabled: <prefix> <white>Uitgeschakeld voor <gold><player></gold>.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>Updatecontrole is nu niet beschikbaar.</light_red>
+    available: "<prefix> <white>Update beschikbaar! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>Zie het serverlogboek voor details.</white>"
 log:
-  defaults-none: Geen nieuwe standaardwaarden nodig voor <file>.
-  defaults-updated: 'Standaarden bijgewerkt (<file>): <count> nieuwe sleutels -> <keys>'
-  modules-summary: 'Module status -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: ingeschakeld
-  modules-state-inactive: uitgeschakeld
-  update-found: 'Update gevonden. Huidige versie: <current>.'
-  update-provider-ok: '- <provider>: Versie <version> [<url>]'
-  update-provider-error: '- <provider>: Ophalen mislukt.'
-  update-none: Geen update gevonden.
-  reload-changes-header: 'Bestandswijzigingen gedetecteerd:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: Geen configuratiewijzigingen gedetecteerd.
+    defaults_updated: "Standaarden bijgewerkt (<file>): <count> nieuwe sleutel(s) -> <keys>"
+    modules_summary: "Modulestatus -> Vellen: <timber>, Herplanten: <replant>, Bladverval: <leaves>"
+    modules_state_active: ingeschakeld
+    modules_state_inactive: uitgeschakeld
+    detail_category_header: "Categorie <category>:"
+    detail_leaves_header: "Bladkoppelingen:"
+    detail_axes_header: "Toegestane bijlen:"
+    detail_saplings_header: "Boompjes om te herplanten:"
+    custom_blocks_hooked: "Aangepaste blokken beschermd tegen vellen: <plugins>"
+    update_found: "Update gevonden. Huidige versie: <current>."
+    update_provider_ok: "- <provider>: Versie <version> [<url>]"
+    update_provider_error: "- <provider>: Ophalen mislukt (<error>)."
+    update_provider_failed: "Updatecontrole via <provider> mislukt (<error>); nieuwe poging bij de volgende controle."
+    update_provider_none: "- <provider>: Geen update gevonden."
+    config_reloaded_external: "Configuratiebestand extern gewijzigd, opnieuw geladen."
+    update_none: Geen update gevonden.
+    reload_changes_header: "Bestandswijzigingen gedetecteerd:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: Geen configuratiewijzigingen gedetecteerd.
+    config_invalid_reload: "config.yml is geen geldige YAML (<error>); de vorige instellingen blijven actief totdat het bestand is gecorrigeerd."
+    config_invalid_startup: "config.yml is geen geldige YAML (<error>); totdat het bestand is gecorrigeerd, draait de plugin met de standaardinstellingen, zonder bStats en updatecontroles."
+    config_missing_external: "config.yml is verwijderd; de huidige instellingen blijven actief. /timberella reload of een herstart maakt een nieuwe config.yml aan."
+    config_empty_external: "config.yml is leeg; de huidige instellingen blijven actief. /timberella reload of een herstart vult het bestand met de standaardinstellingen."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml is geen geldige YAML (<error>); de vorige bladkoppelingen blijven actief totdat het bestand is gecorrigeerd."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml is geen geldige YAML (<error>); totdat het bestand is gecorrigeerd, worden de standaard bladkoppelingen gebruikt."
+    upgrade_header: "Geüpgraded vanaf <plugin> 1.x: je oude bestanden zijn verplaatst naar <backup> en er zijn nieuwe bestanden aangemaakt."
+    upgrade_from_1_0: "Je <plugin>-bestanden komen uit versie 1.0.x: ze zijn verplaatst naar <backup> en er zijn nieuwe bestanden aangemaakt. Instellingen uit 1.0.x kunnen niet worden overgenomen, dus pas je wijzigingen opnieuw toe vanuit de back-up."
+    upgrade_kept: "- Instelling behouden: <old> -> <new>: <value>"
+    upgrade_dropped: "- Niet overgenomen (deze instelling bestaat niet meer): <key> = <value>"
+    upgrade_new_entries: "- Nieuwe standaarditems ontbreken in je lijst <list>: <entries>"
+    upgrade_replaced_file: "- Je aangepaste <file> is vervangen; jouw versie staat in de back-up."
+    upgrade_dropped_invalid: "- Niet overgenomen (de waarde past niet bij de nieuwe instelling): <key> = <value>"
+    upgrade_removed: "- Je verwijdering behouden: <key>"
+    upgrade_backup_only: "- <file> heeft geen tegenhanger in de nieuwe versie en blijft alleen in de back-up."
 warn:
-  unsupported-server-version: '<prefix> <yellow>Waarschuwing: Timberella wordt officieel ondersteund op <gold><required_server></gold>-servers
-    die Minecraft <gold><supported_versions></gold> draaien. Jouw server meldt <gold><server_name></gold> <gold><mc_version></gold>.
-    Ga verder op eigen risico.</yellow>'
+    unsupported_server_version:
+        "<yellow>Waarschuwing: Timberella wordt officieel ondersteund op <gold><required_server></gold>-servers
+        die Minecraft <gold><supported_versions></gold> draaien. Jouw server meldt <gold><server_name></gold> <gold><mc_version></gold>.
+        Ga verder op eigen risico.</yellow>"

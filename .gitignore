@@ -4,10 +4,10 @@
 /out/
 /dist/
 /dist/sources/
+/dist-archive/
 /target/
 /logs/
 /tmp/
-/wiki/
 
 # Gradle caches
 /.gradle/

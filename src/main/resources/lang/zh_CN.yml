@@ -1,40 +1,65 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>砍伐已在进行中</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>砍伐已在进行中</red>
+    felling_stopped_axe_missing: "<red>砍伐已停止：斧头已不在你的物品栏中</red>"
+    felling_stopped_world_changed: "<red>砍伐已停止：你已切换世界</red>"
 plugin:
-  enabled: Timberella 插件已启用。
-  disabled: Timberella 插件已禁用。
-  language-set: 语言已设置为 <code>。
+    enabled: Timberella 插件已启用。
+    disabled: Timberella 插件已禁用。
+    language_set: 语言已设置为 <code>。
 command:
-  usage-admin: <prefix> <white>用法：/timberella [reload|version|toggle]</white>
-  reloaded: <prefix> <white>配置已重新加载。</white>
-  no-permission: <prefix> <light_red>你没有权限执行此操作。</light_red>
-  player-only: <prefix> <light_red>只有玩家才能使用这个指令。</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>未找到该玩家。</light_red>
+    usage: "<prefix> <white>用法：/<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>配置已重新加载。</white>
+    reload_failed: "<prefix> <red>未重新加载：config.yml 不是有效的 YAML (<error>)。之前的设置仍然有效。</red>"
+    no_permission: <prefix> <red>你没有权限执行此操作。</red>
+    player_only: <prefix> <red>只有玩家才能使用这个指令。</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>未找到该玩家。</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella 已启用。</white>
-  self-disabled: <prefix> <white>Timberella 已停用。</white>
-  other-enabled: <prefix> <white>已为 <gold><player></gold> 启用。</white>
-  other-disabled: <prefix> <white>已为 <gold><player></gold> 停用。</white>
+    self_enabled: <prefix> <white>Timberella 已启用。</white>
+    self_disabled: <prefix> <white>Timberella 已停用。</white>
+    other_enabled: <prefix> <white>已为 <gold><player></gold> 启用。</white>
+    other_disabled: <prefix> <white>已为 <gold><player></gold> 停用。</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>目前无法检查更新。</light_red>
+    available: "<prefix> <white>有可用更新！ <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>详情请查看服务器日志。</white>"
 log:
-  defaults-none: <file> 不需要新的默认值。
-  defaults-updated: 默认值已更新 (<file>)：<count> 个新键 -> <keys>
-  modules-summary: '模块状态 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: 已启用
-  modules-state-inactive: 已禁用
-  update-found: 发现更新。当前版本：<current>.
-  update-provider-ok: '- <provider>：版本 <version> [<url>]'
-  update-provider-error: '- <provider>：获取失败。'
-  update-none: 未发现更新。
-  reload-changes-header: 检测到文件更改：
-  reload-changes-line: <file>（<changes>）
-  reload-changes-locale-line: <file>
-  reload-changes-none: 未检测到配置更改。
+    defaults_updated: 默认值已更新 (<file>)：<count> 个新键 -> <keys>
+    modules_summary: "模块状态 -> 砍伐：<timber>，补种：<replant>，落叶：<leaves>"
+    modules_state_active: 已启用
+    modules_state_inactive: 已禁用
+    detail_category_header: "类别 <category>："
+    detail_leaves_header: "树叶映射："
+    detail_axes_header: "允许的斧头："
+    detail_saplings_header: "补种树苗："
+    custom_blocks_hooked: "受砍伐保护的自定义方块：<plugins>"
+    update_found: 发现更新。当前版本：<current>.
+    update_provider_ok: "- <provider>：版本 <version> [<url>]"
+    update_provider_error: "- <provider>：获取失败（<error>）。"
+    update_provider_failed: "通过 <provider> 检查更新失败（<error>）；将在下次检查时重试。"
+    update_provider_none: "- <provider>：未发现更新。"
+    config_reloaded_external: "配置文件被外部修改，已重新加载。"
+    update_none: 未发现更新。
+    reload_changes_header: 检测到文件更改：
+    reload_changes_line: <file>（<changes>）
+    reload_changes_locale_line: <file>
+    reload_changes_none: 未检测到配置更改。
+    config_invalid_reload: "config.yml 不是有效的 YAML (<error>)；在修复之前，之前的设置仍然有效。"
+    config_invalid_startup: "config.yml 不是有效的 YAML (<error>)；在修复之前，将使用默认设置运行，并停用 bStats 和更新检查。"
+    config_missing_external: "config.yml 已被删除；当前设置仍然有效。/timberella reload 或重启服务器会创建新的 config.yml。"
+    config_empty_external: "config.yml 为空；当前设置仍然有效。/timberella reload 或重启服务器会用默认设置填充它。"
+    leaf_mappings_invalid_reload: "leaf_mappings.yml 不是有效的 YAML (<error>)；在修复之前，之前的树叶映射仍然有效。"
+    leaf_mappings_invalid_startup: "leaf_mappings.yml 不是有效的 YAML (<error>)；在修复之前，将使用默认的树叶映射。"
+    upgrade_header: "已从 <plugin> 1.x 升级：旧文件已移至 <backup>，并已创建新文件。"
+    upgrade_from_1_0: "你的 <plugin> 文件来自 1.0.x 版本：已移至 <backup>，并已创建新文件。1.0.x 的设置无法迁移，请根据备份重新应用你的更改。"
+    upgrade_kept: "- 已保留设置：<old> -> <new>：<value>"
+    upgrade_dropped: "- 未迁移（该设置已不存在）：<key> = <value>"
+    upgrade_new_entries: "- 你的列表 <list> 缺少新的默认条目：<entries>"
+    upgrade_replaced_file: "- 你修改过的 <file> 已被替换；你的版本在备份中。"
+    upgrade_dropped_invalid: "- 未迁移（该值不适用于新设置）：<key> = <value>"
+    upgrade_removed: "- 已保留你的删除：<key>"
+    upgrade_backup_only: "- <file> 在新版本中没有对应文件，仅保留在备份中。"
 warn:
-  unsupported-server-version: <prefix> <yellow>警告：Timberella 官方仅支持运行 Minecraft <gold><supported_versions></gold> 的 <gold><required_server></gold>
-    服务器。当前服务器为 <gold><server_name></gold> <gold><mc_version></gold>，继续使用需自担风险。</yellow>
+    unsupported_server_version:
+        <yellow>警告：Timberella 官方仅支持运行 Minecraft <gold><supported_versions></gold> 的 <gold><required_server></gold>
+        服务器。当前服务器为 <gold><server_name></gold> <gold><mc_version></gold>，继续使用需自担风险。</yellow>

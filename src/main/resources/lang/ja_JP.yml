@@ -1,40 +1,65 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>伐採はすでに進行中です</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>伐採はすでに進行中です</red>
+    felling_stopped_axe_missing: "<red>伐採を中止しました: 斧がインベントリにありません</red>"
+    felling_stopped_world_changed: "<red>伐採を中止しました: ワールドを移動しました</red>"
 plugin:
-  enabled: Timberella プラグインを有効化したよ。
-  disabled: Timberella プラグインを無効化したよ。
-  language-set: 言語を <code> にしたよ。
+    enabled: Timberella プラグインを有効化しました。
+    disabled: Timberella プラグインを無効化しました。
+    language_set: 言語を <code> に設定しました。
 command:
-  usage-admin: '<prefix> <white>使い方: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>設定を再読み込みしました。</white>
-  no-permission: <prefix> <light_red>その操作をする権限がありません。</light_red>
-  player-only: <prefix> <light_red>このコマンドはプレイヤーのみ使用できます。</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>プレイヤーが見つかりません。</light_red>
+    usage: "<prefix> <white>使い方: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>設定を再読み込みしました。</white>
+    reload_failed: "<prefix> <red>再読み込みしませんでした: config.yml が有効な YAML ではありません (<error>)。以前の設定が引き続き有効です。</red>"
+    no_permission: <prefix> <red>その操作をする権限がありません。</red>
+    player_only: <prefix> <red>このコマンドはプレイヤーのみ使用できます。</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>プレイヤーが見つかりません。</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella を有効化しました。</white>
-  self-disabled: <prefix> <white>Timberella を無効化しました。</white>
-  other-enabled: <prefix> <white><gold><player></gold> を有効化しました。</white>
-  other-disabled: <prefix> <white><gold><player></gold> を無効化しました。</white>
+    self_enabled: <prefix> <white>Timberella を有効化しました。</white>
+    self_disabled: <prefix> <white>Timberella を無効化しました。</white>
+    other_enabled: <prefix> <white><gold><player></gold> を有効化しました。</white>
+    other_disabled: <prefix> <white><gold><player></gold> を無効化しました。</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>今はアップデートを確認できません。</light_red>
+    available: "<prefix> <white>アップデートがあります！ <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>詳細はサーバーログを確認してください。</white>"
 log:
-  defaults-none: <file> に新しいデフォルト値はありません。
-  defaults-updated: 'デフォルトを更新しました (<file>): <count> 件の新しいキー -> <keys>'
-  modules-summary: 'モジュール状態 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: 有効
-  modules-state-inactive: 無効
-  update-found: 'アップデートが見つかりました。現在のバージョン: <current>.'
-  update-provider-ok: '- <provider>: バージョン <version> [<url>]'
-  update-provider-error: '- <provider>: 取得に失敗しました。'
-  update-none: アップデートは見つかりませんでした。
-  reload-changes-header: 'ファイルの変更を検出しました:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: 設定の変更は検出されませんでした。
+    defaults_updated: "デフォルトを更新しました (<file>): <count> 件の新しいキー -> <keys>"
+    modules_summary: "モジュール状態 -> 伐採: <timber>, 植え直し: <replant>, 落葉: <leaves>"
+    modules_state_active: 有効
+    modules_state_inactive: 無効
+    detail_category_header: "カテゴリ <category>:"
+    detail_leaves_header: "葉の対応付け:"
+    detail_axes_header: "使用可能な斧:"
+    detail_saplings_header: "植え直す苗木:"
+    custom_blocks_hooked: "伐採から保護するカスタムブロック: <plugins>"
+    update_found: "アップデートが見つかりました。現在のバージョン: <current>."
+    update_provider_ok: "- <provider>: バージョン <version> [<url>]"
+    update_provider_error: "- <provider>: 取得に失敗しました（<error>）。"
+    update_provider_failed: "<provider> による更新チェックに失敗しました（<error>）。次回のチェックで再試行します。"
+    update_provider_none: "- <provider>: アップデートは見つかりませんでした。"
+    config_reloaded_external: "設定ファイルが外部で変更されたため、再読み込みしました。"
+    update_none: アップデートは見つかりませんでした。
+    reload_changes_header: "ファイルの変更を検出しました:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: 設定の変更は検出されませんでした。
+    config_invalid_reload: "config.yml が有効な YAML ではありません (<error>)。修正されるまで以前の設定が有効なままです。"
+    config_invalid_startup: "config.yml が有効な YAML ではありません (<error>)。修正されるまで、bStats と更新チェックを無効にしてデフォルト設定で動作します。"
+    config_missing_external: "config.yml が削除されました。現在の設定が引き続き有効です。/timberella reload またはサーバーの再起動で新しい config.yml が作成されます。"
+    config_empty_external: "config.yml が空です。現在の設定が引き続き有効です。/timberella reload またはサーバーの再起動でデフォルト設定が書き込まれます。"
+    leaf_mappings_invalid_reload: "leaf_mappings.yml が有効な YAML ではありません (<error>)。修正されるまで以前の葉の対応付けが有効なままです。"
+    leaf_mappings_invalid_startup: "leaf_mappings.yml が有効な YAML ではありません (<error>)。修正されるまでデフォルトの葉の対応付けを使用します。"
+    upgrade_header: "<plugin> 1.x からアップグレードしました: 古いファイルは <backup> に移動し、新しいファイルを作成しました。"
+    upgrade_from_1_0: "<plugin> のファイルはバージョン 1.0.x のものです: <backup> に移動し、新しいファイルを作成しました。1.0.x の設定は引き継げないため、バックアップから変更内容を再適用してください。"
+    upgrade_kept: "- 設定を引き継ぎました: <old> -> <new>: <value>"
+    upgrade_dropped: "- 引き継がれませんでした (この設定はもう存在しません): <key> = <value>"
+    upgrade_new_entries: "- リスト <list> に新しいデフォルト項目がありません: <entries>"
+    upgrade_replaced_file: "- カスタマイズした <file> は置き換えられました。元のファイルはバックアップにあります。"
+    upgrade_dropped_invalid: "- 引き継がれませんでした (値が新しい設定に合いません): <key> = <value>"
+    upgrade_removed: "- 削除した設定を引き継ぎました: <key>"
+    upgrade_backup_only: "- <file> は新しいバージョンに対応するファイルがないため、バックアップにのみ残ります。"
 warn:
-  unsupported-server-version: '<prefix> <yellow>警告: Timberella は公式には <gold><required_server></gold> サーバーで動作する Minecraft <gold><supported_versions></gold>
-    をサポートしています。現在のサーバーは <gold><server_name></gold> <gold><mc_version></gold> です。自己責任で続行してください。</yellow>'
+    unsupported_server_version:
+        "<yellow>警告: Timberella は公式には <gold><required_server></gold> サーバーで動作する Minecraft <gold><supported_versions></gold>
+        をサポートしています。現在のサーバーは <gold><server_name></gold> <gold><mc_version></gold> です。自己責任で続行してください。</yellow>"

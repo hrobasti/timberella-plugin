@@ -1,5 +1,9 @@
 rootProject.name = 'Timberella'
 
-include(':plugins:turtle-lib')
-project(':plugins').projectDir = file('..')
-project(':plugins:turtle-lib').projectDir = file('../turtle-lib')
+// Default: resolve turtle-lib from GitHub Releases (see build.gradle). Pass
+// -PuseLocalTurtleLib=true to build against the sibling ../turtle-lib checkout instead.
+if (settings.hasProperty('useLocalTurtleLib') && Boolean.parseBoolean(settings.useLocalTurtleLib.toString())) {
+    include(':plugins:turtle-lib')
+    project(':plugins').projectDir = file('..')
+    project(':plugins:turtle-lib').projectDir = file('../turtle-lib')
+}

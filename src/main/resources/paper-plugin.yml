@@ -1,21 +1,40 @@
 name: Timberella
 version: ${version}
-main: com.github.hrobasti.timberella.TimberellaPlugin
+main: net.kroet.timberella.TimberellaPlugin
 description: "Tree cutting, leaves decay and replanting abilities. Completely configurable."
-api-version: '26.3'
+api-version: "26.3"
 authors:
-  - hro_basti
+    - "kroet.net"
 website: "https://github.com/hrobasti/timberella-plugin"
+# Optional: when installed, their custom blocks are kept out of fellings.
+dependencies:
+    server:
+        ItemsAdder:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        MMOItems:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        MythicCrucible:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        CraftEngine:
+            load: BEFORE
+            required: false
+            join-classpath: true
 permissions:
-  timberella.use:
-    description: Use Timberella to fell trees
-    default: 'true'
-  timberella.toggle:
-    description: Allow players to toggle Timberella for themselves
-    default: 'true'
-  timberella.admin:
-    description: Admin permission for Timberella
-    default: 'op'
-  timberella.update.notify:
-    description: Receive in-game update reminders when new versions are available
-    default: 'op'
+    timberella.use:
+        description: Use Timberella to fell trees
+        default: "true"
+    timberella.toggle:
+        description: Allow players to toggle Timberella for themselves
+        default: "true"
+    timberella.admin:
+        description: Admin permission for Timberella
+        default: "op"
+    timberella.update.notify:
+        description: Receive in-game update reminders when new versions are available
+        default: "op"

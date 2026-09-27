@@ -1,0 +1,35 @@
+[versions]
+paper = "26.3.build.49-alpha"
+bstats = "3.2.1"
+# Since JUnit 6, Jupiter and Platform share one version.
+junit = "6.1.3"
+turtleLib = "2.0.0"
+# APIs of other plugins, compileOnly for Timberella's custom-block guard. MMOItems-API and
+# MythicLib-dist are published only as snapshots, so they are pinned to timestamped builds.
+itemsadderApi = "4.0.17"
+craftEngine = "26.9.1"
+mmoitemsApi = "6.10.1-20260916.164945-67"
+mythicLib = "1.7.1-20260821.190929-108"
+mythicCrucible = "2.2.0"
+mythicMobs = "5.13.0"
+
+[libraries]
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+# Group/name are arbitrary: resolved via the GitHub-Releases ivy pattern in each plugin's
+# build.gradle, not a real Maven coordinate. version.ref must equal both the turtle-lib git
+# tag and the release-asset filename suffix (turtle-lib-paper-<version>.jar) exactly.
+turtle-lib = { module = "turtle-lib:turtle-lib-paper", version.ref = "turtleLib" }
+itemsadder-api = { module = "beer.devs:itemsadder-api", version.ref = "itemsadderApi" }
+craftengine-bukkit = { module = "net.momirealms:craft-engine-bukkit", version.ref = "craftEngine" }
+mmoitems-api = { module = "net.Indyuce:MMOItems-API", version.ref = "mmoitemsApi" }
+mythiclib-dist = { module = "io.lumine:MythicLib-dist", version.ref = "mythicLib" }
+mythiccrucible-dist = { module = "io.lumine:MythicCrucible-Dist", version.ref = "mythicCrucible" }
+mythic-dist = { module = "io.lumine:Mythic-Dist", version.ref = "mythicMobs" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
+spotless = { id = "com.diffplug.spotless", version = "8.10.2" }

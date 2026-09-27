@@ -1,40 +1,65 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>Kesim zaten devam ediyor</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>Kesim zaten devam ediyor</red>
+    felling_stopped_axe_missing: "<red>Kesim durdu: balta artık envanterinde değil</red>"
+    felling_stopped_world_changed: "<red>Kesim durdu: dünya değiştirdin</red>"
 plugin:
-  enabled: Timberella eklentisi etkinleştirildi.
-  disabled: Timberella eklentisi devre dışı bırakıldı.
-  language-set: Dil <code> olarak ayarlandı.
+    enabled: Timberella eklentisi etkinleştirildi.
+    disabled: Timberella eklentisi devre dışı bırakıldı.
+    language_set: Dil <code> olarak ayarlandı.
 command:
-  usage-admin: '<prefix> <white>Kullanım: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>Yapılandırma yeniden yüklendi.</white>
-  no-permission: <prefix> <light_red>Bunu yapmak için iznin yok.</light_red>
-  player-only: <prefix> <light_red>Bu komutu sadece oyuncular kullanabilir.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>Oyuncu bulunamadı.</light_red>
+    usage: "<prefix> <white>Kullanım: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>Yapılandırma yeniden yüklendi.</white>
+    reload_failed: "<prefix> <red>Yeniden yüklenmedi: config.yml geçerli bir YAML değil (<error>). Önceki ayarlar etkin kalıyor.</red>"
+    no_permission: <prefix> <red>Bunu yapmak için iznin yok.</red>
+    player_only: <prefix> <red>Bu komutu sadece oyuncular kullanabilir.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>Oyuncu bulunamadı.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella etkinleştirildi.</white>
-  self-disabled: <prefix> <white>Timberella devre dışı bırakıldı.</white>
-  other-enabled: <prefix> <white><gold><player></gold> için etkinleştirildi.</white>
-  other-disabled: <prefix> <white><gold><player></gold> için devre dışı bırakıldı.</white>
+    self_enabled: <prefix> <white>Timberella etkinleştirildi.</white>
+    self_disabled: <prefix> <white>Timberella devre dışı bırakıldı.</white>
+    other_enabled: <prefix> <white><gold><player></gold> için etkinleştirildi.</white>
+    other_disabled: <prefix> <white><gold><player></gold> için devre dışı bırakıldı.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>Güncelleme kontrolü şu anda kullanılamıyor.</light_red>
+    available: "<prefix> <white>Güncelleme var! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>Ayrıntılar için sunucu kayıtlarını kontrol et.</white>"
 log:
-  defaults-none: <file> için yeni varsayılanlara gerek yok.
-  defaults-updated: 'Varsayılanlar güncellendi (<file>): <count> yeni anahtar -> <keys>'
-  modules-summary: 'Modül durumu -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: etkin
-  modules-state-inactive: devre dışı
-  update-found: 'Güncelleme bulundu. Mevcut sürüm: <current>.'
-  update-provider-ok: '- <provider>: Sürüm <version> [<url>]'
-  update-provider-error: '- <provider>: Getirme başarısız.'
-  update-none: Güncelleme bulunamadı.
-  reload-changes-header: 'Dosya değişiklikleri algılandı:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: Yapılandırma değişikliği algılanmadı.
+    defaults_updated: "Varsayılanlar güncellendi (<file>): <count> yeni anahtar -> <keys>"
+    modules_summary: "Modül durumu -> Kesim: <timber>, Yeniden dikim: <replant>, Yaprak dökümü: <leaves>"
+    modules_state_active: etkin
+    modules_state_inactive: devre dışı
+    detail_category_header: "Kategori <category>:"
+    detail_leaves_header: "Yaprak eşlemeleri:"
+    detail_axes_header: "İzin verilen baltalar:"
+    detail_saplings_header: "Yeniden dikilecek fidanlar:"
+    custom_blocks_hooked: "Kesime karşı korunan özel bloklar: <plugins>"
+    update_found: "Güncelleme bulundu. Mevcut sürüm: <current>."
+    update_provider_ok: "- <provider>: Sürüm <version> [<url>]"
+    update_provider_error: "- <provider>: Getirme başarısız (<error>)."
+    update_provider_failed: "<provider> üzerinden güncelleme denetimi başarısız oldu (<error>); bir sonraki denetimde yeniden denenecek."
+    update_provider_none: "- <provider>: Güncelleme bulunamadı."
+    config_reloaded_external: "Yapılandırma dosyası dışarıdan değiştirildi, yeniden yüklendi."
+    update_none: Güncelleme bulunamadı.
+    reload_changes_header: "Dosya değişiklikleri algılandı:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: Yapılandırma değişikliği algılanmadı.
+    config_invalid_reload: "config.yml geçerli bir YAML değil (<error>); düzeltilene kadar önceki ayarlar etkin kalır."
+    config_invalid_startup: "config.yml geçerli bir YAML değil (<error>); düzeltilene kadar bStats ve güncelleme denetimi olmadan varsayılan ayarlarla çalışılıyor."
+    config_missing_external: "config.yml silindi; mevcut ayarlar etkin kalıyor. /timberella reload veya yeniden başlatma yeni bir config.yml oluşturur."
+    config_empty_external: "config.yml boş; mevcut ayarlar etkin kalıyor. /timberella reload veya yeniden başlatma dosyayı varsayılan ayarlarla doldurur."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml geçerli bir YAML değil (<error>); düzeltilene kadar önceki yaprak eşlemeleri etkin kalır."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml geçerli bir YAML değil (<error>); düzeltilene kadar varsayılan yaprak eşlemeleri kullanılıyor."
+    upgrade_header: "<plugin> 1.x sürümünden yükseltildi: eski dosyaların <backup> konumuna taşındı ve yeni dosyalar oluşturuldu."
+    upgrade_from_1_0: "<plugin> dosyaların 1.0.x sürümüne ait: <backup> konumuna taşındı ve yeni dosyalar oluşturuldu. 1.0.x ayarları aktarılamıyor; değişikliklerini yedekten yeniden uygula."
+    upgrade_kept: "- Ayar korundu: <old> -> <new>: <value>"
+    upgrade_dropped: "- Aktarılmadı (bu ayar artık yok): <key> = <value>"
+    upgrade_new_entries: "- <list> listende yeni varsayılan girdiler eksik: <entries>"
+    upgrade_replaced_file: "- Özelleştirdiğin <file> dosyası değiştirildi; senin sürümün yedekte."
+    upgrade_dropped_invalid: "- Aktarılmadı (değer yeni ayara uymuyor): <key> = <value>"
+    upgrade_removed: "- Kaldırman korundu: <key>"
+    upgrade_backup_only: "- <file> dosyasının yeni sürümde karşılığı yok ve yalnızca yedekte kalıyor."
 warn:
-  unsupported-server-version: '<prefix> <yellow>Uyarı: Timberella resmi olarak <gold><required_server></gold> sunucularında çalışan Minecraft <gold><supported_versions></gold>
-    sürümlerini destekler. Sunucun <gold><server_name></gold> <gold><mc_version></gold> bildiriyor. Devam etmek kendi sorumluluğundadır.</yellow>'
+    unsupported_server_version:
+        "<yellow>Uyarı: Timberella resmi olarak <gold><required_server></gold> sunucularında çalışan Minecraft <gold><supported_versions></gold>
+        sürümlerini destekler. Sunucun <gold><server_name></gold> <gold><mc_version></gold> bildiriyor. Devam etmek kendi sorumluluğundadır.</yellow>"

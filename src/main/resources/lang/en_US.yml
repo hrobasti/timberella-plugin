@@ -1,41 +1,66 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>Felling already running</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>Felling already running</red>
+    felling_stopped_axe_missing: "<red>Felling stopped: axe no longer in your inventory</red>"
+    felling_stopped_world_changed: "<red>Felling stopped: you changed worlds</red>"
 plugin:
-  enabled: Timberella plugin enabled.
-  disabled: Timberella plugin disabled.
-  language-set: Language set to <code>.
+    enabled: Timberella plugin enabled.
+    disabled: Timberella plugin disabled.
+    language_set: Language set to <code>.
 command:
-  usage-admin: '<prefix> <white>Usage: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>Configuration reloaded.</white>
-  no-permission: <prefix> <light_red>You don't have permission to do that.</light_red>
-  player-only: <prefix> <light_red>This command can only be used by players.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>Player not found.</light_red>
+    usage: "<prefix> <white>Usage: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>Configuration reloaded.</white>
+    reload_failed: "<prefix> <red>Not reloaded: config.yml isn't valid YAML (<error>). The previous settings stay active.</red>"
+    no_permission: <prefix> <red>You don't have permission to do that.</red>
+    player_only: <prefix> <red>This command can only be used by players.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>Player not found.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella enabled.</white>
-  self-disabled: <prefix> <white>Timberella disabled.</white>
-  other-enabled: <prefix> <white>Enabled for <gold><player></gold>.</white>
-  other-disabled: <prefix> <white>Disabled for <gold><player></gold>.</white>
+    self_enabled: <prefix> <white>Timberella enabled.</white>
+    self_disabled: <prefix> <white>Timberella disabled.</white>
+    other_enabled: <prefix> <white>Enabled for <gold><player></gold>.</white>
+    other_disabled: <prefix> <white>Disabled for <gold><player></gold>.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>Update check unavailable right now.</light_red>
+    available: "<prefix> <white>Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>For details, see the server log.</white>"
 log:
-  defaults-none: No new default values needed for <file>.
-  defaults-updated: 'Defaults updated (<file>): <count> new keys -> <keys>'
-  modules-summary: 'Module status -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: enabled
-  modules-state-inactive: disabled
-  update-found: 'Update found. Current version: <current>.'
-  update-provider-ok: '- <provider>: Version <version> [<url>]'
-  update-provider-error: '- <provider>: Failed to fetch.'
-  update-none: No update found.
-  reload-changes-header: 'Detected file changes:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: No configuration changes detected.
+    defaults_updated: "Defaults updated (<file>): <count> new key(s) -> <keys>"
+    modules_summary: "Module status -> Timber: <timber>, Replant: <replant>, Leaf decay: <leaves>"
+    modules_state_active: enabled
+    modules_state_inactive: disabled
+    detail_category_header: "Category <category>:"
+    detail_leaves_header: "Leaf mappings:"
+    detail_axes_header: "Allowed axes:"
+    detail_saplings_header: "Replant saplings:"
+    custom_blocks_hooked: "Custom blocks protected from felling: <plugins>"
+    update_found: "Update found. Current version: <current>."
+    update_provider_ok: "- <provider>: Version <version> [<url>]"
+    update_provider_error: "- <provider>: Failed to fetch (<error>)."
+    update_provider_failed: "Update check via <provider> failed (<error>); retrying at the next check."
+    update_provider_none: "- <provider>: No update found."
+    config_reloaded_external: "Config file changed externally, reloaded."
+    update_none: No update found.
+    reload_changes_header: "Detected file changes:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: No configuration changes detected.
+    config_invalid_reload: "config.yml isn't valid YAML (<error>); the previous settings stay active until it is fixed."
+    config_invalid_startup: "config.yml isn't valid YAML (<error>); running with the default settings, without bStats and update checks, until it is fixed."
+    config_missing_external: "config.yml was deleted; the current settings stay active. /timberella reload or a restart creates a fresh config.yml."
+    config_empty_external: "config.yml is empty; the current settings stay active. /timberella reload or a restart fills it with the default settings."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml isn't valid YAML (<error>); the previous leaf mappings stay active until it is fixed."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml isn't valid YAML (<error>); the default leaf mappings are used until it is fixed."
+    upgrade_header: "Upgraded from <plugin> 1.x: your old files were moved to <backup>, and fresh files were created."
+    upgrade_from_1_0: "Your <plugin> files are from version 1.0.x: they were moved to <backup>, and fresh files were created. Settings from 1.0.x can't be carried over, so re-apply your changes from the backup."
+    upgrade_kept: "- Kept your setting <old> -> <new>: <value>"
+    upgrade_dropped: "- Not carried over (no matching setting anymore): <key> = <value>"
+    upgrade_new_entries: "- New default entries missing from your list <list>: <entries>"
+    upgrade_replaced_file: "- Your customized <file> was replaced; your version is in the backup."
+    upgrade_dropped_invalid: "- Not carried over (the value doesn't fit the new setting): <key> = <value>"
+    upgrade_removed: "- Kept your removal of <key>"
+    upgrade_backup_only: "- <file> has no counterpart in the new version and stays only in the backup."
 warn:
-  unsupported-server-version: '<prefix> <yellow>Warning: Timberella officially supports <gold><required_server></gold> servers
-    running Minecraft <gold><supported_versions></gold>. Your server reports <gold><server_name></gold> <gold><mc_version></gold>.
-    Proceed at your own risk.</yellow>'
+    unsupported_server_version:
+        "<yellow>Warning: Timberella officially supports <gold><required_server></gold> servers
+        running Minecraft <gold><supported_versions></gold>. Your server reports <gold><server_name></gold> <gold><mc_version></gold>.
+        Proceed at your own risk.</yellow>"

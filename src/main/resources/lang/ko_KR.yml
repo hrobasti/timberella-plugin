@@ -1,40 +1,65 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>벌목이 이미 진행 중입니다</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>벌목이 이미 진행 중입니다</red>
+    felling_stopped_axe_missing: "<red>벌목 중단: 도끼가 더 이상 인벤토리에 없습니다</red>"
+    felling_stopped_world_changed: "<red>벌목 중단: 월드를 이동했습니다</red>"
 plugin:
-  enabled: Timberella 플러그인 활성화됐어.
-  disabled: Timberella 플러그인 비활성화됐어.
-  language-set: 언어를 <code>로 설정했어.
+    enabled: Timberella 플러그인이 활성화되었습니다.
+    disabled: Timberella 플러그인이 비활성화되었습니다.
+    language_set: 언어를 <code>(으)로 설정했습니다.
 command:
-  usage-admin: '<prefix> <white>사용법: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>설정을 다시 불러왔습니다.</white>
-  no-permission: <prefix> <light_red>이 작업을 할 권한이 없어요.</light_red>
-  player-only: <prefix> <light_red>이 명령어는 플레이어만 사용할 수 있습니다.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>플레이어를 찾을 수 없습니다.</light_red>
+    usage: "<prefix> <white>사용법: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>설정을 다시 불러왔습니다.</white>
+    reload_failed: "<prefix> <red>다시 불러오지 않았습니다: config.yml이 올바른 YAML이 아닙니다 (<error>). 이전 설정이 계속 적용됩니다.</red>"
+    no_permission: <prefix> <red>이 작업을 할 권한이 없습니다.</red>
+    player_only: <prefix> <red>이 명령어는 플레이어만 사용할 수 있습니다.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>플레이어를 찾을 수 없습니다.</red>
 toggle:
-  self-enabled: <prefix> <white>Timberella가 활성화되었습니다.</white>
-  self-disabled: <prefix> <white>Timberella가 비활성화되었습니다.</white>
-  other-enabled: <prefix> <white><gold><player></gold>에게 활성화했습니다.</white>
-  other-disabled: <prefix> <white><gold><player></gold>에게 비활성화했습니다.</white>
+    self_enabled: <prefix> <white>Timberella가 활성화되었습니다.</white>
+    self_disabled: <prefix> <white>Timberella가 비활성화되었습니다.</white>
+    other_enabled: <prefix> <white><gold><player></gold>에게 활성화했습니다.</white>
+    other_disabled: <prefix> <white><gold><player></gold>에게 비활성화했습니다.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>지금은 업데이트를 확인할 수 없습니다.</light_red>
+    available: "<prefix> <white>업데이트가 있습니다! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>자세한 내용은 서버 로그를 확인하세요.</white>"
 log:
-  defaults-none: <file>에는 새 기본값이 필요하지 않습니다.
-  defaults-updated: '기본값 업데이트 (<file>): <count>개의 새 키 -> <keys>'
-  modules-summary: '모듈 상태 -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: 활성
-  modules-state-inactive: 비활성
-  update-found: '업데이트를 찾았습니다. 현재 버전: <current>.'
-  update-provider-ok: '- <provider>: 버전 <version> [<url>]'
-  update-provider-error: '- <provider>: 가져오기에 실패했습니다.'
-  update-none: 업데이트를 찾지 못했습니다.
-  reload-changes-header: '파일 변경 사항이 감지되었습니다:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: 구성 변경이 감지되지 않았습니다.
+    defaults_updated: "기본값 업데이트 (<file>): <count>개의 새 키 -> <keys>"
+    modules_summary: "모듈 상태 -> 벌목: <timber>, 다시 심기: <replant>, 낙엽: <leaves>"
+    modules_state_active: 활성
+    modules_state_inactive: 비활성
+    detail_category_header: "카테고리 <category>:"
+    detail_leaves_header: "잎 매핑:"
+    detail_axes_header: "허용된 도끼:"
+    detail_saplings_header: "다시 심을 묘목:"
+    custom_blocks_hooked: "벌목에서 보호되는 사용자 지정 블록: <plugins>"
+    update_found: "업데이트를 찾았습니다. 현재 버전: <current>."
+    update_provider_ok: "- <provider>: 버전 <version> [<url>]"
+    update_provider_error: "- <provider>: 가져오기에 실패했습니다 (<error>)."
+    update_provider_failed: "<provider>을(를) 통한 업데이트 확인에 실패했습니다 (<error>). 다음 확인 때 다시 시도합니다."
+    update_provider_none: "- <provider>: 업데이트를 찾지 못했습니다."
+    config_reloaded_external: "설정 파일이 외부에서 변경되어 다시 불러왔습니다."
+    update_none: 업데이트를 찾지 못했습니다.
+    reload_changes_header: "파일 변경 사항이 감지되었습니다:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: 구성 변경이 감지되지 않았습니다.
+    config_invalid_reload: "config.yml이 올바른 YAML이 아닙니다 (<error>). 수정될 때까지 이전 설정이 계속 적용됩니다."
+    config_invalid_startup: "config.yml이 올바른 YAML이 아닙니다 (<error>). 수정될 때까지 bStats와 업데이트 확인 없이 기본 설정으로 실행됩니다."
+    config_missing_external: "config.yml이 삭제되었습니다. 현재 설정이 계속 적용됩니다. /timberella reload 또는 재시작하면 새 config.yml이 만들어집니다."
+    config_empty_external: "config.yml이 비어 있습니다. 현재 설정이 계속 적용됩니다. /timberella reload 또는 재시작하면 기본 설정으로 채워집니다."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml이 올바른 YAML이 아닙니다 (<error>). 수정될 때까지 이전 잎 매핑이 계속 적용됩니다."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml이 올바른 YAML이 아닙니다 (<error>). 수정될 때까지 기본 잎 매핑을 사용합니다."
+    upgrade_header: "<plugin> 1.x에서 업그레이드했습니다: 이전 파일은 <backup>(으)로 옮겼고 새 파일을 만들었습니다."
+    upgrade_from_1_0: "<plugin> 파일은 1.0.x 버전의 파일입니다: <backup>(으)로 옮겼고 새 파일을 만들었습니다. 1.0.x 설정은 옮길 수 없으므로 백업에서 변경 사항을 다시 적용해 주세요."
+    upgrade_kept: "- 설정을 유지했습니다: <old> -> <new>: <value>"
+    upgrade_dropped: "- 옮기지 않음 (더 이상 없는 설정): <key> = <value>"
+    upgrade_new_entries: "- 목록 <list>에 새 기본 항목이 없습니다: <entries>"
+    upgrade_replaced_file: "- 수정한 <file> 파일을 교체했습니다. 원래 버전은 백업에 있습니다."
+    upgrade_dropped_invalid: "- 옮기지 않음 (값이 새 설정에 맞지 않음): <key> = <value>"
+    upgrade_removed: "- 삭제한 항목을 유지했습니다: <key>"
+    upgrade_backup_only: "- <file>은(는) 새 버전에 대응하는 파일이 없어 백업에만 남습니다."
 warn:
-  unsupported-server-version: '<prefix> <yellow>경고: Timberella 는 공식적으로 <gold><required_server></gold> 서버에서 실행되는 Minecraft <gold><supported_versions></gold>
-    만 지원합니다. 현재 서버는 <gold><server_name></gold> <gold><mc_version></gold> 입니다. 계속 진행 시 주의하세요.</yellow>'
+    unsupported_server_version:
+        "<yellow>경고: Timberella 는 공식적으로 <gold><required_server></gold> 서버에서 실행되는 Minecraft <gold><supported_versions></gold>
+        만 지원합니다. 현재 서버는 <gold><server_name></gold> <gold><mc_version></gold> 입니다. 계속 진행 시 주의하세요.</yellow>"

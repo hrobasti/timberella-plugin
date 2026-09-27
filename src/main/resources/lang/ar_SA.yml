@@ -1,41 +1,66 @@
 ui:
-  prefix: <light_purple>[<prefix_label>]</light_purple>
-  felling-already-running: <light_red>القطع جارٍ بالفعل</light_red>
+    prefix: <light_purple>[<prefix_label>]</light_purple>
+    felling_already_running: <red>القطع جارٍ بالفعل</red>
+    felling_stopped_axe_missing: "<red>توقف القطع: الفأس لم يعد في مخزونك</red>"
+    felling_stopped_world_changed: "<red>توقف القطع: لقد انتقلت إلى عالم آخر</red>"
 plugin:
-  enabled: تم تفعيل إضافة Timberella.
-  disabled: تم تعطيل إضافة Timberella.
-  language-set: تم ضبط اللغة إلى <code>.
+    enabled: تم تفعيل إضافة Timberella.
+    disabled: تم تعطيل إضافة Timberella.
+    language_set: تم ضبط اللغة إلى <code>.
 command:
-  usage-admin: '<prefix> <white>الاستخدام: /timberella [reload|version|toggle]</white>'
-  reloaded: <prefix> <white>تم إعادة تحميل الإعدادات.</white>
-  no-permission: <prefix> <light_red>ليس لديك صلاحية للقيام بذلك.</light_red>
-  player-only: <prefix> <light_red>يمكن للاعبين فقط استخدام هذا الأمر.</light_red>
-  version: <prefix> <white>Timberella v<gold><current_ver></gold></white>
-  player-not-found: <prefix> <light_red>لم يتم العثور على اللاعب.</light_red>
+    usage: "<prefix> <white>الاستخدام: /<label> [<subcommands>]</white>"
+    reloaded: <prefix> <white>تم إعادة تحميل الإعدادات.</white>
+    reload_failed: "<prefix> <red>لم تتم إعادة التحميل: config.yml ليس ملف YAML صالحًا (<error>). تبقى الإعدادات السابقة فعالة.</red>"
+    no_permission: <prefix> <red>ليس لديك صلاحية للقيام بذلك.</red>
+    player_only: <prefix> <red>يمكن للاعبين فقط استخدام هذا الأمر.</red>
+    version: <prefix> <white>Timberella <gold><current_ver></gold></white>
+    player_not_found: <prefix> <red>لم يتم العثور على اللاعب.</red>
 toggle:
-  self-enabled: <prefix> <white>تم تفعيل Timberella.</white>
-  self-disabled: <prefix> <white>تم تعطيل Timberella.</white>
-  other-enabled: <prefix> <white>تم التفعيل لـ <gold><player></gold>.</white>
-  other-disabled: <prefix> <white>تم التعطيل لـ <gold><player></gold>.</white>
+    self_enabled: <prefix> <white>تم تفعيل Timberella.</white>
+    self_disabled: <prefix> <white>تم تعطيل Timberella.</white>
+    other_enabled: <prefix> <white>تم التفعيل لـ <gold><player></gold>.</white>
+    other_disabled: <prefix> <white>تم التعطيل لـ <gold><player></gold>.</white>
 update:
-  available: '<prefix> <white>: Update available! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>'
-  details: '<prefix> <white>: For details, see the server log.</white>'
-  failed: <prefix> <light_red>التحقق من التحديث غير متاح حالياً.</light_red>
+    available: "<prefix> <white>يوجد تحديث متاح! <gold><current_ver></gold> -> <gold><latest_ver></gold></white>"
+    details: "<prefix> <white>للحصول على التفاصيل، راجع سجل الخادم.</white>"
 log:
-  defaults-none: لا توجد قيم افتراضية جديدة مطلوبة لـ <file>.
-  defaults-updated: 'تم تحديث القيم الافتراضية (<file>): <count> مفاتيح جديدة -> <keys>'
-  modules-summary: 'حالة الوحدات -> Timber: <timber>, Replant: <replant>, Leaves: <leaves>'
-  modules-state-active: مفعل
-  modules-state-inactive: معطل
-  update-found: 'تم العثور على تحديث. الإصدار الحالي: <current>.'
-  update-provider-ok: '- <provider>: الإصدار <version> [<url>]'
-  update-provider-error: '- <provider>: فشل في الجلب.'
-  update-none: لم يتم العثور على تحديث.
-  reload-changes-header: 'تم رصد تغييرات في الملفات:'
-  reload-changes-line: <file> (<changes>)
-  reload-changes-locale-line: <file>
-  reload-changes-none: لم يتم اكتشاف تغييرات في الإعداد.
+    defaults_updated: "تم تحديث القيم الافتراضية (<file>)، المفاتيح الجديدة: <count> -> <keys>"
+    modules_summary: "حالة الوحدات -> القطع: <timber>, إعادة الزراعة: <replant>, تساقط الأوراق: <leaves>"
+    modules_state_active: مفعل
+    modules_state_inactive: معطل
+    detail_category_header: "الفئة <category>:"
+    detail_leaves_header: "ربط الأوراق:"
+    detail_axes_header: "الفؤوس المسموح بها:"
+    detail_saplings_header: "شتلات إعادة الزراعة:"
+    custom_blocks_hooked: "الكتل المخصصة المحمية من القطع: <plugins>"
+    update_found: "تم العثور على تحديث. الإصدار الحالي: <current>."
+    update_provider_ok: "- <provider>: الإصدار <version> [<url>]"
+    update_provider_error: "- <provider>: فشل في الجلب (<error>)."
+    update_provider_failed: "فشل التحقق من التحديثات عبر <provider> (<error>)؛ ستتم إعادة المحاولة في الفحص التالي."
+    update_provider_none: "- <provider>: لم يتم العثور على تحديث."
+    config_reloaded_external: "تم تغيير ملف الإعدادات خارجياً، وأُعيد تحميله."
+    update_none: لم يتم العثور على تحديث.
+    reload_changes_header: "تم رصد تغييرات في الملفات:"
+    reload_changes_line: <file> (<changes>)
+    reload_changes_locale_line: <file>
+    reload_changes_none: لم يتم اكتشاف تغييرات في الإعداد.
+    config_invalid_reload: "config.yml ليس ملف YAML صالحًا (<error>)؛ تبقى الإعدادات السابقة فعالة حتى يتم إصلاحه."
+    config_invalid_startup: "config.yml ليس ملف YAML صالحًا (<error>)؛ تعمل الإضافة بالإعدادات الافتراضية، دون bStats ودون التحقق من التحديثات، حتى يتم إصلاحه."
+    config_missing_external: "تم حذف config.yml؛ تبقى الإعدادات الحالية فعالة. يؤدي /timberella reload أو إعادة التشغيل إلى إنشاء ملف config.yml جديد."
+    config_empty_external: "ملف config.yml فارغ؛ تبقى الإعدادات الحالية فعالة. يملؤه /timberella reload أو إعادة التشغيل بالإعدادات الافتراضية."
+    leaf_mappings_invalid_reload: "leaf_mappings.yml ليس ملف YAML صالحًا (<error>)؛ يبقى ربط الأوراق السابق فعالًا حتى يتم إصلاحه."
+    leaf_mappings_invalid_startup: "leaf_mappings.yml ليس ملف YAML صالحًا (<error>)؛ يُستخدم ربط الأوراق الافتراضي حتى يتم إصلاحه."
+    upgrade_header: "تمت الترقية من <plugin> 1.x: نُقلت ملفاتك القديمة إلى <backup> وأُنشئت ملفات جديدة."
+    upgrade_from_1_0: "ملفات <plugin> لديك من الإصدار 1.0.x: نُقلت إلى <backup> وأُنشئت ملفات جديدة. لا يمكن نقل إعدادات 1.0.x، لذا أعد تطبيق تغييراتك من النسخة الاحتياطية."
+    upgrade_kept: "- تم الإبقاء على إعدادك: <old> -> <new>: <value>"
+    upgrade_dropped: "- لم يُنقل (لم يعد هذا الإعداد موجودًا): <key> = <value>"
+    upgrade_new_entries: "- إدخالات افتراضية جديدة غير موجودة في قائمتك <list>: <entries>"
+    upgrade_replaced_file: "- تم استبدال ملفك المعدَّل <file>؛ نسختك موجودة في النسخة الاحتياطية."
+    upgrade_dropped_invalid: "- لم يُنقل (القيمة لا تناسب الإعداد الجديد): <key> = <value>"
+    upgrade_removed: "- تم الإبقاء على حذفك: <key>"
+    upgrade_backup_only: "- لا يوجد مقابل لـ <file> في الإصدار الجديد ويبقى في النسخة الاحتياطية فقط."
 warn:
-  unsupported-server-version: '<prefix> <yellow>تحذير: يدعم Timberella رسمياً خوادم <gold><required_server></gold> التي تعمل على
-    ماينكرافت <gold><supported_versions></gold>. يبلغ خادمك <gold><server_name></gold> <gold><mc_version></gold>. المتابعة على
-    مسؤوليتك الخاصة.</yellow>'
+    unsupported_server_version:
+        "<yellow>تحذير: يدعم Timberella رسمياً خوادم <gold><required_server></gold> التي تعمل على
+        ماينكرافت <gold><supported_versions></gold>. يبلغ خادمك <gold><server_name></gold> <gold><mc_version></gold>. المتابعة على
+        مسؤوليتك الخاصة.</yellow>"

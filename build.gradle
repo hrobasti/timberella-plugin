@@ -1,11 +1,12 @@
 plugins {
     id 'java'
-    id 'com.gradleup.shadow' version '9.5.1'
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.spotless)
 }
 
 import org.gradle.jvm.tasks.Jar
 
-group = 'com.github.hrobasti.timberella'
+group = 'net.kroet.timberella'
 
 def versionProps = new Properties()
 def versionFile = file('version.properties')
@@ -14,10 +15,9 @@ if (versionFile.exists()) {
 }
 def resolvedVersion = versionProps.getProperty('version')
 if (resolvedVersion == null || resolvedVersion.trim().isEmpty()) {
-    resolvedVersion = project.findProperty('version') ?: '1.0-SNAPSHOT'
+    resolvedVersion = providers.gradleProperty('version').getOrElse('1.0-SNAPSHOT')
 }
 version = resolvedVersion
-def paperApiVersion = (project.findProperty('paperApiVersion') ?: '26.3.build.30-alpha').toString()
 
 java {
     toolchain {
@@ -27,21 +27,79 @@ java {
 }
 
 repositories {
-    mavenLocal()
+    // No mavenLocal(): turtle-lib is resolved below (project dependency or GitHub Releases),
+    // and resolving other coordinates from the local Maven cache first would let a stale or
+    // tampered local artifact silently win over Maven Central, and make builds machine-dependent.
     mavenCentral()
     maven {
         name = 'papermc-repo'
         url = uri('https://repo.papermc.io/repository/maven-public/')
     }
+    // Custom-block plugin APIs, compile-only; each adapter runs only when its plugin is installed.
+    maven {
+        name = 'momirealms'
+        url = uri('https://repo.momirealms.net/releases/')
+        content { includeGroup 'net.momirealms' }
+    }
+    maven {
+        name = 'phoenixdevt'
+        url = uri('https://nexus.phoenixdevt.fr/repository/maven-public/')
+        content { includeGroup 'net.Indyuce'; includeModule 'io.lumine', 'MythicLib-dist' }
+    }
+    maven {
+        name = 'lumine'
+        url = uri('https://mvn.lumine.io/repository/maven-public/')
+        content { includeModule 'io.lumine', 'MythicCrucible-Dist'; includeModule 'io.lumine', 'Mythic-Dist' }
+    }
+    // turtle-lib comes only from its GitHub Release assets, and nothing else is read from there.
+    // Tag name and release-asset filename must match libs.versions.toml exactly
+    // (turtle-lib-paper-<version>.jar), or resolution fails with a 404.
+    exclusiveContent {
+        forRepository {
+            ivy {
+                url = uri('https://github.com/hrobasti/turtle-lib/releases/download')
+                patternLayout {
+                    artifact '[revision]/[artifact]-[revision].[ext]'
+                }
+                metadataSources { artifact() }
+            }
+        }
+        filter { includeGroup 'turtle-lib' }
+    }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}")
-    implementation(project(':plugins:turtle-lib'))
-    implementation('net.kyori:adventure-text-minimessage:4.17.0')
-    implementation('com.google.code.gson:gson:2.10.1')
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.2')
-    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.10.2')
+    // Also supplies Adventure/MiniMessage and Gson at the server's own versions; Paper
+    // provides them at runtime, so they are neither declared separately nor shaded.
+    compileOnly(libs.paper.api)
+    // Read like settings.gradle does, so both agree on any value.
+    if (Boolean.parseBoolean(providers.gradleProperty('useLocalTurtleLib').getOrElse('false'))) {
+        implementation(project(':plugins:turtle-lib'))
+    } else {
+        implementation(libs.turtle.lib)
+    }
+    // Real dependency (not compileOnly): Paper doesn't provide bStats, so it's
+    // shaded into the jar and relocated below into our own package per bStats'
+    // license terms.
+    implementation(libs.bstats.bukkit)
+    // Custom-block plugin APIs for the guard that keeps their blocks out of fellings;
+    // MythicLib/MythicMobs only supply the base classes MMOItems/Crucible extend.
+    compileOnly(libs.itemsadder.api) { transitive = false }
+    compileOnly(libs.craftengine.bukkit) { transitive = false }
+    compileOnly(libs.mmoitems.api) { transitive = false }
+    compileOnly(libs.mythiclib.dist) { transitive = false }
+    compileOnly(libs.mythiccrucible.dist) { transitive = false }
+    compileOnly(libs.mythic.dist) { transitive = false }
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    // YamlConfiguration/ConfigurationSection are fully self-contained (no running server
+    // needed), so SpeciesConfigConsistencyTest can load the bundled config.yml directly.
+    testImplementation(libs.paper.api)
+}
+
+test {
+    useJUnitPlatform()
 }
 
 def pluginVersionString = project.version.toString()
@@ -52,28 +110,97 @@ tasks.named('processResources') {
     }
 }
 
+tasks.register('cleanDist', Delete) {
+    delete layout.projectDirectory.dir('dist')
+}
+
 tasks.named('shadowJar') {
+    dependsOn tasks.named('cleanDist')
     archiveBaseName.set('timberella-paper')
     archiveClassifier.set('')
     destinationDirectory.set(layout.projectDirectory.dir('dist'))
+    relocate 'org.bstats', 'net.kroet.timberella.bstats'
+    // Test-only TurtleLib helper, never used at runtime.
+    exclude 'net/kroet/turtlelib/helper/LocaleFileChecker*'
+    // TurtleLib's license ships as licenses/turtle-lib-MIT.txt instead.
+    exclude 'META-INF/LICENSE'
+    // Own license at the jar root, next to licenses/.
+    from(layout.projectDirectory.file('LICENSE'))
 }
 
 tasks.named('sourcesJar', Jar) {
+    dependsOn tasks.named('cleanDist')
     archiveBaseName.set('timberella-paper')
     archiveClassifier.set('sources')
     destinationDirectory.set(layout.projectDirectory.dir('dist/sources'))
+    // Own license at the jar root, as in the shadow jar.
+    from(layout.projectDirectory.file('LICENSE'))
 }
 
 tasks.named('jar') {
     enabled = false // only shadowed timberella-paper artifact
 }
 
+// Local SHA-256 checksums next to each release jar, verifiable with `sha256sum -c`.
+// Every jar task triggers it, so a partial build never leaves a jar without one.
+def distDir = layout.projectDirectory.dir('dist')
+tasks.register('checksumDist') {
+    mustRunAfter tasks.named('shadowJar'), tasks.named('sourcesJar')
+    def jars = fileTree(distDir) { include '**/*.jar' }
+    doLast {
+        jars.files.each { jarFile ->
+            def digest = java.security.MessageDigest.getInstance('SHA-256').digest(jarFile.bytes)
+            def sha256 = digest.collect { String.format('%02x', it & 0xff) }.join()
+            new File(jarFile.parentFile, "${jarFile.name}.sha256").text = "${sha256}  ${jarFile.name}\n"
+        }
+    }
+}
+
+tasks.named('shadowJar') {
+    finalizedBy tasks.named('checksumDist')
+}
+
+tasks.named('sourcesJar') {
+    finalizedBy tasks.named('checksumDist')
+}
+
 tasks.named('build') {
     dependsOn tasks.named('shadowJar')
     dependsOn tasks.named('sourcesJar')
+    dependsOn tasks.named('checksumDist')
 }
 
 tasks.named('clean') {
     delete layout.projectDirectory.dir('dist')
+}
+
+// Enforced Java formatting (Eclipse JDT formatter via Spotless, not Google's or
+// Palantir's). spotlessCheck is wired into check, so `./gradlew build` fails on
+// unformatted code; run `./gradlew spotlessApply` to fix it locally.
+spotless {
+    // Preserve each file's existing line-ending style (repo mixes LF and CRLF per
+    // .gitattributes); only whitespace/newline hygiene is enforced below, not EOL style.
+    lineEndings = com.diffplug.spotless.LineEnding.PRESERVE
+    java {
+        target 'src/**/*.java'
+        // Import steps run first so the Eclipse formatter has the last word on layout.
+        removeUnusedImports()
+        importOrder()
+        forbidWildcardImports()
+        eclipse().configFile('config/spotless-eclipse-formatter.properties')
+        toggleOffOn()
+        trimTrailingWhitespace()
+        endWithNewline()
+        leadingTabsToSpaces(4)
+    }
+    format 'resources', {
+        target 'src/**/*.yml', 'src/**/*.yaml', 'src/**/*.properties', 'src/**/*.txt'
+        // Byte-exact old release defaults (upgrade baseline and test input), and
+        // license texts copied verbatim from their upstream sources.
+        targetExclude 'src/main/resources/legacy/**', 'src/test/resources/release-*/**',
+                'src/main/resources/licenses/**'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
