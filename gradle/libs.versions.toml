@@ -1,5 +1,5 @@
 [versions]
-paper = "26.3.build.49-alpha"
+paper = "26.3-rc-3.build.1-alpha"
 bstats = "3.2.1"
 # Since JUnit 6, Jupiter and Platform share one version.
 junit = "6.1.3"
