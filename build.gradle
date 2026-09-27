@@ -91,6 +91,7 @@ dependencies {
     compileOnly(libs.mythiccrucible.dist) { transitive = false }
     compileOnly(libs.mythic.dist) { transitive = false }
     testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
     // YamlConfiguration/ConfigurationSection are fully self-contained (no running server
