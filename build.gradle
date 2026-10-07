@@ -179,9 +179,8 @@ tasks.named('clean') {
 // Palantir's). spotlessCheck is wired into check, so `./gradlew build` fails on
 // unformatted code; run `./gradlew spotlessApply` to fix it locally.
 spotless {
-    // Preserve each file's existing line-ending style (repo mixes LF and CRLF per
-    // .gitattributes); only whitespace/newline hygiene is enforced below, not EOL style.
-    lineEndings = com.diffplug.spotless.LineEnding.PRESERVE
+    // All files use LF (.gitattributes), enforced here in check and apply.
+    lineEndings = com.diffplug.spotless.LineEnding.UNIX
     java {
         target 'src/**/*.java'
         // Import steps run first so the Eclipse formatter has the last word on layout.
