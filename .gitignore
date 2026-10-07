@@ -26,3 +26,14 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Tooling installs, secrets and machine-local config
+node_modules/
+/DEV-TOOLS/vendor/
+.env
+.env.*
+!.env.example
+*.local.json
+.claude/settings.local.json
+/.tmp/
+desktop.ini

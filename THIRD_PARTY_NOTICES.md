@@ -1,4 +1,4 @@
-# Third-Party Licenses
+# Third-Party Notices
 
 | Dependency                              | Version (current)                    | License            | Upstream                                    | Notes                                                                                                                                                                           |
 | --------------------------------------- | ------------------------------------ | ------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -11,8 +11,8 @@
 
 The two libraries bundled in the jar ship their license texts under `licenses/`, each a verbatim copy of the upstream `LICENSE`:
 
-- `licenses/turtle-lib-MIT.txt`: TurtleLib (MIT, Copyright (c) 2025-2026 kroet.net)
-- `licenses/bstats-MIT.txt`: bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann)
+- `licenses/turtle_lib_MIT.txt`: TurtleLib (MIT, Copyright (c) 2025-2026 kroet.net)
+- `licenses/bstats_MIT.txt`: bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann)
 
 Adventure/MiniMessage and Gson come in through `paper-api` at compile time only and are not bundled in the jar, so no license text ships for them.
 

@@ -38,6 +38,6 @@ Swap the jar and start the server: your old files move to `plugins/Timberella/ba
 
 - Timberella is released under the MIT License (see `LICENSE`), Copyright (c) 2025-2026 [kroet.net](https://kroet.net). Releases before 2.0.0 were published under the Apache License 2.0; kroet.net additionally makes them available under the MIT License.
 - The MIT License covers the code, not the name: forks should use a different plugin name and must not suggest they are the official Timberella.
-- Includes TurtleLib by [kroet.net](https://kroet.net) (MIT); its license text ships at `licenses/turtle-lib-MIT.txt` inside the jar.
-- Includes bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann); its license text ships at `licenses/bstats-MIT.txt`. MiniMessage and Gson are provided by Paper at runtime. All bundled and runtime-provided libraries are listed in `THIRD_PARTY_LICENSES.md`.
+- Includes TurtleLib by [kroet.net](https://kroet.net) (MIT); its license text ships at `licenses/turtle_lib_MIT.txt` inside the jar.
+- Includes bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann); its license text ships at `licenses/bstats_MIT.txt`. MiniMessage and Gson are provided by Paper at runtime. All bundled and runtime-provided libraries are listed in `THIRD_PARTY_NOTICES.md`.
 - Parts of this plugin and its documentation were produced with AI assistance and reviewed by the maintainer before release.

@@ -1,0 +1,42 @@
+#!/bin/sh
+# Fast pre-commit check of the staged files: line endings and formatting.
+# Builds and tests run in DEV-TOOLS/tools/Invoke-Check.ps1.
+# Activate once per clone: git config core.hooksPath .githooks
+
+ROOT=$(git rev-parse --show-toplevel) || exit 1
+# Workspace root (holds DEV-TOOLS/ and .prettierrc.json); this repo lives in its plugins/ folder.
+WORKSPACE=$(cd "$ROOT/../.." && pwd) || exit 1
+cd "$ROOT" || exit 1
+fail=0
+
+staged() { git diff --cached --name-only -z --diff-filter=ACMR -- "$@"; }
+
+# 1. Line endings: LF everywhere, CRLF only in *.bat; text must not be stored as binary.
+bad=$(staged | xargs -0 -r git ls-files --eol -- | awk -F'\t' '
+    { split($1, f, " "); i = f[1] }
+    (i == "i/crlf" || i == "i/mixed") && $2 !~ /\.bat$/ { print "CRLF:   " $2 }
+    i == "i/-text" && $2 ~ /\.(php|js|cjs|mjs|ts|css|html|md|json|ya?ml|cs|java|ps1|xml|txt)$/ { print "binary: " $2 }')
+if [ -n "$bad" ]; then
+    echo "pre-commit: wrong line endings or control characters:"
+    echo "$bad"
+    fail=1
+fi
+
+# 2. Prettier (Markdown, JSON, YAML and whatever .prettierignore leaves to it).
+prettier="$WORKSPACE/DEV-TOOLS/node_modules/.bin/prettier"
+if [ -x "$prettier" ]; then
+    staged | xargs -0 -r "$prettier" --check --ignore-unknown --no-error-on-unmatched-pattern \
+        --ignore-path "$WORKSPACE/.prettierignore" || fail=1
+else
+    echo "pre-commit: Prettier missing, run npm install in DEV-TOOLS" && fail=1
+fi
+
+# 3. Java: Spotless (Eclipse formatter) of this repo's own Gradle build.
+if [ -n "$(git diff --cached --name-only --diff-filter=ACMR -- '*.java')" ]; then
+    ./gradlew -q spotlessCheck || fail=1
+fi
+
+if [ "$fail" -ne 0 ]; then
+    echo "pre-commit: fix with 'npm run format' in DEV-TOOLS, stage again, commit again."
+fi
+exit $fail

@@ -1,4 +1,30 @@
-* text=auto
-gradlew text eol=lf
+# LF everywhere, regardless of a contributor's core.autocrlf; only batch files need CRLF.
+* text=auto eol=lf
 *.bat text eol=crlf
+
+# Binary files: never touch line endings, never diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
 *.jar binary
+*.dll binary
+*.exe binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.mp4 binary
+*.m4v binary
+*.mkv binary
+*.sqlite binary
+*.db binary
