@@ -12,9 +12,9 @@ command:
   reloaded: <prefix> <white>Konfiguration neu geladen.</white>
   reload_failed: "<prefix> <red>Nicht neu geladen: config.yml ist kein gültiges YAML (<error>). Die bisherigen Einstellungen bleiben aktiv.</red>"
   no_permission: <prefix> <red>Dafür hast du keine Berechtigung.</red>
-  player_only: <prefix> <red>Diesen Befehl können nur Spieler verwenden.</red>
+  player_only: <prefix> <red>Diesen Befehl können nur Spieler:innen verwenden.</red>
   version: <prefix> <white>Timberella <gold><current_ver></gold></white>
-  player_not_found: <prefix> <red>Spieler nicht gefunden.</red>
+  player_not_found: <prefix> <red>Spieler:in nicht gefunden.</red>
 toggle:
   self_enabled: <prefix> <white>Timberella aktiviert.</white>
   self_disabled: <prefix> <white>Timberella deaktiviert.</white>
