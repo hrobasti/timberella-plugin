@@ -12,10 +12,17 @@ fail=0
 staged() { git diff --cached --name-only -z --diff-filter=ACMR -- "$@"; }
 
 # 1. Line endings: LF everywhere, CRLF only in *.bat; text must not be stored as binary.
-bad=$(staged | xargs -0 -r git ls-files --eol -- | awk -F'\t' '
+bad=$(staged | xargs -0 -r git -c core.quotePath=false ls-files --eol -- | awk -F'\t' '
     { split($1, f, " "); i = f[1] }
     (i == "i/crlf" || i == "i/mixed") && $2 !~ /\.bat$/ { print "CRLF:   " $2 }
     i == "i/-text" && $2 ~ /\.(php|js|cjs|mjs|ts|css|html|md|json|ya?ml|cs|java|ps1|xml|txt)$/ { print "binary: " $2 }')
+# Control characters in staged text, e.g. "\a" or "\b" left over from a lost backslash; form feeds (page breaks in license texts) are fine.
+ctrl=$(staged | xargs -0 -r git -c core.quotePath=false ls-files --eol -- | awk -F'\t' '{ split($1, f, " ") } f[1] ~ /^i\/(lf|crlf|mixed)$/ { print $2 }' |
+    while IFS= read -r file; do
+        n=$(git show ":$file" | LC_ALL=C tr -d '\011\012\014\015\040-\377' | wc -c)
+        [ $n -gt 0 ] && echo "control: $file"
+    done)
+bad=$(printf '%s\n%s' "$bad" "$ctrl" | sed '/^$/d')
 if [ -n "$bad" ]; then
     echo "pre-commit: wrong line endings or control characters:"
     echo "$bad"
