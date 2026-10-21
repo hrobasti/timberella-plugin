@@ -1,23 +1,46 @@
-# Third-Party Notices
+# Third-party notices
 
-| Dependency                              | Version (current)                    | License            | Upstream                                    | Notes                                                                                                                                                                           |
-| --------------------------------------- | ------------------------------------ | ------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| turtle-lib:turtle-lib-paper (TurtleLib) | 2.0.0                                | MIT License        | <https://github.com/hrobasti/turtle-lib>    | Library by the same author (kroet.net). Shaded into this jar; the test-only `LocaleFileChecker` is left out. Copyright (c) 2025-2026 kroet.net.                                 |
-| org.bstats:bstats-bukkit                | 3.2.1                                | MIT License        | <https://github.com/Bastian/bStats-Metrics> | Telemetry. Shaded and relocated into `net.kroet.timberella.bstats`, as bStats requires its classes to live in the plugin's own package. Copyright (c) 2021 Bastian Oppermann.   |
-| net.kyori:adventure-text-minimessage    | provided by Paper (currently 5.2.0)  | MIT License        | <https://github.com/KyoriPowered/adventure> | MiniMessage formatting for all messages. Comes in through `paper-api` (`compileOnly`), which fixes its version; Paper provides it at runtime, so it is not bundled in this jar. |
-| com.google.code.gson:gson               | provided by Paper (currently 2.14.0) | Apache License 2.0 | <https://github.com/google/gson>            | JSON parsing for the update checker. Comes in through `paper-api` (`compileOnly`), which fixes its version; Paper provides it at runtime, so it is not bundled in this jar.     |
+Timberella by kroet.net contains the following third-party software. Each component is used under the license named below. The full license texts follow the table, one section per license, headed by the name in the License column. Components under the same license share its text.
 
-## Bundled license texts
+| Component      | Includes                                                                                                                                            | Version | License | Copyright              | Source                                    |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- | ---------------------- | ----------------------------------------- |
+| TurtleLib      | `turtle-lib:turtle-lib-paper` without the test-only `LocaleFileChecker`; license text `licenses/turtle_lib_MIT.txt` in the jar                      | 2.0.0   | MIT     | 2025-2026 kroet.net    | https://github.com/hrobasti/turtle-lib    |
+| bStats Metrics | `org.bstats:bstats-bukkit`, `org.bstats:bstats-base`, relocated to `net.kroet.timberella.bstats`; license text `licenses/bstats_MIT.txt` in the jar | 3.2.1   | MIT     | 2021 Bastian Oppermann | https://github.com/Bastian/bStats-Metrics |
 
-The two libraries bundled in the jar ship their license texts under `licenses/`, each a verbatim copy of the upstream `LICENSE`:
+## MIT
 
-- `licenses/turtle_lib_MIT.txt`: TurtleLib (MIT, Copyright (c) 2025-2026 kroet.net)
-- `licenses/bstats_MIT.txt`: bStats Metrics (MIT, Copyright (c) 2021 Bastian Oppermann)
+Applies to the components marked MIT above, each with its own copyright holder.
 
-Adventure/MiniMessage and Gson come in through `paper-api` at compile time only and are not bundled in the jar, so no license text ships for them.
+```text
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-## TurtleLib
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-TurtleLib is a separate library by the same author (kroet.net), released under the MIT License. Timberella shades its compiled classes into this jar and leaves out the test-only `LocaleFileChecker`, which the MIT License allows. The canonical license text is <https://github.com/hrobasti/turtle-lib/blob/default/LICENSE>.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
-Both bundled libraries are MIT-licensed, which requires their copyright and permission notices to stay with every copy: please keep `licenses/` and this file when you redistribute Timberella or a modified version of it.
+## Trademarks
+
+- Minecraft and its names, blocks, textures and characters belong to Mojang Studios and Microsoft. Timberella is not an official Minecraft product and is not approved by or associated with Mojang or Microsoft.
+- The animation in `img/` (README only, not in the jar) shows Minecraft gameplay; Minecraft's textures in it are not covered by Timberella's MIT license.
+- Paper, Hangar, Modrinth, bStats, ItemsAdder, CraftEngine, MMOItems and MythicCrucible are named only to identify the platforms, services and plugins Timberella works with; the names belong to their owners.
+
+## Not shipped
+
+Never part of the plugin jar; versions in `gradle/libs.versions.toml`:
+
+- Provided at runtime by Paper: the Paper API (Paper's own license terms) with Adventure and MiniMessage (MIT) and Gson (Apache-2.0).
+- APIs of other plugins, used only to compile Timberella's custom-block guard, each under its publisher's terms: ItemsAdder API (MIT), CraftEngine (GPL-3.0), MMOItems API, MythicLib, MythicCrucible, MythicMobs.
+- Used only for tests: JUnit 6 (Jupiter and Platform Launcher; EPL-2.0).
