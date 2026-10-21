@@ -7,7 +7,7 @@ Drop-in quality-of-life plugin for Paper 26.3.x servers: instant tree felling, t
 ## Why server owners love it
 
 - ⚡ One axe swing can clear an entire tree while axe wear, block limits and timing stay configurable.
-- 🌱 Optional replant + soil checks keep forests alive, underwater too with [UnderwaterTrees](https://github.com/hrobasti/underwatertrees-plugin).
+- 🌱 Optional replant + soil checks keep forests alive, underwater too with [Underwater Trees](https://github.com/hrobasti/underwatertrees-plugin).
 - 🛡️ Species-aware limits (per-tree caps, radii, durability rules) stop griefing before it starts.
 - 🏠 Builds stay safe: only logs of the hit tree's species with naturally grown foliage are felled, log walls and huts touching a tree stay standing, giant mushrooms only in their natural shape, player-placed leaves are never cleared away, and custom blocks from ItemsAdder, MMOItems, MythicCrucible and CraftEngine are left alone.
 - 🏰 Respects land protection: every extra log and leaf goes through a regular block-break check and every replanted sapling through a block-place check, so WorldGuard, GriefPrevention & co. can deny them.
