@@ -44,3 +44,4 @@ Never part of the plugin jar; versions in `gradle/libs.versions.toml`:
 - Provided at runtime by Paper: the Paper API (Paper's own license terms) with Adventure and MiniMessage (MIT) and Gson (Apache-2.0).
 - APIs of other plugins, used only to compile Timberella's custom-block guard, each under its publisher's terms: ItemsAdder API (MIT), CraftEngine (GPL-3.0), MMOItems API, MythicLib, MythicCrucible, MythicMobs.
 - Used only for tests: JUnit 6 (Jupiter and Platform Launcher; EPL-2.0).
+- Used only for the build's null check: the JSpecify annotations (Apache-2.0, compile-only) and the Eclipse compiler ECJ (EPL-2.0).

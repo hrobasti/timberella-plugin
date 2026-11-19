@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -47,6 +48,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.Nullable;
 
 public class TimberellaPlugin extends JavaPlugin {
     private static final int BSTATS_PLUGIN_ID = 28062;
@@ -162,23 +164,22 @@ public class TimberellaPlugin extends JavaPlugin {
             Map.entry("warn.unsupported-server-version", "warn.unsupported_server_version"));
     private record MergeResult(String fileName, List<String> addedKeys) {
     }
-    private MessageService messages;
-    private volatile UpdateChecker updateChecker;
-    private TreeChopListener treeChopListener;
-    private Metrics metrics;
-    private ConfigWatcher configWatcher;
-    private ServerMatcher serverMatcher;
-    private BukkitTask periodicUpdateTask;
-    private volatile UpdateChecker.UpdateInfo pendingUpdateInfo;
+    private @Nullable MessageService messages;
+    private volatile @Nullable UpdateChecker updateChecker;
+    private @Nullable TreeChopListener treeChopListener;
+    private @Nullable Metrics metrics;
+    private @Nullable ConfigWatcher configWatcher;
+    private @Nullable BukkitTask periodicUpdateTask;
+    private volatile UpdateChecker.@Nullable UpdateInfo pendingUpdateInfo;
     private volatile boolean announceNextUpdateSummary = true;
     // Providers whose failure the console has already shown since the last start,
     // reload or successful fetch; main thread only.
     private final Set<UpdateChecker.Provider> reportedProviderFailures = EnumSet.noneOf(UpdateChecker.Provider.class);
     private final Set<UUID> disabledPlayers = Collections.synchronizedSet(new HashSet<>());
-    private FileChangeTracker fileChangeTracker;
+    private @Nullable FileChangeTracker fileChangeTracker;
     // leaf_mappings.yml on its own, compared only while it is valid YAML.
-    private FileChangeTracker leafMappingsTracker;
-    private FileConfiguration loadedConfig;
+    private @Nullable FileChangeTracker leafMappingsTracker;
+    private @Nullable FileConfiguration loadedConfig;
     // Set while config.yml wasn't valid YAML at startup: the plugin runs on the
     // bundled defaults, without bStats and update checks, until a reload succeeds.
     private boolean runningOnDefaults;
@@ -199,18 +200,20 @@ public class TimberellaPlugin extends JavaPlugin {
         if (getConfig().getBoolean("startup_banner_enabled", true)) {
             logStartupBanner();
         }
-        this.messages = new MessageService(this, "<light_purple>[<prefix_label>]</light_purple>", "Timberella");
-        this.messages.setLegacyKeyMigrations(LEGACY_LANG_KEY_MIGRATIONS);
-        this.messages.setLegacyDefaultsRoot("legacy/1.x/");
+        MessageService service = new MessageService(this, "<light_purple>[<prefix_label>]</light_purple>",
+                "Timberella");
+        this.messages = service;
+        service.setLegacyKeyMigrations(LEGACY_LANG_KEY_MIGRATIONS);
+        service.setLegacyDefaultsRoot("legacy/1.x/");
         String lang = getConfig().getString("language", "en_US");
-        this.messages.load(lang);
+        service.load(lang);
         applyChatPrefixLabel();
         setupServerMatcher();
         if (runningOnDefaults) {
-            messages.log(getLogger(), Level.WARNING, "log.config_invalid_startup", Map.of("error", configError));
+            service.log(getLogger(), Level.WARNING, "log.config_invalid_startup", Map.of("error", configError));
         }
         syncAllYamlDefaults();
-        getLogger().info(messages.plain("plugin.language_set", Map.of("code", messages.getLanguage())));
+        getLogger().info(service.plain("plugin.language_set", Map.of("code", service.getLanguage())));
         logUpgradeReport(upgrade);
 
         registerCommand(COMMAND_LABEL, "Timberella commands", new TimberellaCommand(this, COMMAND_LABEL));
@@ -219,17 +222,19 @@ public class TimberellaPlugin extends JavaPlugin {
 
         // Register events (keep reference for refresh on reload)
         PluginManager pm = Bukkit.getPluginManager();
-        this.treeChopListener = new TreeChopListener(this);
-        hookCustomBlockPlugins();
-        pm.registerEvents(this.treeChopListener, this);
+        TreeChopListener listener = new TreeChopListener(this);
+        this.treeChopListener = listener;
+        hookCustomBlockPlugins(listener);
+        pm.registerEvents(listener, this);
         pm.registerEvents(new UpdateNotifyListener(this), this);
 
         // Update checker (fail-safe)
         announceNextUpdateSummary = true;
         configureUpdateChecker();
 
-        if (configWatcher != null) {
-            configWatcher.start();
+        ConfigWatcher watcher = configWatcher;
+        if (watcher != null) {
+            watcher.start();
         }
 
         loadToggles();
@@ -237,19 +242,21 @@ public class TimberellaPlugin extends JavaPlugin {
         setupMetrics();
 
         logModuleStates();
-        fileChangeTracker = FileChangeTracker.builder(getDataFolder(), getLogger())
+        FileChangeTracker files = FileChangeTracker.builder(getDataFolder(), getLogger())
                 .yamlFile("config.yml")
                 .folder("lang", ".yml")
                 .build();
-        leafMappingsTracker = FileChangeTracker.builder(getDataFolder(), getLogger())
+        fileChangeTracker = files;
+        FileChangeTracker leafMappings = FileChangeTracker.builder(getDataFolder(), getLogger())
                 .yamlFile("leaf_mappings.yml")
                 .build();
+        leafMappingsTracker = leafMappings;
         // On defaults, the first snapshot waits for the reload that fixes config.yml,
         // so that reload doesn't list every setting as changed.
         if (!runningOnDefaults) {
-            compareTrackedFiles();
+            compareTrackedFiles(files, leafMappings);
         }
-        getLogger().info(messages.plain("plugin.enabled"));
+        getLogger().info(service.plain("plugin.enabled"));
     }
 
     private File configFile() {
@@ -258,10 +265,11 @@ public class TimberellaPlugin extends JavaPlugin {
 
     @Override
     public FileConfiguration getConfig() {
-        if (loadedConfig == null) {
-            reloadConfig();
+        FileConfiguration config = loadedConfig;
+        if (config == null) {
+            config = loadConfigFile();
         }
-        return loadedConfig;
+        return config;
     }
 
     // Loads like JavaPlugin, but without Bukkit's SEVERE stack trace for a
@@ -269,7 +277,13 @@ public class TimberellaPlugin extends JavaPlugin {
     // its own warning.
     @Override
     public void reloadConfig() {
-        loadedConfig = loadConfig(configFile(), () -> getResource("config.yml"), getLogger());
+        loadConfigFile();
+    }
+
+    private FileConfiguration loadConfigFile() {
+        FileConfiguration config = loadConfig(configFile(), () -> getResource("config.yml"), getLogger());
+        loadedConfig = config;
+        return config;
     }
 
     /**
@@ -300,11 +314,11 @@ public class TimberellaPlugin extends JavaPlugin {
         return config;
     }
 
-    private void hookCustomBlockPlugins() {
+    private void hookCustomBlockPlugins(TreeChopListener listener) {
         CustomBlockGuards guards = CustomBlockGuards.detect(this);
-        treeChopListener.setCustomBlockGuard(guards);
+        listener.setCustomBlockGuard(guards);
         if (!guards.hookedPlugins().isEmpty()) {
-            messages.log(getLogger(), Level.INFO, "log.custom_blocks_hooked",
+            messages().log(getLogger(), Level.INFO, "log.custom_blocks_hooked",
                     Map.of("plugins", String.join(", ", guards.hookedPlugins())));
         }
     }
@@ -335,7 +349,7 @@ public class TimberellaPlugin extends JavaPlugin {
     // keep the admin's changed values; runs before anything reads or creates them.
     // Package-private for LegacyConfigMigrationTest.
     static LegacyUpgrade upgradeLegacyDataFolder(File dataFolder, Function<String, InputStream> resources,
-            Logger logger) {
+            @Nullable Logger logger) {
         LegacyDataUpgrade.Builder upgrade1x = LegacyDataUpgrade.builder(dataFolder, resources, logger)
                 .markerKeys(LEGACY_1X_MARKER_KEYS.toArray(String[]::new))
                 .backupDirName("backup-1.x")
@@ -372,7 +386,7 @@ public class TimberellaPlugin extends JavaPlugin {
             return;
         }
         logUpgradeLine(upgrade.from10() ? "log.upgrade_from_1_0" : "log.upgrade_header", "plugin", getName(),
-                "backup", displayPath(report.backupDir()));
+                "backup", displayPath(Objects.requireNonNull(report.backupDir(), "performed upgrade has a backup")));
         for (LegacyDataUpgrade.CarriedValue value : report.carried()) {
             logUpgradeLine("log.upgrade_kept", "old", value.oldPath(), "new", value.newPath(), "value", value.value());
         }
@@ -404,7 +418,7 @@ public class TimberellaPlugin extends JavaPlugin {
         for (int i = 0; i + 1 < placeholderPairs.length; i += 2) {
             placeholders.put(placeholderPairs[i], String.valueOf(placeholderPairs[i + 1]));
         }
-        messages.log(getLogger(), Level.INFO, key, placeholders);
+        messages().log(getLogger(), Level.INFO, key, placeholders);
     }
 
     // Relative to the server folder when possible, e.g.
@@ -422,26 +436,30 @@ public class TimberellaPlugin extends JavaPlugin {
         cancelScheduledUpdateChecks();
         // Stops TurtleLib's HTTP client and threads, so none outlive a /reload.
         UpdateChecker.shutdown();
-        if (configWatcher != null) {
-            configWatcher.stop();
+        ConfigWatcher watcher = configWatcher;
+        if (watcher != null) {
+            watcher.stop();
         }
-        if (treeChopListener != null) {
+        TreeChopListener listener = treeChopListener;
+        if (listener != null) {
             // In-progress fellings won't get to run their own cleanup tick after this.
-            treeChopListener.clearActiveFellingTagsOnShutdown();
+            listener.clearActiveFellingTagsOnShutdown();
         }
         // Pending async saves are dropped on disable, so save synchronously.
         if (togglesChanged) {
             writeToggles(snapshotToggles());
         }
-        if (messages == null) {
+        MessageService service = messages;
+        if (service == null) {
             getLogger().info("Timberella plugin disabled.");
         } else {
-            getLogger().info(messages.plain("plugin.disabled"));
+            getLogger().info(service.plain("plugin.disabled"));
         }
     }
 
+    // Set in onEnable before any listener, command or reload can call this.
     public MessageService messages() {
-        return messages;
+        return Objects.requireNonNull(messages, "MessageService is set in onEnable");
     }
 
     /**
@@ -450,19 +468,20 @@ public class TimberellaPlugin extends JavaPlugin {
      *
      * @return {@code null} once reloaded, otherwise the YAML error in config.yml
      */
-    public String reloadAndMergeConfig() {
+    public @Nullable String reloadAndMergeConfig() {
         return reloadAndMergeConfig(false);
     }
 
     // external: started by the config watcher, which announces the reload in the
     // console before the list of changes.
-    private String reloadAndMergeConfig(boolean external) {
+    private @Nullable String reloadAndMergeConfig(boolean external) {
         String configError = ConfigWatcher.describeYamlError(configFile());
         if (configError != null) {
-            messages.log(getLogger(), Level.WARNING, "log.config_invalid_reload", Map.of("error", configError));
-            if (configWatcher != null) {
+            messages().log(getLogger(), Level.WARNING, "log.config_invalid_reload", Map.of("error", configError));
+            ConfigWatcher watcher = configWatcher;
+            if (watcher != null) {
                 // Otherwise the watcher would report this same content once more.
-                configWatcher.refreshBaseline();
+                watcher.refreshBaseline();
             }
             return configError;
         }
@@ -472,30 +491,35 @@ public class TimberellaPlugin extends JavaPlugin {
         reloadConfig();
         // Reload language after potential changes
         String lang = getConfig().getString("language", "en_US");
-        messages.load(lang);
+        messages().load(lang);
         applyChatPrefixLabel();
         // Skipped here on purpose: the server version can't change at runtime, so
         // re-checking on every reload would only repeat the warning (or, with
         // ERROR_AND_DISABLE, disable the plugin mid-reload).
         syncAllYamlDefaults();
-        getLogger().info(messages.plain("plugin.language_set", Map.of("code", messages.getLanguage())));
+        getLogger().info(messages().plain("plugin.language_set", Map.of("code", messages().getLanguage())));
         // Refresh listener material sets
-        if (treeChopListener != null)
-            treeChopListener.refresh();
+        TreeChopListener listener = treeChopListener;
+        if (listener != null)
+            listener.refresh();
         setupMetrics();
         announceNextUpdateSummary = true;
         configureUpdateChecker();
         logModuleStates();
         if (external) {
-            messages.log(getLogger(), Level.INFO, "log.config_reloaded_external");
+            messages().log(getLogger(), Level.INFO, "log.config_reloaded_external");
         }
-        if (fileChangeTracker != null) {
-            logFileChangeSummary(compareTrackedFiles());
+        FileChangeTracker files = fileChangeTracker;
+        FileChangeTracker leafMappings = leafMappingsTracker;
+        // Both are set together in onEnable.
+        if (files != null && leafMappings != null) {
+            logFileChangeSummary(compareTrackedFiles(files, leafMappings));
         }
-        if (configWatcher != null) {
-            configWatcher.setEnabled(readConfigWatchEnabled());
-            configWatcher.setIntervalSeconds(resolveConfigWatchIntervalSeconds());
-            configWatcher.refreshBaseline();
+        ConfigWatcher watcher = configWatcher;
+        if (watcher != null) {
+            watcher.setEnabled(readConfigWatchEnabled());
+            watcher.setIntervalSeconds(resolveConfigWatchIntervalSeconds());
+            watcher.refreshBaseline();
         }
         return null;
     }
@@ -531,12 +555,13 @@ public class TimberellaPlugin extends JavaPlugin {
         if (ConfigWatcher.describeYamlError(new File(getDataFolder(), "leaf_mappings.yml")) == null) {
             logMergeReport(insertMissingDefaults("leaf_mappings.yml", LEAF_MAPPINGS_OPEN_SECTIONS));
         }
-        if (messages == null) {
+        MessageService service = messages;
+        if (service == null) {
             return;
         }
         // messages.load() already synced the active lang file; only report what it
         // added.
-        logMergeReport(new MergeResult("lang/" + messages.getLanguage() + ".yml", messages.getLastAddedKeys()));
+        logMergeReport(new MergeResult("lang/" + service.getLanguage() + ".yml", service.getLastAddedKeys()));
     }
 
     private void initializeConfigWatcher() {
@@ -556,7 +581,7 @@ public class TimberellaPlugin extends JavaPlugin {
                     }
                 })
                 // A deleted or emptied config.yml isn't reloaded; the settings in use stay.
-                .onSkipped(reason -> messages.log(getLogger(), Level.WARNING,
+                .onSkipped(reason -> messages().log(getLogger(), Level.WARNING,
                         reason == ConfigWatcher.SkipReason.MISSING
                                 ? "log.config_missing_external"
                                 : "log.config_empty_external"))
@@ -641,15 +666,13 @@ public class TimberellaPlugin extends JavaPlugin {
     }
 
     private void logMergeReport(MergeResult result) {
-        if (result == null)
-            return;
         if (result.addedKeys().isEmpty())
             return;
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("file", result.fileName());
         placeholders.put("count", Integer.toString(result.addedKeys().size()));
         placeholders.put("keys", String.join(", ", result.addedKeys()));
-        messages.log(getLogger(), Level.INFO, "log.defaults_updated", placeholders);
+        messages().log(getLogger(), Level.INFO, "log.defaults_updated", placeholders);
     }
 
     private void logModuleStates() {
@@ -661,14 +684,15 @@ public class TimberellaPlugin extends JavaPlugin {
             placeholders.put("timber", stateLabel(timber));
             placeholders.put("replant", stateLabel(replantEnabled));
             placeholders.put("leaves", stateLabel(leaves));
-            messages.log(getLogger(), Level.INFO, "log.modules_summary", placeholders);
+            messages().log(getLogger(), Level.INFO, "log.modules_summary", placeholders);
         }
-        if (getConfig().getBoolean("log_detail", false) && treeChopListener != null) {
-            treeChopListener.activeCategoryMaterials().forEach((category, names) -> logDetailList(
+        TreeChopListener listener = treeChopListener;
+        if (getConfig().getBoolean("log_detail", false) && listener != null) {
+            listener.activeCategoryMaterials().forEach((category, names) -> logDetailList(
                     "log.detail_category_header", Map.of("category", category), names));
-            logDetailList("log.detail_leaves_header", Map.of(), treeChopListener.activeLeafMappings());
-            logDetailList("log.detail_axes_header", Map.of(), treeChopListener.activeAxes());
-            logDetailList("log.detail_saplings_header", Map.of(), treeChopListener.activeSaplings());
+            logDetailList("log.detail_leaves_header", Map.of(), listener.activeLeafMappings());
+            logDetailList("log.detail_axes_header", Map.of(), listener.activeAxes());
+            logDetailList("log.detail_saplings_header", Map.of(), listener.activeSaplings());
         }
     }
 
@@ -676,7 +700,7 @@ public class TimberellaPlugin extends JavaPlugin {
         if (entries.isEmpty()) {
             return;
         }
-        messages.log(getLogger(), Level.INFO, headerKey, placeholders);
+        messages().log(getLogger(), Level.INFO, headerKey, placeholders);
         for (String entry : entries) {
             getLogger().info(" - " + entry);
         }
@@ -691,10 +715,11 @@ public class TimberellaPlugin extends JavaPlugin {
     }
 
     private String stateLabel(boolean flag) {
-        if (messages != null) {
+        MessageService service = messages;
+        if (service != null) {
             return flag
-                    ? messages.plain("log.modules_state_active")
-                    : messages.plain("log.modules_state_inactive");
+                    ? service.plain("log.modules_state_active")
+                    : service.plain("log.modules_state_inactive");
         }
         return flag ? "enabled" : "disabled";
     }
@@ -708,30 +733,33 @@ public class TimberellaPlugin extends JavaPlugin {
         if (metrics != null) {
             return;
         }
-        metrics = new Metrics(this, BSTATS_PLUGIN_ID);
-        registerMetricsCharts(metrics);
+        Metrics created = new Metrics(this, BSTATS_PLUGIN_ID);
+        metrics = created;
+        registerMetricsCharts(created);
     }
 
     private void applyChatPrefixLabel() {
-        if (messages == null) {
+        MessageService service = messages;
+        if (service == null) {
             return;
         }
         String label = getConfig().getString("chat_prefix_label", "Timberella");
         if (label == null || label.isBlank()) {
             label = "Timberella";
         }
-        messages.setPrefixLabel(label);
+        service.setPrefixLabel(label);
     }
 
     private void shutdownMetrics() {
-        if (metrics != null) {
-            metrics.shutdown();
+        Metrics current = metrics;
+        if (current != null) {
+            current.shutdown();
             metrics = null;
         }
     }
 
     private void registerMetricsCharts(Metrics metricsInstance) {
-        metricsInstance.addCustomChart(new SimplePie("language", () -> messages.getLanguage()));
+        metricsInstance.addCustomChart(new SimplePie("language", () -> messages().getLanguage()));
         metricsInstance.addCustomChart(new SimplePie("sneak_mode", () -> switch (getConfig().getInt("sneak_mode", 0)) {
             case 1 -> "not_sneaking";
             case 2 -> "always";
@@ -773,10 +801,11 @@ public class TimberellaPlugin extends JavaPlugin {
         int provider = readUpdateProvider();
         boolean includePrereleases = readUpdateBoolean("include_prereleases", false);
         boolean filterByServerVersion = readUpdateBoolean("filter_by_server_version", true);
-        this.updateChecker = new UpdateChecker(this, provider, includePrereleases, filterByServerVersion,
+        UpdateChecker checker = new UpdateChecker(this, provider, includePrereleases, filterByServerVersion,
                 "timberella", "hro_basti/timberella");
+        this.updateChecker = checker;
         // The update summary names a failed provider with its reason, translated.
-        this.updateChecker.setLogFailures(false);
+        checker.setLogFailures(false);
         scheduleUpdateChecks();
     }
 
@@ -791,8 +820,9 @@ public class TimberellaPlugin extends JavaPlugin {
     }
 
     private void cancelScheduledUpdateChecks() {
-        if (periodicUpdateTask != null) {
-            periodicUpdateTask.cancel();
+        BukkitTask task = periodicUpdateTask;
+        if (task != null) {
+            task.cancel();
             periodicUpdateTask = null;
         }
     }
@@ -821,7 +851,7 @@ public class TimberellaPlugin extends JavaPlugin {
                 });
     }
 
-    private void handleUpdateInfo(UpdateChecker.UpdateInfo info) {
+    private void handleUpdateInfo(UpdateChecker.@Nullable UpdateInfo info) {
         if (info == null) {
             return;
         }
@@ -837,7 +867,7 @@ public class TimberellaPlugin extends JavaPlugin {
         List<UpdateChecker.ProviderResult> firstFailures = firstFailures(reportedProviderFailures, info.providers());
         if (notifyConsole && !shouldLog) {
             for (UpdateChecker.ProviderResult result : firstFailures) {
-                messages.log(getLogger(), Level.WARNING, "log.update_provider_failed", Map.of("provider",
+                messages().log(getLogger(), Level.WARNING, "log.update_provider_failed", Map.of("provider",
                         result.provider().displayName(), "error", result.errorMessage()));
             }
         }
@@ -854,7 +884,7 @@ public class TimberellaPlugin extends JavaPlugin {
     // Marks every failed provider as shown and returns those failing for the first
     // time since the last reset; a successful fetch resets its provider.
     static List<UpdateChecker.ProviderResult> firstFailures(Set<UpdateChecker.Provider> reported,
-            List<UpdateChecker.ProviderResult> results) {
+            @Nullable List<UpdateChecker.ProviderResult> results) {
         List<UpdateChecker.ProviderResult> first = new ArrayList<>();
         if (results == null) {
             return first;
@@ -872,7 +902,7 @@ public class TimberellaPlugin extends JavaPlugin {
         return first;
     }
 
-    public UpdateChecker.UpdateInfo getPendingUpdateInfo() {
+    public UpdateChecker.@Nullable UpdateInfo getPendingUpdateInfo() {
         return pendingUpdateInfo;
     }
 
@@ -884,7 +914,7 @@ public class TimberellaPlugin extends JavaPlugin {
         return readUpdateBoolean("notify_console", true);
     }
 
-    private void logUpdateSummary(UpdateChecker.UpdateInfo info) {
+    private void logUpdateSummary(UpdateChecker.@Nullable UpdateInfo info) {
         if (info == null)
             return;
         List<UpdateChecker.ProviderResult> providers = info.providers() == null ? Collections.emptyList() : info.providers();
@@ -896,9 +926,9 @@ public class TimberellaPlugin extends JavaPlugin {
         }
 
         if (info.hasUpdate()) {
-            messages.log(getLogger(), Level.INFO, "log.update_found", Map.of("current", info.currentVersion()));
+            messages().log(getLogger(), Level.INFO, "log.update_found", Map.of("current", info.currentVersion()));
         } else {
-            messages.log(getLogger(), Level.INFO, "log.update_none");
+            messages().log(getLogger(), Level.INFO, "log.update_none");
         }
 
         if (hasProviderDetails) {
@@ -916,7 +946,7 @@ public class TimberellaPlugin extends JavaPlugin {
         getLogger().info("=======================");
     }
 
-    private void logProviderResult(UpdateChecker.ProviderResult result) {
+    private void logProviderResult(UpdateChecker.@Nullable ProviderResult result) {
         if (result == null) {
             return;
         }
@@ -924,29 +954,28 @@ public class TimberellaPlugin extends JavaPlugin {
         placeholders.put("provider", result.provider().displayName());
         if (!result.success()) {
             placeholders.put("error", result.errorMessage());
-            messages.log(getLogger(), Level.INFO, "log.update_provider_error", placeholders);
+            messages().log(getLogger(), Level.INFO, "log.update_provider_error", placeholders);
             return;
         }
         if (result.latestVersion() == null) {
-            messages.log(getLogger(), Level.INFO, "log.update_provider_none", placeholders);
+            messages().log(getLogger(), Level.INFO, "log.update_provider_none", placeholders);
             return;
         }
         placeholders.put("version", result.latestVersion());
         placeholders.put("url", result.url());
-        messages.log(getLogger(), Level.INFO, "log.update_provider_ok", placeholders);
+        messages().log(getLogger(), Level.INFO, "log.update_provider_ok", placeholders);
     }
 
     private void setupServerMatcher() {
         if (messages == null) {
-            serverMatcher = null;
             return;
         }
-        serverMatcher = ServerMatcher.builder(this)
+        ServerMatcher.builder(this)
                 .allowMinorSeries(SUPPORTED_MINOR_SERIES)
                 .incompatibleAction(INCOMPATIBLE_SERVER_ACTION)
                 .onMismatch(this::handleServerMismatch)
-                .build();
-        serverMatcher.enforce();
+                .build()
+                .enforce();
     }
 
     private void handleServerMismatch(ServerMatcher.MatchResult result) {
@@ -956,9 +985,10 @@ public class TimberellaPlugin extends JavaPlugin {
         placeholders.put("server_name", result.serverName() != null ? result.serverName() : "unknown");
         placeholders.put("mc_version", result.minecraftVersion() != null ? result.minecraftVersion() : "unknown");
 
-        if (messages != null) {
+        MessageService service = messages;
+        if (service != null) {
             // The logger already prefixes the plugin name, so the message has no <prefix>.
-            messages.log(getLogger(), Level.WARNING, "warn.unsupported_server_version", placeholders);
+            service.log(getLogger(), Level.WARNING, "warn.unsupported_server_version", placeholders);
         } else {
             getLogger().warning("Timberella officially supports " + REQUIRED_SERVER_BRAND
                     + " " + SUPPORTED_VERSION_LABEL + ". Detected "
@@ -999,9 +1029,8 @@ public class TimberellaPlugin extends JavaPlugin {
         return defaultValue;
     }
 
-    private FileChangeTracker.Changes compareTrackedFiles() {
-        return compareTrackedFiles(fileChangeTracker, leafMappingsTracker,
-                new File(getDataFolder(), "leaf_mappings.yml"));
+    private FileChangeTracker.Changes compareTrackedFiles(FileChangeTracker files, FileChangeTracker leafMappings) {
+        return compareTrackedFiles(files, leafMappings, new File(getDataFolder(), "leaf_mappings.yml"));
     }
 
     // While leaf_mappings.yml isn't valid YAML it is left out, so its last readable
@@ -1024,24 +1053,24 @@ public class TimberellaPlugin extends JavaPlugin {
             return;
         }
         if (changes.isEmpty()) {
-            messages.log(getLogger(), Level.INFO, "log.reload_changes_none");
+            messages().log(getLogger(), Level.INFO, "log.reload_changes_none");
             return;
         }
         // Only unreadable files: the tracker's own warning says so.
         if (!changes.hasListedChanges()) {
             return;
         }
-        messages.log(getLogger(), Level.INFO, "log.reload_changes_header");
+        messages().log(getLogger(), Level.INFO, "log.reload_changes_header");
         for (FileChangeTracker.FileKeyChanges fileChanges : changes.keyChanges()) {
             if (fileChanges.changes().isEmpty())
                 continue;
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("file", fileChanges.file());
             placeholders.put("changes", fileChanges.describe());
-            messages.log(getLogger(), Level.INFO, "log.reload_changes_line", placeholders);
+            messages().log(getLogger(), Level.INFO, "log.reload_changes_line", placeholders);
         }
         for (String file : changes.allChangedFiles()) {
-            messages.log(getLogger(), Level.INFO, "log.reload_changes_locale_line", Map.of("file", file));
+            messages().log(getLogger(), Level.INFO, "log.reload_changes_locale_line", Map.of("file", file));
         }
     }
 

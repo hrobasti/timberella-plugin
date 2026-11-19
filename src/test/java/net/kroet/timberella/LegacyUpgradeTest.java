@@ -33,6 +33,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 class LegacyUpgradeTest {
     private static final String TOGGLES = "disabled:\n- 069a79f4-44e9-4726-a5be-fca90e38aaf5\n";
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path dataDir;
 

@@ -20,6 +20,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Bee nests and beehives felled with a tree treat their bees like vanilla's
@@ -69,7 +70,7 @@ final class BeeNests {
         }
     }
 
-    private static boolean keepsBees(ItemStack tool) {
+    private static boolean keepsBees(@Nullable ItemStack tool) {
         if (tool == null || tool.isEmpty()) {
             return false;
         }

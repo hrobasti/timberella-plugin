@@ -11,11 +11,14 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class InternalEventGuardTest {
     private final List<LogRecord> records = new ArrayList<>();
+    // Set in @BeforeEach before each test.
+    @SuppressWarnings("null")
     private InternalEventGuard guard;
 
     @BeforeEach
@@ -24,7 +27,10 @@ class InternalEventGuardTest {
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
             @Override
-            public void publish(LogRecord record) {
+            public void publish(@Nullable LogRecord record) {
+                if (record == null) {
+                    return;
+                }
                 records.add(record);
             }
 

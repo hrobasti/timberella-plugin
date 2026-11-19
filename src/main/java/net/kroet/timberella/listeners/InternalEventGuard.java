@@ -2,6 +2,7 @@ package net.kroet.timberella.listeners;
 
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Runs the creation and firing of an event whose constructor Paper marks as
@@ -21,7 +22,7 @@ final class InternalEventGuard {
     }
 
     // The fired event, or null if creating or firing it hit a LinkageError.
-    <E> E fire(Supplier<E> fire) {
+    <E> @Nullable E fire(Supplier<E> fire) {
         try {
             return fire.get();
         } catch (LinkageError e) {

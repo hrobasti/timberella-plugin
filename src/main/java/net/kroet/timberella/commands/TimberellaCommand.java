@@ -12,7 +12,7 @@ import net.kroet.timberella.TimberellaPlugin;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class TimberellaCommand implements BasicCommand {
 

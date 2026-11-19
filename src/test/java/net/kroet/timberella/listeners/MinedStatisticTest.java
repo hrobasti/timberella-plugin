@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -75,9 +76,10 @@ class MinedStatisticTest {
     }
 
     private static final class FakeScore {
+        @Nullable
         Integer value;
 
-        FakeScore(Integer value) {
+        FakeScore(@Nullable Integer value) {
             this.value = value;
         }
 

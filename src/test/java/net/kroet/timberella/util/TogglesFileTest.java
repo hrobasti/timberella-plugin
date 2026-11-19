@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -25,6 +26,8 @@ class TogglesFileTest {
     private static final String A = "069a79f4-44e9-4726-a5be-fca90e38aaf5";
     private static final String B = "853c80ef-3c37-49fd-aa49-938b674adae6";
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path dir;
 
@@ -81,7 +84,10 @@ class TogglesFileTest {
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
             @Override
-            public void publish(LogRecord logRecord) {
+            public void publish(@Nullable LogRecord logRecord) {
+                if (logRecord == null) {
+                    return;
+                }
                 warnings.add(logRecord.getMessage());
             }
 

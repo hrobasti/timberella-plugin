@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Proxy;
 import org.bukkit.inventory.meta.Damageable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -71,7 +72,7 @@ class DurabilityCostTest {
         assertEquals(250, TreeChopListener.maxDurability(250, damageable(null)));
     }
 
-    private static Damageable damageable(Integer maxDamage) {
+    private static Damageable damageable(@Nullable Integer maxDamage) {
         return (Damageable) Proxy.newProxyInstance(Damageable.class.getClassLoader(), new Class<?>[]{Damageable.class},
                 (proxy, method, args) -> switch (method.getName()) {
                     case "hasMaxDamage" -> maxDamage != null;

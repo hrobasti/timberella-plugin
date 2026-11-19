@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.ToIntFunction;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Shape rules for giant mushrooms on plain block positions, modeled on
@@ -68,6 +69,7 @@ final class GiantMushroomShape {
     /** The cap kind of the block at a position, null if it is no cap block. */
     @FunctionalInterface
     interface CapLookup {
+        @Nullable
         Cap at(int x, int y, int z);
     }
 
@@ -92,7 +94,7 @@ final class GiantMushroomShape {
      * cap blocks that are its own; null if the blocks around it aren't
      * vanilla-shaped.
      */
-    static Mushroom find(int x, int y, int z, BlockTest isStem, CapLookup caps, ToIntFunction<Cap> reach,
+    static @Nullable Mushroom find(int x, int y, int z, BlockTest isStem, CapLookup caps, ToIntFunction<Cap> reach,
             int maxBlocks) {
         Cap hit = caps.at(x, y, z);
         Pos stem = new Pos(x, y, z);
@@ -111,7 +113,7 @@ final class GiantMushroomShape {
             return null;
         }
         Cap kind = caps.at(anchor.x(), anchor.y(), anchor.z());
-        if (hit != null && hit != kind) {
+        if (kind == null || (hit != null && hit != kind)) {
             return null;
         }
         BlockTest isCap = kind(caps, kind);
@@ -140,7 +142,7 @@ final class GiantMushroomShape {
      * The stem column through (x, y, z), or null if any other stem touches it, even
      * diagonally, or it is taller than maxHeight.
      */
-    static Column column(int x, int y, int z, BlockTest isStem, int maxHeight) {
+    static @Nullable Column column(int x, int y, int z, BlockTest isStem, int maxHeight) {
         int bottom = y;
         int top = y;
         while (top - bottom < maxHeight && isStem.test(x, bottom - 1, z)) {
@@ -168,7 +170,7 @@ final class GiantMushroomShape {
      * The cap block the column carries: directly above its top, else anywhere in
      * the 3x3 above it; null if nothing sits on the stem.
      */
-    static Pos capAbove(Column column, BlockTest isCap) {
+    static @Nullable Pos capAbove(Column column, BlockTest isCap) {
         int y = column.top() + 1;
         if (isCap.test(column.x(), y, column.z())) {
             return new Pos(column.x(), y, column.z());
@@ -188,7 +190,7 @@ final class GiantMushroomShape {
      * through the connected cap; the nearest column wins. Null if no column within
      * reach carries the cap, or two are equally near.
      */
-    static Pos stemUnderCap(int x, int y, int z, BlockTest isCap, BlockTest isStem, int reach, int depth,
+    static @Nullable Pos stemUnderCap(int x, int y, int z, BlockTest isCap, BlockTest isStem, int reach, int depth,
             int maxBlocks) {
         BlockTest nearby = (cx, cy, cz) -> Math.abs(cy - y) <= depth
                 && Math.max(Math.abs(cx - x), Math.abs(cz - z)) <= 2 * reach && isCap.test(cx, cy, cz);
@@ -258,13 +260,13 @@ final class GiantMushroomShape {
         return true;
     }
 
-    private static Column naturalColumn(int x, int y, int z, BlockTest isStem, int maxHeight) {
+    private static @Nullable Column naturalColumn(int x, int y, int z, BlockTest isStem, int maxHeight) {
         Column column = column(x, y, z, isStem, maxHeight);
         return column != null && column.height() >= MIN_HEIGHT ? column : null;
     }
 
     // Other stems holding up the cluster; null if one of them isn't vanilla-shaped.
-    private static List<Column> neighbors(Column column, List<Pos> cluster, BlockTest isStem, int maxHeight) {
+    private static @Nullable List<Column> neighbors(Column column, List<Pos> cluster, BlockTest isStem, int maxHeight) {
         List<Column> neighbors = new ArrayList<>();
         for (Pos pos : cluster) {
             boolean ownTop = pos.x() == column.x() && pos.z() == column.z() && pos.y() - 1 == column.top();

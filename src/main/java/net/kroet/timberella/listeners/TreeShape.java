@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Splits the blocks collected from a hit block into the tree and the builds
@@ -120,7 +121,7 @@ final class TreeShape {
     private final Map<Pos, Part> partOf = new HashMap<>();
     private final Map<Pos, Run> runs = new HashMap<>();
     private final Map<Run, Boolean> holdsBranch = new HashMap<>();
-    private LeafReach leafReach;
+    private @Nullable LeafReach leafReach;
 
     private TreeShape(List<Pos> collected, Surroundings world, boolean diagonals) {
         this.collected = collected;
@@ -137,7 +138,7 @@ final class TreeShape {
      * protectBuilds off, all of it is the tree. Null if the hit block itself
      * belongs to a build.
      */
-    static Result analyze(List<Pos> collected, Surroundings world, boolean diagonals, boolean protectBuilds) {
+    static @Nullable Result analyze(List<Pos> collected, Surroundings world, boolean diagonals, boolean protectBuilds) {
         TreeShape shape = new TreeShape(collected, world, diagonals);
         Pos hit = collected.get(0);
         Pos trunk = shape.settle(shape.findTrunk(hit));
@@ -195,7 +196,7 @@ final class TreeShape {
     // The log the tree stands on: straight down from the hit block if that reaches
     // the ground, else the lowest one reachable, since branches lead down to it. A
     // single log resting on the ground is only taken if no taller trunk is found.
-    private Pos findTrunk(Pos hit) {
+    private @Nullable Pos findTrunk(Pos hit) {
         record Step(Pos pos, int order) {
         }
         PriorityQueue<Step> queue = new PriorityQueue<>(
@@ -228,7 +229,7 @@ final class TreeShape {
 
     // Moves from a column built against a trunk to that trunk, and from a branch
     // resting on the ground down to the trunk it belongs to.
-    private Pos settle(Pos trunk) {
+    private @Nullable Pos settle(@Nullable Pos trunk) {
         Set<Run> visited = new HashSet<>();
         while (trunk != null && visited.add(runs.get(trunk))) {
             Run run = runs.get(trunk);
@@ -251,7 +252,7 @@ final class TreeShape {
     // A trunk reaching higher with grown leaves on top beside a bare column, which
     // is then a post built against it unless it holds that trunk up; a column of a
     // 2x2 or thick fungus trunk stays with its own trunk.
-    private Pos treeBeside(Run run) {
+    private @Nullable Pos treeBeside(Run run) {
         if (run.support() == Support.TREE || hasLeafOnTop(run) || isPartOfWideTrunk(run)) {
             return null;
         }
@@ -316,10 +317,12 @@ final class TreeShape {
     // Whether the run, or what hangs or rests on from it, has grown leaves on top,
     // without going through the holder.
     private boolean reachesLeaves(Run start, Run holder) {
-        if (leafReach == null) {
-            leafReach = new LeafReach();
+        LeafReach reach = leafReach;
+        if (reach == null) {
+            reach = new LeafReach();
+            leafReach = reach;
         }
-        return leafReach.reaches(start, holder);
+        return reach.reaches(start, holder);
     }
 
     /**
@@ -515,7 +518,7 @@ final class TreeShape {
 
     // The nearest trunk standing lower than the resting branch at pos that would
     // fell that branch with it.
-    private Pos trunkBelow(Pos pos) {
+    private @Nullable Pos trunkBelow(Pos pos) {
         record Step(Pos pos, int order) {
         }
         Run resting = runs.get(pos);
@@ -553,7 +556,7 @@ final class TreeShape {
 
     // Everything connected to the trunk base, other than builds and what only
     // connects through them; without a base, what connects to the seed.
-    private Set<Pos> fell(Pos trunk, Base base, Pos seed) {
+    private Set<Pos> fell(@Nullable Pos trunk, Base base, Pos seed) {
         Set<Pos> excluded = trunk == null ? Set.of() : excluded(runs.get(trunk), base.columns());
         Set<Pos> tree = new HashSet<>();
         Deque<Pos> queue = new ArrayDeque<>();
@@ -757,7 +760,7 @@ final class TreeShape {
         return supported;
     }
 
-    private static Run runStartingAt(Map<Column, List<Run>> supported, Column column, int bottom) {
+    private static @Nullable Run runStartingAt(Map<Column, List<Run>> supported, Column column, int bottom) {
         for (Run run : supported.getOrDefault(column, List.of())) {
             if (run.bottom() == bottom) {
                 return run;

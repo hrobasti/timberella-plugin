@@ -30,6 +30,8 @@ class LegacyLangMigrationTest {
     // Keys dropped on purpose because nothing uses them anymore.
     private static final Set<String> REMOVED_KEYS = Set.of("update.failed", "log.defaults-none");
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path tempDir;
 

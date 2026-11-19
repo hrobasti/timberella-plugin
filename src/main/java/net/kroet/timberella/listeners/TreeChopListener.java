@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -68,6 +69,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jspecify.annotations.Nullable;
 
 public class TreeChopListener implements Listener {
     private final TimberellaPlugin plugin;
@@ -101,7 +103,7 @@ public class TreeChopListener implements Listener {
         private final Set<Material> saplings;
         private final int needed;
         private int collected;
-        private Material kept;
+        private @Nullable Material kept;
 
         SaplingPool(Material sapling, int needed) {
             this(Set.of(sapling), needed);
@@ -127,6 +129,7 @@ public class TreeChopListener implements Listener {
             return collected;
         }
 
+        @Nullable
         Material kept() {
             return kept;
         }
@@ -199,10 +202,10 @@ public class TreeChopListener implements Listener {
         private final int defaultMaxBlocks;
         private final int defaultHorizontalRadius;
         private final int defaultVerticalRadius;
-        private final Material sapling;
+        private final @Nullable Material sapling;
 
         Species(String configKey, boolean defaultEnabled, int defaultMaxBlocks,
-                int defaultHorizontalRadius, int defaultVerticalRadius, Material sapling) {
+                int defaultHorizontalRadius, int defaultVerticalRadius, @Nullable Material sapling) {
             this.configKey = configKey;
             this.defaultEnabled = defaultEnabled;
             this.defaultMaxBlocks = defaultMaxBlocks;
@@ -232,6 +235,7 @@ public class TreeChopListener implements Listener {
         }
 
         /** Sapling to replant after felling; null for species that don't replant. */
+        @Nullable
         Material sapling() {
             return sapling;
         }
@@ -358,7 +362,7 @@ public class TreeChopListener implements Listener {
     private boolean replantFromDrops = true;
     // Set only while a leaf breaks for a drops-based replant, so onItemSpawn can
     // keep back the saplings it drops.
-    private SaplingPool capturingPool;
+    private @Nullable SaplingPool capturingPool;
     private boolean includeDiagonals = true;
     private boolean requireNaturalLeaves = true;
     private int maxBlocks = 1024;
@@ -664,7 +668,7 @@ public class TreeChopListener implements Listener {
      * species was found, the start block belongs to a build, or the logs carry no
      * grown foliage.
      */
-    private TreeSelection collectTree(Block start) {
+    private @Nullable TreeSelection collectTree(Block start) {
         Species species = detectSpecies(start);
         // Without a species of its own or next to it, only the hit block breaks.
         if (species == null)
@@ -700,7 +704,7 @@ public class TreeChopListener implements Listener {
 
     // The world around collected blocks of one species, for TreeShape. Leaves that
     // touch one of the ignored blocks never count as a tree's own foliage.
-    private TreeShape.Surroundings surroundings(World world, Map<TreeShape.Pos, Block> blocks, Species species,
+    private TreeShape.Surroundings surroundings(World world, Map<TreeShape.Pos, Block> blocks, @Nullable Species species,
             Set<Long> ignoredFoliage) {
         return new TreeShape.Surroundings() {
             @Override
@@ -752,7 +756,7 @@ public class TreeChopListener implements Listener {
     }
 
     // What a column of collected logs stands on; the block itself wasn't collected.
-    private TreeShape.Support supportAt(Block block, Species species) {
+    private TreeShape.Support supportAt(Block block, @Nullable Species species) {
         Material type = block.getType();
         if (MANGROVE_ROOT_BLOCKS.contains(type))
             return TreeShape.Support.ROOT;
@@ -769,7 +773,7 @@ public class TreeChopListener implements Listener {
         return TRUNK_SOILS.contains(type);
     }
 
-    private static TreeShape.Footprint footprintOf(Species species) {
+    private static TreeShape.Footprint footprintOf(@Nullable Species species) {
         if (species == null)
             return TreeShape.Footprint.SINGLE;
         return switch (species) {
@@ -784,7 +788,7 @@ public class TreeChopListener implements Listener {
      * null if the mushroom blocks around it have any other shape. Only the cap on
      * top of that stem is felled, never a neighbor's.
      */
-    private TreeSelection collectGiantMushroom(Block start) {
+    private @Nullable TreeSelection collectGiantMushroom(Block start) {
         World world = start.getWorld();
         GiantMushroomShape.Mushroom mushroom = GiantMushroomShape.find(start.getX(), start.getY(), start.getZ(),
                 (x, y, z) -> {
@@ -816,7 +820,7 @@ public class TreeChopListener implements Listener {
         }
     }
 
-    private GiantMushroomShape.Cap capAt(Block block) {
+    private GiantMushroomShape.@Nullable Cap capAt(Block block) {
         GiantMushroomShape.Cap cap = switch (block.getType()) {
             case BROWN_MUSHROOM_BLOCK -> GiantMushroomShape.Cap.BROWN;
             case RED_MUSHROOM_BLOCK -> GiantMushroomShape.Cap.RED;
@@ -923,7 +927,7 @@ public class TreeChopListener implements Listener {
 
         // Completes normally (stopKey null) or stops early with an actionbar note;
         // either way the logs broken so far get leaf cleanup and replanting.
-        private void finish(String stopKey) {
+        private void finish(@Nullable String stopKey) {
             chargeDurability();
             end();
             handlePostActions(player, brokenLogs, tree, true, originalMaterials);
@@ -972,8 +976,6 @@ public class TreeChopListener implements Listener {
     }
 
     private boolean isAxe(ItemStack stack) {
-        if (stack == null)
-            return false;
         Material type = stack.getType();
         // If config provides allowed axes, use it; fallback to the vanilla axes tag so
         // new/modded axe materials (e.g. copper) are covered without a hardcoded list
@@ -983,8 +985,6 @@ public class TreeChopListener implements Listener {
     }
 
     private boolean hasMinDurability(ItemStack stack) {
-        if (stack == null)
-            return false;
         var meta = stack.getItemMeta();
         if (!(meta instanceof Damageable damageable) || meta.isUnbreakable())
             return true;
@@ -996,7 +996,7 @@ public class TreeChopListener implements Listener {
 
     // An item's own max_damage component wins over its type's durability.
     // Package-private for DurabilityCostTest.
-    static int maxDurability(int typeDurability, Damageable meta) {
+    static int maxDurability(int typeDurability, @Nullable Damageable meta) {
         return meta != null && meta.hasMaxDamage() ? meta.getMaxDamage() : typeDurability;
     }
 
@@ -1009,7 +1009,7 @@ public class TreeChopListener implements Listener {
         Material typeAt(int x, int y, int z);
     }
 
-    private Species detectSpecies(Block block) {
+    private @Nullable Species detectSpecies(Block block) {
         World world = block.getWorld();
         return detectSpecies(block.getX(), block.getY(), block.getZ(), world.getMaxHeight(), includeDiagonals,
                 (x, y, z) -> {
@@ -1021,7 +1021,7 @@ public class TreeChopListener implements Listener {
     // A block's own species, a mushroom stem's from its cap, and for bee nests,
     // creaking hearts or fences that of a tree block next to them; null if none.
     // Package-private for SpeciesDetectionTest.
-    static Species detectSpecies(int x, int y, int z, int maxY, boolean diagonals, TypeLookup types,
+    static @Nullable Species detectSpecies(int x, int y, int z, int maxY, boolean diagonals, TypeLookup types,
             Predicate<Material> treeMaterial) {
         Material type = types.typeAt(x, y, z);
         if (MATERIAL_TO_SPECIES.containsKey(type) || type == Material.MUSHROOM_STEM) {
@@ -1045,13 +1045,13 @@ public class TreeChopListener implements Listener {
         return null;
     }
 
-    private static Species ownSpecies(int x, int y, int z, int maxY, TypeLookup types) {
+    private static @Nullable Species ownSpecies(int x, int y, int z, int maxY, TypeLookup types) {
         Material type = types.typeAt(x, y, z);
         return type == Material.MUSHROOM_STEM ? capOfStem(x, y, z, maxY, types) : MATERIAL_TO_SPECIES.get(type);
     }
 
     // The cap sits on the stem's top, however tall vanilla grew it (up to twelve).
-    private static Species capOfStem(int x, int y, int z, int maxY, TypeLookup types) {
+    private static @Nullable Species capOfStem(int x, int y, int z, int maxY, TypeLookup types) {
         int top = y;
         while (top + 1 < maxY && types.typeAt(x, top + 1, z) == Material.MUSHROOM_STEM) {
             top++;
@@ -1071,14 +1071,14 @@ public class TreeChopListener implements Listener {
         return null;
     }
 
-    private static Species capSpecies(Material type) {
+    private static @Nullable Species capSpecies(Material type) {
         Species species = MATERIAL_TO_SPECIES.get(type);
         return species == Species.MUSHROOM_BROWN || species == Species.MUSHROOM_RED ? species : null;
     }
 
     // Connected blocks the joins test accepts, within the species' block and radius
     // limits around the start.
-    private List<Block> collectConnectedLogs(Block start, Species species, Predicate<Material> joins) {
+    private List<Block> collectConnectedLogs(Block start, @Nullable Species species, Predicate<Material> joins) {
         int treeMaxBlocks = maxBlocks;
         int horizontal = -1;
         int vertical = -1;
@@ -1105,7 +1105,7 @@ public class TreeChopListener implements Listener {
      * block is neither collected nor connects anything behind it. Package-private
      * for TreeCollectionTest.
      */
-    static List<Block> collectConnected(Block start, int maxBlocks, boolean includeDiagonals,
+    static List<Block> collectConnected(@Nullable Block start, int maxBlocks, boolean includeDiagonals,
             Predicate<Block> joins, ToLongFunction<Block> key) {
         if (start == null) {
             return Collections.emptyList();
@@ -1140,7 +1140,7 @@ public class TreeChopListener implements Listener {
      * Whether a block may join a felling started on the given species. Additions
      * and fences join any tree; giant mushroom stems join their cap's species.
      */
-    private boolean belongsToTree(Material material, Species species) {
+    private boolean belongsToTree(Material material, @Nullable Species species) {
         if (!isTreeMaterial(material))
             return false;
         if (species == null || additions.contains(material) || fences.contains(material))
@@ -1196,7 +1196,7 @@ public class TreeChopListener implements Listener {
      * without a persistence flag (wart blocks, shroomlights, mushroom caps) only
      * counts when leaf_mappings.yml lists it for this log.
      */
-    private boolean isNaturalFoliage(Block block, Set<Material> mappedFoliage) {
+    private boolean isNaturalFoliage(Block block, @Nullable Set<Material> mappedFoliage) {
         if (customBlocks.isCustomBlock(block))
             return false;
         Material type = block.getType();
@@ -1210,7 +1210,7 @@ public class TreeChopListener implements Listener {
     // for, a replant at the tree's planting spots.
     private void handlePostActions(Player player, List<Block> logs, TreeSelection tree, boolean replant,
             Map<Long, Material> originalMaterials) {
-        if (logs == null || logs.isEmpty())
+        if (logs.isEmpty())
             return;
         ReplantPlan plan = replant && replantEnabled
                 ? planReplant(tree.plantingSpots(), originalMaterials, UnderwaterPlanting.forPlayer(player),
@@ -1250,7 +1250,7 @@ public class TreeChopListener implements Listener {
 
     private void scheduleLeavesDecay(Player player, List<Block> logs, LeafHolders holders,
             Map<Long, Material> originalMaterials,
-            ReplantPlan plan, SaplingPool pool) {
+            @Nullable ReplantPlan plan, @Nullable SaplingPool pool) {
         if (!leavesDecayEnabled)
             return;
         if (leavesDecayRadius <= 0)
@@ -1381,7 +1381,8 @@ public class TreeChopListener implements Listener {
                 }
                 if (queue.isEmpty()) {
                     cancel();
-                    if (pool != null) {
+                    // A pool exists only with a plan.
+                    if (pool != null && plan != null) {
                         UUID playerId = player.getUniqueId();
                         plantOnceWaterSettled(plan, playerId, 0L, () -> plantFromPool(plan, pool, playerId));
                     }
@@ -1448,7 +1449,7 @@ public class TreeChopListener implements Listener {
         private final int reach;
         private final Map<Material, List<TreeShape.Pos>> felledOwners = new EnumMap<>(Material.class);
         private final Map<Material, List<TreeShape.Pos>> standingOwners = new EnumMap<>(Material.class);
-        private List<Block> standingLogs;
+        private @Nullable List<Block> standingLogs;
 
         FoliageOwners(List<Block> felled, Map<Long, Material> originals, LeafHolders holders, int reach) {
             this.felled = felled;
@@ -1476,10 +1477,13 @@ public class TreeChopListener implements Listener {
         }
 
         private List<TreeShape.Pos> standingOwnersOf(Material foliage) {
-            if (standingLogs == null)
-                standingLogs = findStandingLogs();
+            List<Block> logs = standingLogs;
+            if (logs == null) {
+                logs = findStandingLogs();
+                standingLogs = logs;
+            }
             List<TreeShape.Pos> owners = new ArrayList<>();
-            for (Block log : standingLogs) {
+            for (Block log : logs) {
                 if (maps(log.getType(), foliage) && !holders.isBuild(log))
                     owners.add(new TreeShape.Pos(log.getX(), log.getY(), log.getZ()));
             }
@@ -1693,9 +1697,9 @@ public class TreeChopListener implements Listener {
     }
 
     private void seedLeafNeighbors(Block log, Deque<LeafEntry> queue, Set<Long> visited, int maxDepth,
-            Set<Material> allowedLeaves, Map<Long, List<Block>> logsByCell, int cellSize,
+            @Nullable Set<Material> allowedLeaves, Map<Long, List<Block>> logsByCell, int cellSize,
             int foliageMaxDistanceSquared) {
-        if (log == null || maxDepth <= 0)
+        if (maxDepth <= 0)
             return;
         if (includeDiagonals) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -1722,10 +1726,8 @@ public class TreeChopListener implements Listener {
     }
 
     private void enqueueLeaf(Block block, int depth, int maxDepth, Deque<LeafEntry> queue, Set<Long> visited,
-            Set<Material> allowedLeaves, Map<Long, List<Block>> logsByCell, int cellSize,
+            @Nullable Set<Material> allowedLeaves, Map<Long, List<Block>> logsByCell, int cellSize,
             int foliageMaxDistanceSquared) {
-        if (block == null)
-            return;
         if (depth > maxDepth)
             return;
         if (!isDecayCandidate(block.getType(), allowedLeaves))
@@ -1742,7 +1744,7 @@ public class TreeChopListener implements Listener {
         }
     }
 
-    private boolean isAllowedLeaf(Material material, Set<Material> allowedLeaves) {
+    private boolean isAllowedLeaf(Material material, @Nullable Set<Material> allowedLeaves) {
         return allowedLeaves == null || allowedLeaves.contains(material);
     }
 
@@ -1751,9 +1753,7 @@ public class TreeChopListener implements Listener {
      * {@code leaf_mappings.yml} when present; otherwise falls back to vanilla leaf
      * materials ({@code *_LEAVES} / {@code *_LEAF}).
      */
-    private boolean isDecayCandidate(Material material, Set<Material> allowedLeaves) {
-        if (material == null)
-            return false;
+    private boolean isDecayCandidate(Material material, @Nullable Set<Material> allowedLeaves) {
         if (allowedLeaves != null && !allowedLeaves.isEmpty() && allowedLeaves.contains(material)) {
             return true;
         }
@@ -1766,8 +1766,6 @@ public class TreeChopListener implements Listener {
     }
 
     private boolean isWithinLeafDistance(Block origin, Block candidate, int maxDistanceSquared) {
-        if (origin == null || candidate == null)
-            return true;
         int dx = origin.getX() - candidate.getX();
         int dy = origin.getY() - candidate.getY();
         int dz = origin.getZ() - candidate.getZ();
@@ -1780,7 +1778,7 @@ public class TreeChopListener implements Listener {
      */
     private boolean isWithinLeafDistance(Map<Long, List<Block>> logsByCell, int cellSize, Block candidate,
             int maxDistanceSquared) {
-        if (candidate == null || logsByCell == null || logsByCell.isEmpty()) {
+        if (logsByCell.isEmpty()) {
             return true;
         }
         long cx = Math.floorDiv(candidate.getX(), cellSize);
@@ -1836,8 +1834,8 @@ public class TreeChopListener implements Listener {
 
     // Replants where the trunk base stood: all four spots of a 2x2 trunk, or else
     // the lowest one that can take a sapling.
-    private ReplantPlan planReplant(List<Block> plantingSpots, Map<Long, Material> originalMaterials,
-            UnderwaterPlanting underwater, Material azalea) {
+    private @Nullable ReplantPlan planReplant(List<Block> plantingSpots, Map<Long, Material> originalMaterials,
+            @Nullable UnderwaterPlanting underwater, @Nullable Material azalea) {
         Material sapling = null;
         List<Block> targets = new ArrayList<>();
         for (Block spot : plantingSpots) {
@@ -1862,12 +1860,12 @@ public class TreeChopListener implements Listener {
                             .thenComparingInt(Block::getZ))
                     .orElseThrow());
         }
-        return new ReplantPlan(sapling, List.copyOf(targets));
+        return new ReplantPlan(Objects.requireNonNull(sapling, "set with the first target"), List.copyOf(targets));
     }
 
     // The sapling for the spot's column: its lowest block that maps to one, as a
     // creaking heart at the bottom of a trunk maps to none.
-    private Material saplingFor(Block spot, Map<Long, Material> originalMaterials) {
+    private @Nullable Material saplingFor(Block spot, Map<Long, Material> originalMaterials) {
         for (Block block = spot; originalMaterials.containsKey(key(block)); block = block.getRelative(BlockFace.UP)) {
             Material mapped = saplingMappings.get(originalMaterials.get(key(block)));
             if (mapped != null)
@@ -1878,7 +1876,7 @@ public class TreeChopListener implements Listener {
 
     // The spot itself, or where a trunk stood on roots above water or air, the
     // first plantable block below it.
-    private Block plantingTarget(Block spot, Material sapling, UnderwaterPlanting underwater) {
+    private @Nullable Block plantingTarget(Block spot, Material sapling, @Nullable UnderwaterPlanting underwater) {
         Block target = spot;
         for (int drop = 0; drop <= MAX_REPLANT_DROP; drop++) {
             if (canPlantAt(target, sapling, underwater))
@@ -1956,7 +1954,8 @@ public class TreeChopListener implements Listener {
         if (collected <= 0)
             return;
         // An azalea tree may have dropped the other kind of azalea than planned.
-        ReplantPlan kept = new ReplantPlan(pool.kept(), plan.targets());
+        ReplantPlan kept = new ReplantPlan(Objects.requireNonNull(pool.kept(), "kept with the first sapling"),
+                plan.targets());
         int planted = collected >= kept.targets().size() ? plantSaplings(kept, collected, playerId) : 0;
         int left = collected - planted;
         if (left > 0) {
@@ -1968,7 +1967,7 @@ public class TreeChopListener implements Listener {
 
     // An azalea tree grows oak logs under azalea leaves: where those outnumber oak
     // leaves around the felled oak logs, an azalea goes back instead of an oak.
-    private Material azaleaFor(List<Block> logs, Map<Long, Material> originalMaterials) {
+    private @Nullable Material azaleaFor(List<Block> logs, Map<Long, Material> originalMaterials) {
         Set<Long> seen = new HashSet<>();
         int oak = 0;
         int azalea = 0;
@@ -1999,7 +1998,7 @@ public class TreeChopListener implements Listener {
 
     // A flowering azalea if most of the azalea leaves flower. Package-private for
     // SaplingPoolTest.
-    static Material azaleaSapling(int oakLeaves, int azaleaLeaves, int floweringLeaves) {
+    static @Nullable Material azaleaSapling(int oakLeaves, int azaleaLeaves, int floweringLeaves) {
         if (azaleaLeaves + floweringLeaves <= oakLeaves)
             return null;
         return floweringLeaves > azaleaLeaves ? Material.FLOWERING_AZALEA : Material.AZALEA;
@@ -2014,29 +2013,28 @@ public class TreeChopListener implements Listener {
     static Map<Material, Material> defaultSaplingMappings() {
         Map<Material, Material> mappings = new EnumMap<>(Material.class);
         MATERIAL_TO_SPECIES.forEach((material, species) -> {
-            if (species.sapling() != null) {
-                mappings.put(material, species.sapling());
+            Material sapling = species.sapling();
+            if (sapling != null) {
+                mappings.put(material, sapling);
             }
         });
         return mappings;
     }
 
     private Map<Long, Material> captureOriginalMaterials(List<Block> logs) {
-        if (logs == null || logs.isEmpty()) {
+        if (logs.isEmpty()) {
             return Collections.emptyMap();
         }
         Map<Long, Material> snapshot = new HashMap<>(logs.size());
         for (Block log : logs) {
-            if (log == null)
-                continue;
             snapshot.put(key(log), log.getType());
         }
         return snapshot;
     }
 
     private Material getOriginalMaterial(Block block, Map<Long, Material> originals) {
-        if (block == null || originals == null || originals.isEmpty()) {
-            return block != null ? block.getType() : null;
+        if (originals.isEmpty()) {
+            return block.getType();
         }
         return originals.getOrDefault(key(block), block.getType());
     }
@@ -2044,8 +2042,8 @@ public class TreeChopListener implements Listener {
     // Into air or a replaceable block like grass, where vanilla lets the sapling
     // survive; into water only a mangrove propagule, or with UnderwaterTrees any
     // sapling it would plant there itself, on its own soils.
-    private boolean canPlantAt(Block target, Material sapling, UnderwaterPlanting underwater) {
-        if (target == null || sapling == null || customBlocks.isCustomBlock(target))
+    private boolean canPlantAt(Block target, Material sapling, @Nullable UnderwaterPlanting underwater) {
+        if (customBlocks.isCustomBlock(target))
             return false;
         Material current = target.getType();
         BlockData data = sapling.createBlockData();
@@ -2061,7 +2059,8 @@ public class TreeChopListener implements Listener {
     }
 
     // Returns the block's state before planting, or null if nothing was planted.
-    private BlockState placeSapling(Block target, Material sapling, Player player, UnderwaterPlanting underwater) {
+    private @Nullable BlockState placeSapling(Block target, Material sapling, Player player,
+            @Nullable UnderwaterPlanting underwater) {
         if (!canPlantAt(target, sapling, underwater))
             return null;
         Material current = target.getType();
@@ -2226,7 +2225,7 @@ public class TreeChopListener implements Listener {
     // The leaf mappings to load: the server's file, or while it isn't valid YAML,
     // none to keep those loaded, or the bundled ones if none are loaded yet; the
     // file stays untouched. Package-private for LeafMappingsFileTest.
-    static YamlConfiguration leafMappingsSource(File file, String yamlError, boolean loaded,
+    static @Nullable YamlConfiguration leafMappingsSource(File file, @Nullable String yamlError, boolean loaded,
             Supplier<InputStream> bundled) {
         if (yamlError == null) {
             return YamlConfiguration.loadConfiguration(file);
@@ -2243,17 +2242,13 @@ public class TreeChopListener implements Listener {
         }
     }
 
-    private Set<Material> computeAllowedLeaves(List<Block> logs, Map<Long, Material> originalMaterials) {
-        if (logs == null || logs.isEmpty()) {
+    private @Nullable Set<Material> computeAllowedLeaves(List<Block> logs, Map<Long, Material> originalMaterials) {
+        if (logs.isEmpty()) {
             return null;
         }
         Set<Material> allowed = null;
         for (Block log : logs) {
-            if (log == null)
-                continue;
             Material logType = getOriginalMaterial(log, originalMaterials);
-            if (logType == null)
-                continue;
             Set<Material> mapped = leafMappings.get(logType);
             if (mapped == null || mapped.isEmpty())
                 continue;
@@ -2287,7 +2282,7 @@ public class TreeChopListener implements Listener {
     // (Unbreaking, Unbreakable, PlayerItemDamageEvent, none in creative mode) and
     // returns the points that were rolled for, not the points actually taken.
     private int applyDurabilityCostForTaggedTool(Player player, UUID fellingId, int amount) {
-        if (player == null || fellingId == null || amount <= 0)
+        if (amount <= 0)
             return 0;
         FoundTool found = findToolByFellingId(player, fellingId);
         if (found == null || found.stack == null)
@@ -2309,8 +2304,8 @@ public class TreeChopListener implements Listener {
         return charge;
     }
 
-    private UUID markToolForFelling(ItemStack tool) {
-        if (tool == null || tool.getType().isAir())
+    private @Nullable UUID markToolForFelling(ItemStack tool) {
+        if (tool.getType().isAir())
             return null;
         var meta = tool.getItemMeta();
         if (meta == null)
@@ -2323,8 +2318,6 @@ public class TreeChopListener implements Listener {
     }
 
     private void clearToolFellingTag(Player player, UUID fellingId) {
-        if (player == null || fellingId == null)
-            return;
         FoundTool found = findToolByFellingId(player, fellingId);
         if (found == null || found.stack == null)
             return;
@@ -2341,8 +2334,6 @@ public class TreeChopListener implements Listener {
      * inventory, regardless of which felling created it.
      */
     private void clearAnyFellingTags(Player player) {
-        if (player == null)
-            return;
         var inv = player.getInventory();
         ItemStack off = inv.getItemInOffHand();
         if (clearFellingTagIfPresent(off)) {
@@ -2356,7 +2347,7 @@ public class TreeChopListener implements Listener {
         }
     }
 
-    private boolean clearFellingTagIfPresent(ItemStack stack) {
+    private boolean clearFellingTagIfPresent(@Nullable ItemStack stack) {
         if (stack == null || stack.getType().isAir())
             return false;
         var meta = stack.getItemMeta();
@@ -2379,7 +2370,8 @@ public class TreeChopListener implements Listener {
      * Searches off hand, inventory, cursor and crafting grid in that order.
      * Package-private and generic for ToolLocationTest.
      */
-    static <T> ToolLocation locateTool(T offhand, T[] contents, T cursor, T[] craftingGrid,
+    static <T extends @Nullable Object> @Nullable ToolLocation locateTool(T offhand, T[] contents, T cursor,
+            T[] craftingGrid,
             Predicate<T> matches) {
         if (matches.test(offhand))
             return new ToolLocation(ToolPlace.OFFHAND, -1);
@@ -2406,8 +2398,6 @@ public class TreeChopListener implements Listener {
         }
 
         void writeBack(Player player, ItemStack updated) {
-            if (player == null)
-                return;
             var inv = player.getInventory();
             switch (location.place()) {
                 case OFFHAND -> inv.setItemInOffHand(updated);
@@ -2427,7 +2417,7 @@ public class TreeChopListener implements Listener {
 
     // The player's own 2x2 grid or an open crafting table: the server hands their
     // items back when the view closes, so a tool there still counts as carried.
-    private static CraftingInventory craftingGridOf(Player player) {
+    private static @Nullable CraftingInventory craftingGridOf(Player player) {
         var top = player.getOpenInventory().getTopInventory();
         if ((top.getType() == InventoryType.CRAFTING || top.getType() == InventoryType.WORKBENCH)
                 && top instanceof CraftingInventory grid) {
@@ -2436,9 +2426,7 @@ public class TreeChopListener implements Listener {
         return null;
     }
 
-    private FoundTool findToolByFellingId(Player player, UUID fellingId) {
-        if (player == null || fellingId == null)
-            return null;
+    private @Nullable FoundTool findToolByFellingId(Player player, UUID fellingId) {
         var inv = player.getInventory();
         String target = fellingId.toString();
         CraftingInventory grid = craftingGridOf(player);
@@ -2459,7 +2447,7 @@ public class TreeChopListener implements Listener {
         return new FoundTool(location, stack);
     }
 
-    private boolean hasFellingId(ItemStack stack, String expectedId) {
+    private boolean hasFellingId(@Nullable ItemStack stack, String expectedId) {
         if (stack == null || stack.getType().isAir())
             return false;
         var meta = stack.getItemMeta();
@@ -2470,7 +2458,7 @@ public class TreeChopListener implements Listener {
     }
 
     private void sendFellingStoppedActionbar(Player player, String key) {
-        if (player == null || !player.isOnline())
+        if (!player.isOnline())
             return;
         try {
             player.sendActionBar(plugin.messages().component(key));
@@ -2480,7 +2468,7 @@ public class TreeChopListener implements Listener {
     }
 
     private void sendFellingAlreadyRunningActionbar(Player player) {
-        if (player == null || !player.isOnline())
+        if (!player.isOnline())
             return;
         long now = System.currentTimeMillis();
         UUID uuid = player.getUniqueId();
@@ -2507,8 +2495,6 @@ public class TreeChopListener implements Listener {
 
     private boolean withinRadius(int originX, int originY, int originZ, Block candidate,
             int horizontalRadius, int verticalRadius) {
-        if (candidate == null)
-            return false;
         int dx = Math.abs(candidate.getX() - originX);
         int dy = Math.abs(candidate.getY() - originY);
         int dz = Math.abs(candidate.getZ() - originZ);

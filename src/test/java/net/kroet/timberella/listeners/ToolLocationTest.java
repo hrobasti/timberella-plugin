@@ -3,8 +3,10 @@ package net.kroet.timberella.listeners;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.Objects;
 import net.kroet.timberella.listeners.TreeChopListener.ToolLocation;
 import net.kroet.timberella.listeners.TreeChopListener.ToolPlace;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -16,7 +18,8 @@ class ToolLocationTest {
     private static final String AXE = "tagged-axe";
     private static final String[] EMPTY_GRID = {};
 
-    private static ToolLocation locate(String offhand, String[] contents, String cursor, String[] grid) {
+    private static @Nullable ToolLocation locate(@Nullable String offhand, @Nullable String[] contents,
+            @Nullable String cursor, @Nullable String[] grid) {
         return TreeChopListener.locateTool(offhand, contents, cursor, grid, AXE::equals);
     }
 
@@ -35,9 +38,9 @@ class ToolLocationTest {
     @Test
     void searchesOffhandThenInventoryThenCursorThenGrid() {
         String[] grid = {AXE};
-        assertEquals(ToolPlace.OFFHAND, locate(AXE, new String[]{AXE}, AXE, grid).place());
-        assertEquals(ToolPlace.INVENTORY, locate(null, new String[]{AXE}, AXE, grid).place());
-        assertEquals(ToolPlace.CURSOR, locate(null, new String[]{}, AXE, grid).place());
+        assertEquals(ToolPlace.OFFHAND, Objects.requireNonNull(locate(AXE, new String[]{AXE}, AXE, grid)).place());
+        assertEquals(ToolPlace.INVENTORY, Objects.requireNonNull(locate(null, new String[]{AXE}, AXE, grid)).place());
+        assertEquals(ToolPlace.CURSOR, Objects.requireNonNull(locate(null, new String[]{}, AXE, grid)).place());
     }
 
     @Test

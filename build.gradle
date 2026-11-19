@@ -72,6 +72,9 @@ dependencies {
     // Also supplies Adventure/MiniMessage and Gson at the server's own versions; Paper
     // provides them at runtime, so they are neither declared separately nor shaded.
     compileOnly(libs.paper.api)
+    // Null annotations only (skill java-null-safety); never shipped.
+    compileOnly(libs.jspecify)
+    testCompileOnly(libs.jspecify)
     // Read like settings.gradle does, so both agree on any value.
     if (Boolean.parseBoolean(providers.gradleProperty('useLocalTurtleLib').getOrElse('false'))) {
         implementation(project(':plugins:turtle-lib'))
@@ -204,3 +207,6 @@ spotless {
     }
 }
 
+// JSpecify null gate with the Eclipse compiler (skill java-null-safety); wired into `check`.
+apply from: 'gradle/null_check.gradle'
+registerNullAnalysis(25)

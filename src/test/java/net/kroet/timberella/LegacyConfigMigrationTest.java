@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import net.kroet.turtlelib.helper.ConfigKeyMigrator;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class LegacyConfigMigrationTest {
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path tempDir;
 
@@ -103,7 +106,10 @@ class LegacyConfigMigrationTest {
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
             @Override
-            public void publish(LogRecord record) {
+            public void publish(@Nullable LogRecord record) {
+                if (record == null) {
+                    return;
+                }
                 if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
                     warnings.add(record);
                 }

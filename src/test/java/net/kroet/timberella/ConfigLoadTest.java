@@ -26,6 +26,8 @@ import org.junit.jupiter.api.io.TempDir;
 class ConfigLoadTest {
     private static final Supplier<InputStream> BUNDLED = () -> ConfigLoadTest.class.getResourceAsStream("/config.yml");
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path dir;
 

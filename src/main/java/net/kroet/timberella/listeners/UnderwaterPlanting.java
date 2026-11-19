@@ -8,6 +8,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 
 /**
  * UnderwaterTrees' rules for planting a sapling into water, read from that
@@ -30,7 +31,7 @@ final class UnderwaterPlanting {
 
     // The rules while UnderwaterTrees is enabled and lets the player plant
     // underwater; null otherwise.
-    static UnderwaterPlanting forPlayer(Player player) {
+    static @Nullable UnderwaterPlanting forPlayer(Player player) {
         Plugin plugin = player.getServer().getPluginManager().getPlugin(PLUGIN_NAME);
         if (plugin == null || !plugin.isEnabled() || !player.hasPermission(PLACE_PERMISSION))
             return null;

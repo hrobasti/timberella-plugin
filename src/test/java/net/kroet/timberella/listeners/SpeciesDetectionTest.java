@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import net.kroet.timberella.listeners.TreeChopListener.Species;
 import org.bukkit.Material;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class SpeciesDetectionTest {
@@ -71,7 +72,7 @@ class SpeciesDetectionTest {
         assertNull(detect(0, 0, 0));
     }
 
-    private Species detect(int x, int y, int z) {
+    private @Nullable Species detect(int x, int y, int z) {
         return TreeChopListener.detectSpecies(x, y, z, 320, true, this::typeAt, this::isTree);
     }
 

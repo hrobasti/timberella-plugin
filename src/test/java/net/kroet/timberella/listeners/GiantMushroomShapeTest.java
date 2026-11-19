@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import net.kroet.timberella.listeners.GiantMushroomShape.Cap;
 import net.kroet.timberella.listeners.GiantMushroomShape.Column;
 import net.kroet.timberella.listeners.GiantMushroomShape.Mushroom;
 import net.kroet.timberella.listeners.GiantMushroomShape.Pos;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -75,7 +77,7 @@ class GiantMushroomShapeTest {
 
         left.cap().forEach(caps::remove);
         stems.removeIf(pos -> pos.x() == 0);
-        assertEquals(45, find(new Pos(4, 0, 0)).cap().size());
+        assertEquals(45, Objects.requireNonNull(find(new Pos(4, 0, 0))).cap().size());
     }
 
     @Test
@@ -92,8 +94,8 @@ class GiantMushroomShapeTest {
         assertEquals(45, brown.cap().size());
         assertTrue(brown.cap().stream().allMatch(pos -> pos.x() <= 3));
         assertEquals(45, red.cap().size());
-        assertEquals(new Column(7, 0, 0, 4), find(new Pos(4, 5, 0)).column());
-        assertEquals(45, find(new Pos(7, 0, 0)).cap().size());
+        assertEquals(new Column(7, 0, 0, 4), Objects.requireNonNull(find(new Pos(4, 5, 0))).column());
+        assertEquals(45, Objects.requireNonNull(find(new Pos(7, 0, 0))).cap().size());
     }
 
     // Vanilla lets a shorter brown mushroom grow this close to a taller one.
@@ -218,7 +220,7 @@ class GiantMushroomShapeTest {
         assertEquals(new Column(0, 0, 0, 11), GiantMushroomShape.column(0, 0, 0, this::isStem, 12));
     }
 
-    private Mushroom find(Pos start) {
+    private @Nullable Mushroom find(Pos start) {
         return GiantMushroomShape.find(start.x(), start.y(), start.z(), this::isStem,
                 (x, y, z) -> caps.get(new Pos(x, y, z)), cap -> cap.radius, 1024);
     }

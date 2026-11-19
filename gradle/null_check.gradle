@@ -1,0 +1,52 @@
+// JSpecify null analysis with the Eclipse compiler and the same rules as VS Code
+// (config/jdt_null_analysis.prefs); javac ignores these annotations, so without this gate
+// new warnings would only show up in the editor.
+// Apply in every Java module after the java plugin: registerNullAnalysis(<java version>)
+def ecjVersion = '3.46.100' // pinned in skill java-null-safety
+def nullAnalysisPrefs = file('config/jdt_null_analysis.prefs')
+
+ext.registerNullAnalysis = { int javaVersion ->
+    def ecjClasspath = configurations.detachedConfiguration(dependencies.create("org.eclipse.jdt:ecj:${ecjVersion}"))
+    def nullCheck = tasks.register('nullCheck') {
+        group = 'verification'
+        description = 'Fails on JSpecify null-analysis warnings in all source sets of this module.'
+    }
+    tasks.matching { it.name == 'check' }.configureEach { dependsOn(nullCheck) }
+
+    sourceSets.configureEach { sourceSet ->
+        def taskName = sourceSet.getTaskName('nullCheck', null)
+        def javaSources = sourceSet.java
+        // A FileCollection survives the configuration cache; the SourceDirectorySet comes back
+        // as a plain FileTree without srcDirs.
+        def sourceDirs = javaSources.sourceDirectories
+        // Lazy: build scripts may replace the classpath after this source set is created.
+        def compileClasspath = files({ sourceSet.compileClasspath })
+        def checkTask = tasks.register(taskName, JavaExec) {
+            group = 'verification'
+            description = "Null analysis of the ${sourceSet.name} source set with the Eclipse compiler."
+            onlyIf { !javaSources.isEmpty() }
+            inputs.files(javaSources).skipWhenEmpty()
+            inputs.files(compileClasspath)
+            inputs.file(nullAnalysisPrefs)
+            def marker = layout.buildDirectory.file("nullCheck/${sourceSet.name}.ok")
+            outputs.file(marker)
+            javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(javaVersion) }
+            classpath = ecjClasspath
+            mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
+            argumentProviders.add({
+                [
+                    '--release', javaVersion.toString(),
+                    '-encoding', 'UTF-8',
+                    '-proc:none',
+                    '-d', 'none',
+                    '-warn:none',
+                    '-properties', nullAnalysisPrefs.absolutePath,
+                    '-failOnWarning',
+                    '-classpath', compileClasspath.asPath
+                ] + sourceDirs.files.findAll { it.exists() }.collect { it.absolutePath }
+            } as CommandLineArgumentProvider)
+            doLast { marker.get().asFile.text = 'ok\n' }
+        }
+        nullCheck.configure { dependsOn(checkTask) }
+    }
+}

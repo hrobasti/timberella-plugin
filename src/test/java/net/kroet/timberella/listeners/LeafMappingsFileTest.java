@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import net.kroet.turtlelib.helper.ConfigWatcher;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +24,8 @@ class LeafMappingsFileTest {
     private static final Supplier<InputStream> BUNDLED = () -> LeafMappingsFileTest.class
             .getResourceAsStream("/leaf_mappings.yml");
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path dir;
 
@@ -30,8 +33,8 @@ class LeafMappingsFileTest {
     void validFileIsLoaded() throws IOException {
         File file = write("log_to_leaves:\n  BIRCH_LOG:\n    - BIRCH_LEAVES\n");
 
-        YamlConfiguration yaml = TreeChopListener.leafMappingsSource(file, ConfigWatcher.describeYamlError(file), true,
-                BUNDLED);
+        YamlConfiguration yaml = Objects.requireNonNull(TreeChopListener.leafMappingsSource(file,
+                ConfigWatcher.describeYamlError(file), true, BUNDLED));
 
         assertEquals(List.of("BIRCH_LEAVES"), yaml.getStringList("log_to_leaves.BIRCH_LOG"));
     }
@@ -47,7 +50,8 @@ class LeafMappingsFileTest {
         assertNotNull(error);
         assertTrue(error.contains("line"), error);
         assertNull(TreeChopListener.leafMappingsSource(file, error, true, BUNDLED));
-        YamlConfiguration atStartup = TreeChopListener.leafMappingsSource(file, error, false, BUNDLED);
+        YamlConfiguration atStartup = Objects.requireNonNull(
+                TreeChopListener.leafMappingsSource(file, error, false, BUNDLED));
         assertTrue(atStartup.getStringList("log_to_leaves.OAK_LOG").contains("OAK_LEAVES"));
         assertTrue(atStartup.getStringList("log_to_leaves.CRIMSON_STEM").contains("NETHER_WART_BLOCK"));
         assertEquals(broken, Files.readString(file.toPath()));

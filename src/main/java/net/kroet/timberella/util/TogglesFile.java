@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.Nullable;
 
 /**
  * toggles.yml, the players who switched Timberella off. It is replaced in one
@@ -104,7 +105,7 @@ public final class TogglesFile {
 
     // toggles.yml.broken, or the first free toggles.yml.broken-N; null if the copy
     // fails.
-    private static Path backup(Path file, Logger logger) {
+    private static @Nullable Path backup(Path file, Logger logger) {
         Path backup = file.resolveSibling(file.getFileName() + ".broken");
         for (int n = 2; Files.exists(backup); n++) {
             backup = file.resolveSibling(file.getFileName() + ".broken-" + n);

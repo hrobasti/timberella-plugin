@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntBinaryOperator;
 import net.kroet.timberella.listeners.TreeShape.Footprint;
@@ -20,6 +21,7 @@ import net.kroet.timberella.listeners.TreeShape.Part;
 import net.kroet.timberella.listeners.TreeShape.Pos;
 import net.kroet.timberella.listeners.TreeShape.Result;
 import net.kroet.timberella.listeners.TreeShape.Support;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -89,7 +91,7 @@ class TreeShapeTest implements TreeShape.Surroundings {
 
         assertEquals(trunk, Set.copyOf(result.kept()));
         assertEquals(hut, result.excluded());
-        assertNull(analyze(new Pos(1, 4, 0)));
+        assertNull(analyzeOrNull(new Pos(1, 4, 0)));
     }
 
     @Test
@@ -274,7 +276,7 @@ class TreeShapeTest implements TreeShape.Surroundings {
 
         Result tree = analyze(new Pos(0, 1, 0));
 
-        assertNull(analyze(new Pos(-1, 0, 0)));
+        assertNull(analyzeOrNull(new Pos(-1, 0, 0)));
         assertEquals(fill(-3, -1, 0, -3, 1, 0), Set.copyOf(analyze(new Pos(-3, 1, 0)).kept()));
         assertEquals(trunk, Set.copyOf(tree.kept()));
         assertEquals(wall, tree.excluded());
@@ -348,7 +350,7 @@ class TreeShapeTest implements TreeShape.Surroundings {
             Set<Pos> wall = fill(-3, top - 1, 0, -1, top, 0);
             crown(-2, 3, -2, 2, 6, 2);
 
-            assertNull(analyze(new Pos(-1, top, 0)), "wall top " + top);
+            assertNull(analyzeOrNull(new Pos(-1, top, 0)), "wall top " + top);
             Result tree = analyze(new Pos(0, 1, 0));
             assertEquals(trunk, Set.copyOf(tree.kept()), "wall top " + top);
             assertEquals(wall, tree.excluded(), "wall top " + top);
@@ -367,7 +369,7 @@ class TreeShapeTest implements TreeShape.Surroundings {
         Set<Pos> post = fill(3, 0, 0, 3, 3, 0);
         leaves.addAll(List.of(new Pos(0, 7, 0), new Pos(1, 6, 0), new Pos(2, 5, 0), new Pos(-1, 7, 0)));
 
-        assertNull(analyze(new Pos(3, 0, 0)));
+        assertNull(analyzeOrNull(new Pos(3, 0, 0)));
         Result result = analyze(new Pos(0, 0, 0));
         assertTrue(result.kept().containsAll(trunk));
         assertTrue(result.excluded().containsAll(post));
@@ -721,6 +723,10 @@ class TreeShapeTest implements TreeShape.Surroundings {
     }
 
     private Result analyze(Pos hit) {
+        return Objects.requireNonNull(analyzeOrNull(hit), "no tree at " + hit);
+    }
+
+    private @Nullable Result analyzeOrNull(Pos hit) {
         return TreeShape.analyze(collect(hit), this, diagonals, protectBuilds);
     }
 

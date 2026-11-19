@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Combines the adapters of all custom-block plugins that are enabled. An
@@ -68,7 +69,7 @@ public final class CustomBlockGuards implements CustomBlockGuard {
     }
 
     @Override
-    public boolean isCustomBlock(Block block) {
+    public boolean isCustomBlock(@Nullable Block block) {
         if (block == null || adapters.isEmpty())
             return false;
         for (int i = 0; i < adapters.size(); i++) {

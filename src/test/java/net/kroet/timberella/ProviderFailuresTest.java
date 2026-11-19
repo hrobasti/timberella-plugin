@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import net.kroet.turtlelib.helper.UpdateChecker.Provider;
 import net.kroet.turtlelib.helper.UpdateChecker.ProviderResult;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -19,11 +20,11 @@ class ProviderFailuresTest {
     private final Set<Provider> reported = EnumSet.noneOf(Provider.class);
 
     private static ProviderResult failed(Provider provider) {
-        return new ProviderResult(provider, null, null, "timeout", null, false);
+        return new ProviderResult(provider, null, "", "timeout", null, false);
     }
 
-    private static ProviderResult fetched(Provider provider, String version) {
-        return new ProviderResult(provider, version, null, null, null, false);
+    private static ProviderResult fetched(Provider provider, @Nullable String version) {
+        return new ProviderResult(provider, version, "", null, null, false);
     }
 
     private List<Provider> firstFailures(ProviderResult... results) {

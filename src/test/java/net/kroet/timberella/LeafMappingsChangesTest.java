@@ -11,6 +11,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import net.kroet.turtlelib.helper.FileChangeTracker;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -24,11 +25,17 @@ class LeafMappingsChangesTest {
     private static final String VALID = "log_to_leaves:\n  OAK_LOG:\n    - OAK_LEAVES\n  BIRCH_LOG:\n    - BIRCH_LEAVES\n";
     private static final String BROKEN = "log_to_leaves:\n  OAK_LOG: [OAK_LEAVES\n";
 
+    // JUnit injects the @TempDir before each test.
+    @SuppressWarnings("null")
     @TempDir
     Path dir;
 
     private final List<LogRecord> warnings = new ArrayList<>();
+    // Set in @BeforeEach before each test.
+    @SuppressWarnings("null")
     private FileChangeTracker files;
+    // Set in @BeforeEach before each test.
+    @SuppressWarnings("null")
     private FileChangeTracker leafMappings;
 
     @BeforeEach
@@ -37,7 +44,10 @@ class LeafMappingsChangesTest {
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
             @Override
-            public void publish(LogRecord record) {
+            public void publish(@Nullable LogRecord record) {
+                if (record == null) {
+                    return;
+                }
                 warnings.add(record);
             }
 
