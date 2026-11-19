@@ -10,3 +10,11 @@ updates:
       # so this range covers them too. Raise both bounds with every Paper minor bump.
       - dependency-name: "io.papermc.paper:paper-api"
         versions: ["[26.0,26.4)"]
+      # Compile-only APIs of other plugins: their repositories (repo.momirealms.net,
+      # mvn.lumine.io) refuse Dependabot with 403, and MMOItems/MythicLib are pinned
+      # snapshots anyway. Check their versions by hand during audits.
+      - dependency-name: "net.momirealms:craft-engine-bukkit"
+      - dependency-name: "net.Indyuce:MMOItems-API"
+      - dependency-name: "io.lumine:MythicLib-dist"
+      - dependency-name: "io.lumine:MythicCrucible-Dist"
+      - dependency-name: "io.lumine:Mythic-Dist"
