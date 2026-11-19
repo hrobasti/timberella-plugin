@@ -18,3 +18,5 @@ updates:
       - dependency-name: "io.lumine:MythicLib-dist"
       - dependency-name: "io.lumine:MythicCrucible-Dist"
       - dependency-name: "io.lumine:Mythic-Dist"
+      # TurtleLib is pinned by hand; Dependabot also asks repo.momirealms.net for it and fails.
+      - dependency-name: "turtle-lib:turtle-lib-paper"
