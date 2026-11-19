@@ -14,7 +14,7 @@ body:
     attributes:
       label: Server Version
       description: "Include the full Paper version string"
-      placeholder: "Paper 26.3 build 49"
+      placeholder: "Paper 26.3 build 256"
     validations:
       required: true
   - type: textarea

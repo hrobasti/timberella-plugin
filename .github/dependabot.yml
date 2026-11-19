@@ -4,3 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Paper stays pinned to the oldest stable build of its minor version, so only a new
+      # minor version is news. Maven ordering puts -rc-/-pre- versions of 26.4 below 26.4,
+      # so this range covers them too. Raise both bounds with every Paper minor bump.
+      - dependency-name: "io.papermc.paper:paper-api"
+        versions: ["[26.0,26.4)"]
